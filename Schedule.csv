@@ -1,0 +1,9 @@
+
+0,On,Garage Door,"1,2,3,4,5",08:34:00,21:58:20,No Schedule/ Off,On
+1,On,Lights,"4,6",13:00:00,23:08:00,No Schedule/ Off,On
+2,On,Lights,"1,2,5",05:25:00,21:00:00,No Schedule/ Off,On
+3,On,Garage Door,3,20:09:00,21:10:00,No Schedule/ Off,On
+4,On,ElectricWindow,6,14:05:00,23:55:55,No Schedule/ Off,On
+5,On,Oven,4,18:40:30,18:40:55,No Schedule/ Off,On
+6,On,Window1,1,08:01:30,22:02:00,No Schedule/ Off,On
+7,On,Window2,5,*14:01:30,22:02:00,No Schedule/ Off,On

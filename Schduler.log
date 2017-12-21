@@ -1,0 +1,9 @@
+[2017-08-17 21:35:31] Local IP: 192.168.2.113
+[2017-08-17 21:35:31] Initialize MainApp
+[2017-08-17 21:35:31] /home/guy/PythonProjects/schedule_192.168.2.112.csv [loaded OK]
+[2017-08-17 21:35:31] [192.168.2.112][MainSwitch ON]
+[2017-08-17 21:35:31] [192.168.2.112] [Switch 1] [ on] task#1
+[2017-08-17 21:35:31] /home/guy/PythonProjects/schedule_192.168.2.113.csv [loaded OK]
+[2017-08-17 21:35:31] [192.168.2.113][MainSwitch ON]
+[2017-08-17 21:35:31] /home/guy/PythonProjects/schedule_192.168.2.114.csv [loaded OK]
+[2017-08-17 21:35:31] [192.168.2.114][MainSwitch ON]
