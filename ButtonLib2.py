@@ -685,7 +685,7 @@ class CoreButton(ttk.Frame):
 
 
     def disable_sched_task(self, state=0, sw=0,task_num=None):
-        print("G")
+        print("def disable_sched_task(state=%s, sw=%s,task_num=%s)"%(state, sw,task_num))
 
         states = ['Cancelled', 'Enabled']
         current_state = None
@@ -829,9 +829,9 @@ class UpDownButton2(CoreButton):
         sw_i = [0, 1]
         sleep_time = 0.5  # seconds
         if self.but_stat[sw_i[sw]].get() == 1:  # Pressed to turn on
-            print("GUY",self.but_stat[sw_i[sw - 1]].get())
+            #print("GUY",self.but_stat[sw_i[sw - 1]].get())
             if self.but_stat[sw_i[sw - 1]].get() == 1:  # check if pther is on
-                #self.disable_sched_task(state=1,sw=sw_i[sw - 1])
+                self.disable_sched_task(state=1,sw=sw_i[sw - 1])
                 #self.but_stat[sw_i[sw - 1]].set(0)  # turn other off (relevant SFButton)
                 self.execute_command(sw_i[sw - 1], 0, 'Logic Switch')  # turn other off")
                 sleep(sleep_time)
@@ -919,20 +919,20 @@ if __name__ == "__main__":
     # d= ErrBut(frame4, ip_out='192.168.2.114', hw_out=[5, 7], hw_in=[13, 21], height=3, width=15,ip_in='192.168.2.114', sched_vector=[[[5,3], "02:24:30", "23:12:10"], [[4], "1:42:00", "23:50:10"]])
     # d.grid(row=0, column=3)
 
-    e = ToggleBut2(root, nickname='LivingRoom Lights', ip_out='192.168.2.115', \
-            hw_out=[7], sched_vector=[[[1, 6,7], "02:24:30", "23:12:10"], \
-            [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
-    e.grid(row=0, column=0, sticky=tk.S)
+    #e = ToggleBut2(root, nickname='LivingRoom Lights', ip_out='192.168.2.115', \
+            #hw_out=[7], sched_vector=[[[1, 6,7], "02:24:30", "23:12:10"], \
+            #[[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
+    #e.grid(row=0, column=0, sticky=tk.S)
 
-    #f = UpDownButton2(root, nickname='RoomWindow', ip_out='192.168.2.114', \
-        #hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1, 2], "22:24:30", \
-        #"23:12:10"], [[6], "1:42:00", "23:50:10"]],sched_vector2=[[[3], "22:24:30", \
-        #"23:12:10"]])
-    #f.grid(row=0, column=1, sticky=tk.S)
+    f = UpDownButton2(root, nickname='RoomWindow', ip_out='192.168.2.114', \
+        hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1, 2], "22:24:30", \
+        "23:12:10"], [[7], "1:42:00", "23:50:10"]],sched_vector2=[[[3], "22:24:30", \
+        "23:12:10"]])
+    f.grid(row=0, column=1, sticky=tk.S)
     
-    g = MainsButton2(root, nickname='WaterBoiler', ip_out='192.168.2.113',\
-        hw_out=[12, 5], hw_in=[13, 21], sched_vector=[[[3, 5], \
-        "02:24:30", "23:55:10"], [[6,7], "1:42:00", "23:50:10"]])
-    g.grid(row=0, column=2, sticky=tk.S)
+    #g = MainsButton2(root, nickname='WaterBoiler', ip_out='192.168.2.113',\
+        #hw_out=[12, 5], hw_in=[13, 21], sched_vector=[[[3, 5], \
+        #"02:24:30", "23:55:10"], [[6,7], "1:42:00", "23:50:10"]])
+    #g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()
