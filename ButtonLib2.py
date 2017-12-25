@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from time import sleep
 import datetime
-import gpiozero
-from gpiozero import OutputDevice
-from gpiozero.pins.pigpio import PiGPIOFactory
+# import gpiozero
+# from gpiozero import OutputDevice
+# from gpiozero.pins.pigpio import PiGPIOFactory
 import time
 import os
 
@@ -192,9 +192,10 @@ class ScheduledEvents(ttk.Frame):
             # sw  to pass to x_switch method
             # if task is on ---------** and task_state is On ----------_**
             if not sch_stat[0][0] == -1 and ButtonClass.task_state[sch_stat[0][1]] == 1:
-                if not bool(sch_stat[0][0]) == ButtonClass.get_state()[sw[sch_stat[0][1]]]:
-                    ButtonClass.ext_press(sw[sch_stat[0][1]], sch_stat[0][0], "Schedule Switch")
+                # if not bool(sch_stat[0][0]) == ButtonClass.get_state()[sw[sch_stat[0][1]]]:
+                #     ButtonClass.ext_press(sw[sch_stat[0][1]], sch_stat[0][0], "Schedule Switch")
                 # Which button to switch--^^on or off ----^^
+                pass
 
             # Reset task status after sched end ( in case it was cancelled )
             elif sch_stat[0][0] == 0 and ButtonClass.task_state[sch_stat[0][1]] == 0:
@@ -570,8 +571,12 @@ class CoreButton(ttk.Frame):
 
         if ip_in == '': ip_in = ip_out  # in case remote input is not defined
         self.HW_input = None
-        self.task_state, self.switch_type = [1] * len(sched_vector), ''
+        self.task_state, self.task_state2, self.switch_type = [1] * len(sched_vector), '', [1] * len(sched_vector2)
         self.nick, self.ip_out = nickname, ip_out
+
+        if num_buts == 1: cols = [0]
+        elif num_buts == 2: cols = [1, 0]
+
 
         # self.label_var = tk.StringVar()   <----- probably not needed
         self.on_off_var = tk.IntVar()  # Enables/Disables All button's GUI
@@ -592,13 +597,11 @@ class CoreButton(ttk.Frame):
         # Run Gui
         self.build_gui()
 
-        if num_buts == 1: cols = [0]
-        elif num_buts == 2: cols = [1, 0]
 
         # run HW I/O
-        self.HW_output = HWRemoteOutput(self, ip_out, hw_out)
-        self.Indicators = Indicators(self.HW_output, self.buttons_frame, pdx=8, cols=cols)
-        if not hw_in == []: self.HW_input = HWRemoteInput(self, ip_in, hw_in)
+        # self.HW_output = HWRemoteOutput(self, ip_out, hw_out)
+        # self.Indicators = Indicators(self.HW_output, self.buttons_frame, pdx=8, cols=cols)
+        # if not hw_in == []: self.HW_input = HWRemoteInput(self, ip_in, hw_in)
 
         # run Sch module
         colspan=2
@@ -684,34 +687,73 @@ class CoreButton(ttk.Frame):
             self.disable_sched_task(state)
 
 
-    def disable_sched_task(self, state=0, sw=0,task_num=None):
-        print("G")
+    # def disable_sched_task(self, state=0, sw=0,task_num=None):
+    #
+    #     states = ['Cancelled', 'Enabled']
+    #     current_state = None
+    #     try:  # if there is a schedule
+    #         # if schedule in ON- disable it for next run
+    #         if task_num == None:
+    #             if not self.SchRun.get_state()[0][0] == -1:
+    #                 task_num = self.SchRun.get_state()[0][1]
+    #                 self.ext_press(sw=sw, state=state, type_s='Schedule Switch')
+    #                 current_state = self.task_state[task_num]
+    #             else:
+    #                 task_num = self.SchRun.get_state()[1].index(min(self.SchRun.get_state()[1]))
+    #                 self.task_state[task_num] = self.task_state[task_num]
+    #
+    #         self.task_state[task_num] = state
+    #
+    #         # Checkbox On/off if sched is active or not
+    #         self.enable_disable_sched_var.set(self.task_state[task_num])
+    #         if current_state != self.task_state[task_num]:
+    #             self.com.message("[ %s ][ Task %s: %s ]" \
+    #                 % (str(self.nick),task_num, states[state]))
+
+    def disable_sched_task(self, state=0, sw=0, task_num=None):
 
         states = ['Cancelled', 'Enabled']
         current_state = None
+
         try:  # if there is a schedule
-            # if schedule in ON- disable it for next run            
+            # if schedule in ON- disable it for next run
             if task_num == None:
-                if not self.SchRun.get_state()[0][0] == -1:
-                    task_num = self.SchRun.get_state()[0][1]
-                    self.ext_press(sw=sw, state=state, type_s='Schedule Switch')
-                    current_state = self.task_state[task_num]
-                else:
-                    task_num = self.SchRun.get_state()[1].index(min(self.SchRun.get_state()[1]))
-                    self.task_state[task_num] = self.task_state[task_num]
+                if not self.SchRun.get_state()[0][0] == -1 and self.task_state[self.SchRun.get_state()[0][1]]==1:
+                    print("SchRun is On and task number:" ,self.task_state[self.SchRun.get_state()[0][1]],'is on')
+                    print('Set all tasks to 0')
+                    self.task_state = [0 for i in self.task_state]
+                    self.enable_disable_sched_var.set(0)
+                elif not self.SchRun.get_state()[0][0] == -1 and self.task_state[self.SchRun.get_state()[0][1]]==0:
+                    print("SchRun is On and task number:" ,self.task_state[self.SchRun.get_state()[0][1]],'is off')
+                    self.task_state = [1 for i in self.task_state]
+                    self.enable_disable_sched_var.set(1)
+                    print('Set all tasts to 1')
 
-            self.task_state[task_num] = state
 
-            # Checkbox On/off if sched is active or not
-            self.enable_disable_sched_var.set(self.task_state[task_num])
-            if current_state != self.task_state[task_num]:
-                self.com.message("[ %s ][ Task %s: %s ]" \
-                    % (str(self.nick),task_num, states[state]))
+
+                # TO DELETE task_num = self.SchRun.get_state()[0][1]
+                    # Case of 2 Buttons ( UPNDOWN )
+            #         if len(self.buts)>1:
+            #             self.ext_press(sw=0, state=state, type_s='Schedule Switch')
+            #             self.ext_press(sw=1, state=state, type_s='Schedule Switch'))
+            #         current_state = self.task_state[task_num]
+            #     else:
+            #         task_num = self.SchRun.get_state()[1].index(min(self.SchRun.get_state()[1]))
+            #         self.task_state[task_num] = self.task_state[task_num]
+            #
+            # self.task_state[task_num] = state
+            #
+            # # Checkbox On/off if sched is active or not
+            # self.enable_disable_sched_var.set(self.task_state[task_num])
+            # if current_state != self.task_state[task_num]:
+            #     self.com.message("[ %s ][ Task %s: %s ]" \
+            #                      % (str(self.nick), task_num, states[state]))
 
         except AttributeError:
             # No schedule to stop
+            print("ATTR ERR")
             pass
-        print(self.task_state)
+        print("tasks",self.task_state)
 
 
     def execute_command(self, sw, stat, add_txt=''):
@@ -790,7 +832,7 @@ class ToggleBut2(CoreButton):
 
 
     def switch_logic(self, sw):
-        self.execute_command(sw, self.but_stat[sw].get())
+        # self.execute_command(sw, self.but_stat[sw].get())
         if self.but_stat[sw].get() == 0:  # Abourt Conter
             self.Counter.succ_end()
 
@@ -828,23 +870,32 @@ class UpDownButton2(CoreButton):
     def switch_logic(self, sw):
         sw_i = [0, 1]
         sleep_time = 0.5  # seconds
+
         if self.but_stat[sw_i[sw]].get() == 1:  # Pressed to turn on
-            print("GUY",self.but_stat[sw_i[sw - 1]].get())
-            if self.but_stat[sw_i[sw - 1]].get() == 1:  # check if pther is on
+            if self.but_stat[sw_i[sw - 1]].get() == 1:  # If other button is "on"
+                #print(sw_i[sw], self.but_stat[sw_i[sw - 1]].get())
+                # Switch other button Off
                 #self.disable_sched_task(state=1,sw=sw_i[sw - 1])
-                #self.but_stat[sw_i[sw - 1]].set(0)  # turn other off (relevant SFButton)
-                self.execute_command(sw_i[sw - 1], 0, 'Logic Switch')  # turn other off")
+                self.but_stat[sw_i[sw - 1]].set(0)  # turn other off (relevant SFButton)
+
+                # Switch selected button On
+                print("self.execute_command(sw_i[sw - 1], 0, 'Logic Switch')  # turn other off")
                 sleep(sleep_time)
-                self.execute_command(sw_i[sw], 1)  # turn on"
+                print("self.execute_command(sw_i[sw], 1)  # turn on")
             elif self.but_stat[sw_i[sw - 1]].get() == 0:  # if other is off
                 sleep(sleep_time)
-                self.execute_command(sw_i[sw], 1)  # turn on")
+                print("self.execute_command(sw_i[sw], 1)  # turn on")
+                #print(sw_i[sw], self.but_stat[sw_i[sw - 1]].get())
+
 
         elif self.but_stat[sw_i[sw]].get() == 0:  # if pressed to turn off
-            self.execute_command(sw_i[sw], 0)  # turn off")
+            #print(sw_i[sw],self.but_stat[sw_i[sw - 1]].get())
+
+            print("self.execute_command(sw_i[sw], 0)#  turn off")
             ##Both lines below are in case of HW switch and sched_swhith together
             #self.execute_command(sw_i[sw - 1], 0)
             #self.but_stat[sw_i[sw - 1]].set(0)
+
 
 
 class MainsButton2(CoreButton):
@@ -924,11 +975,11 @@ if __name__ == "__main__":
             [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
 
-    #f = UpDownButton2(root, nickname='RoomWindow', ip_out='192.168.2.114', \
-        #hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1, 2], "22:24:30", \
-        #"23:12:10"], [[6], "1:42:00", "23:50:10"]],sched_vector2=[[[3], "22:24:30", \
-        #"23:12:10"]])
-    #f.grid(row=0, column=1, sticky=tk.S)
+    f = UpDownButton2(root, nickname='RoomWindow', ip_out='192.168.2.114', \
+        hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1, 2], "22:24:30", \
+        "23:12:10"], [[1], "1:42:00", "23:50:10"]],sched_vector2=[[[3], "22:24:30", \
+        "23:12:10"]])
+    f.grid(row=0, column=1, sticky=tk.S)
     
     g = MainsButton2(root, nickname='WaterBoiler', ip_out='192.168.2.113',\
         hw_out=[12, 5], hw_in=[13, 21], sched_vector=[[[3, 5], \
