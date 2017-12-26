@@ -18,7 +18,7 @@ class Com2Log:
 
     def message(self, text1):
 
-        time_now=str(datetime.datetime.now())[:-5]
+        time_now = str(datetime.datetime.now())[:-5]
         text2 = '[%s] %s' % (time_now, text1)
         try:
             self.master.master.master.master.master.master.master.write2log(text2)
@@ -41,15 +41,16 @@ class ScheduledEvents(ttk.Frame):
         self.style.configure("Blue2.TLabel", background=self.master.master.master.bg)
 
         # This loop is in case sched vector define in 3 place wich switch to pretate
-        
+
         for i, current_task in enumerate(tasks):
+            print(current_task)
             try:
                 self.sw.append(current_task[3])
             except IndexError:
                 self.sw.append(sw)
 
-        self.remain_time_ent = ttk.Label(self, textvariable=self.ent_var,\
-        **kwargs, anchor=tk.E, style="Blue2.TLabel")
+        self.remain_time_ent = ttk.Label(self, textvariable=self.ent_var, \
+                                         **kwargs, anchor=tk.E, style="Blue2.TLabel")
         self.remain_time_ent.grid(row=0, column=0, sticky=tk.W + tk.E)
 
         self.prep_to_run()
@@ -63,7 +64,7 @@ class ScheduledEvents(ttk.Frame):
                 self.run_schedule()
             else:
                 print("Errors in TimeTable")
-                
+
             self.switch_descision()
 
     def update_sched(self, tasks=[]):
@@ -71,6 +72,7 @@ class ScheduledEvents(ttk.Frame):
         self.tasks = tasks
         self.close_device()
         self.prep_to_run()
+
         print(self.master.master.nick, "Schedule update, done ")
 
     def check_integrity_time_table(self):
@@ -114,43 +116,44 @@ class ScheduledEvents(ttk.Frame):
                 # Today
                 if day_in_task == datetime.date.today().isoweekday():
                     start_time = datetime.datetime.strptime(current_task[1], \
-                    '%H:%M:%S').time()
+                                                            '%H:%M:%S').time()
                     stop_time = datetime.datetime.strptime(current_task[2], \
-                    '%H:%M:%S').time()
+                                                           '%H:%M:%S').time()
 
                     # Before Time
                     if start_time > datetime.datetime.now().time():
                         self.result_vector[i][m] = -1
                         new_date = datetime.datetime.combine(datetime.date.today() \
-                        + datetime.timedelta(day_diff),datetime.datetime.\
-                        strptime(current_task[1],'%H:%M:%S').time())
+                                                             + datetime.timedelta(day_diff), datetime.datetime. \
+                                                             strptime(current_task[1], '%H:%M:%S').time())
 
                     # In Time
                     elif start_time < (datetime.datetime.now() - \
-                    datetime.timedelta(seconds=1)).time() and \
-                    (datetime.datetime.now() + datetime.timedelta(seconds=1)).\
-                    time() < stop_time:
+                                       datetime.timedelta(seconds=1)).time() and \
+                            (datetime.datetime.now() + datetime.timedelta(seconds=1)). \
+                                    time() < stop_time:
                         self.result_vector[i][m] = 1
-                        new_date = datetime.datetime.combine(datetime.date.today(),\
-                        datetime.datetime.strptime(current_task[2],'%H:%M:%S').time())
+                        new_date = datetime.datetime.combine(datetime.date.today(), \
+                                                             datetime.datetime.strptime(current_task[2],
+                                                                                        '%H:%M:%S').time())
                         # print("innnn")
 
                     # Time to Off
-                    elif (datetime.datetime.now() + datetime.timedelta(seconds=2)).\
-                    time() > stop_time and datetime.datetime.now().time() < \
-                    stop_time:
+                    elif (datetime.datetime.now() + datetime.timedelta(seconds=2)). \
+                            time() > stop_time and datetime.datetime.now().time() < \
+                            stop_time:
                         self.result_vector[i][m] = 0
                         # print("offff")
                         new_date = datetime.datetime.combine(datetime.date.today() \
-                        + datetime.timedelta(7),datetime.datetime.\
-                        strptime(current_task[1],'%H:%M:%S').time())
+                                                             + datetime.timedelta(7), datetime.datetime. \
+                                                             strptime(current_task[1], '%H:%M:%S').time())
 
                     # Byond Command Times
                     else:
                         self.result_vector[i][m] = -1
                         new_date = datetime.datetime.combine(datetime.date.today() \
-                        + datetime.timedelta(7),datetime.datetime.strptime\
-                        (current_task[1],'%H:%M:%S').time())
+                                                             + datetime.timedelta(7), datetime.datetime.strptime \
+                                                                 (current_task[1], '%H:%M:%S').time())
 
                 # Day in Future
                 elif day_in_task > datetime.date.today().isoweekday():
@@ -163,15 +166,15 @@ class ScheduledEvents(ttk.Frame):
                 elif day_in_task < datetime.date.today().isoweekday():
                     self.result_vector[i][m] = -1
                     new_date = datetime.datetime.combine(datetime.date.today() \
-                    + datetime.timedelta(7 + day_diff), datetime.datetime.\
-                    strptime(current_task[1], '%H:%M:%S').time())
+                                                         + datetime.timedelta(7 + day_diff), datetime.datetime. \
+                                                         strptime(current_task[1], '%H:%M:%S').time())
 
                 self.future_on[i][m] = chop_microseconds(new_date - datetime.datetime.now())
 
         return self.get_state()
 
     def get_state(self):
-        ans,min_time = [-1, -1], []
+        ans, min_time = [-1, -1], []
         for x, res_vec in enumerate(self.result_vector):
             min_time.append(min(self.future_on[x]))
             for op in res_vec:
@@ -192,9 +195,12 @@ class ScheduledEvents(ttk.Frame):
             # sw  to pass to x_switch method
             # if task is on ---------** and task_state is On ----------_**
             if not sch_stat[0][0] == -1 and ButtonClass.task_state[sch_stat[0][1]] == 1:
-                # if not bool(sch_stat[0][0]) == ButtonClass.get_state()[sw[sch_stat[0][1]]]:
+                # TO RESTORE if not bool(sch_stat[0][0]) == ButtonClass.get_state()[sw[sch_stat[0][1]]]:
                 #     ButtonClass.ext_press(sw[sch_stat[0][1]], sch_stat[0][0], "Schedule Switch")
-                # Which button to switch--^^on or off ----^^
+
+
+                # TO DELETE
+                ButtonClass.ext_press(sw[sch_stat[0][1]], sch_stat[0][0], "Schedule Switch")
                 pass
 
             # Reset task status after sched end ( in case it was cancelled )
@@ -229,6 +235,8 @@ class ScheduledEvents(ttk.Frame):
     def close_device(self):
         if self.run_id != None:
             self.after_cancel(self.run_id)
+            self.ent_var.set("Not Active")
+            self.remain_time_ent['foreground'] = 'red'
 
 
 class TimeOutCounter(ttk.Frame):
@@ -387,41 +395,42 @@ class Indicators:
     def __init__(self, master, frame, pdy=0, pdx=3, cols=[]):
         self.master = master
         self.frame = frame
-        self.x=0
+        self.x = 0
         self.update_indicators()
         self.run_id = None
-        
 
     def update_indicators(self):
-        
-        if self.x== 120 or self.x==1:
+
+        if self.x == 120 or self.x == 1:
             self.ping_it()
-            self.x=1
-        elif self.x >5 :
-            self.master.master.conn_lbl['style']='B.TLabel'
+            self.x = 1
+        elif self.x > 5:
+            self.master.master.conn_lbl['style'] = 'B.TLabel'
         self.x += 1
-        
+
         for i, but in enumerate(self.master.master.buts):
             if self.master.get_state()[i] == False:
-                fg, text2='red',' (Off)'
+                fg, text2 = 'red', ' (Off)'
             elif self.master.get_state()[i] == True:
-                fg, text2='green',' (On)'
+                fg, text2 = 'green', ' (On)'
 
             but.config(fg=fg)
-            but.config(text=self.master.master.buts_names[i]+text2)
-        
+            but.config(text=self.master.master.buts_names[i] + text2)
+
         self.run_id = self.frame.after(500, self.update_indicators)
 
     def ping_it(self):
-        conn_stat=['Connected','Lost']
-        style=['Green.TLabel','Red.TLabel']
+        conn_stat = ['Connected', 'Lost']
+        style = ['Green.TLabel', 'Red.TLabel']
         ping_result = os.system('ping %s -c 1 >NULL' % self.master.master.ip_out)
         self.master.master.conn_status_var.set(conn_stat[ping_result])
-        self.master.master.conn_lbl['style']=style[ping_result]
+        self.master.master.conn_lbl['style'] = style[ping_result]
 
     def close_device(self):
         if self.run_id != None:
+            self.master.master.conn_status_var.set('Stop')
             self.frame.after_cancel(self.run_id)
+
 
 
 class HWRemoteInput:
@@ -506,7 +515,7 @@ class HWRemoteOutput:
 class CoreButton(ttk.Frame):
 
     def __init__(self, master, nickname='CoreBut.inc', hw_in=[], hw_out=[], ip_in='', \
-            ip_out='', sched_vector=[], sched_vector2=[], num_buts=1):
+                 ip_out='', sched_vector=[], sched_vector2=[], num_buts=1):
 
         ttk.Frame.__init__(self, master)
 
@@ -518,67 +527,62 @@ class CoreButton(ttk.Frame):
         self.style.configure("Blue2.TFrame", background=self.bg)
         self.style.configure("Red.TButton", foreground='red')
         self.style.configure("Blue2.TLabel", background=self.bg)
-        self.style.configure('B.TLabel', font=('helvetica',8), \
-            background=self.bg)
-        self.style.configure('Green.TLabel', font=('helvetica',8), \
-            background=self.bg, foreground='green')
-        self.style.configure('Red.TLabel', font=('helvetica',8), \
-            background=self.bg, foreground='red')
-        self.style.configure('Title.TLabel', font=('helvetica',10,'bold'), \
-            background=self.bg, foreground='black')
-
+        self.style.configure('B.TLabel', font=('helvetica', 8), \
+                             background=self.bg)
+        self.style.configure('Green.TLabel', font=('helvetica', 8), \
+                             background=self.bg, foreground='green')
+        self.style.configure('Red.TLabel', font=('helvetica', 8), \
+                             background=self.bg, foreground='red')
+        self.style.configure('Title.TLabel', font=('helvetica', 10, 'bold'), \
+                             background=self.bg, foreground='black')
 
         # Frames
         # Buttons&Indicators
         py, px = 2, 2
         self.main_frame = ttk.Frame(self, style="Blue2.TFrame", \
-        relief=tk.RIDGE, padding=2)
+                                    relief=tk.RIDGE, padding=2)
         self.main_frame.grid()
 
         # Display nickname of button
         ttk.Label(self.main_frame, text=self.nick, style="Title.TLabel").grid(row=0, column=0)
-        
-        self.buttons_frame = ttk.Frame(self.main_frame, height=80,width=140, \
-            style="Blue2.TFrame")
+
+        self.buttons_frame = ttk.Frame(self.main_frame, height=80, width=140, \
+                                       style="Blue2.TFrame")
         self.buttons_frame.grid_propagate(0)
         self.buttons_frame.columnconfigure(0, weight=1)
         self.buttons_frame.rowconfigure(0, weight=1)
         self.buttons_frame.grid(row=1, column=0, pady=py, padx=px)
 
         self.sub_frame = ttk.Frame(self.buttons_frame, \
-            style="Azure.TFrame", padding=(10,5,10,5),relief=tk.RAISED)
+                                   style="Azure.TFrame", padding=(10, 5, 10, 5), relief=tk.RAISED)
         self.sub_frame.grid()
-        
+
         # Counters
         self.timers_frame = ttk.Frame(self.main_frame, relief=tk.RIDGE, \
-            border=2, style="Blue2.TFrame")
+                                      border=2, style="Blue2.TFrame")
         self.timers_frame.grid(row=2, column=0, pady=py, padx=px, sticky=tk.E + tk.W)
         self.timers_frame.columnconfigure(0, weight=1)
         self.timers_frame.columnconfigure(1, weight=1)
 
         # Extra GUI
-        self.switches_frame = ttk.Frame(self.main_frame, relief=tk.RIDGE,\
-            style="Blue2.TFrame",padding=2, border=2)
-        self.switches_frame.grid(row=3, column=0, pady=py, padx=px, sticky=tk.W+tk.E)
+        self.switches_frame = ttk.Frame(self.main_frame, relief=tk.RIDGE, \
+                                        style="Blue2.TFrame", padding=2, border=2)
+        self.switches_frame.grid(row=3, column=0, pady=py, padx=px, sticky=tk.W + tk.E)
 
         # Connection to IP
         self.connection_frame = ttk.Frame(self.main_frame, relief=tk.RIDGE, \
-            border=2, style="Blue2.TFrame", padding=2)
+                                          border=2, style="Blue2.TFrame", padding=2)
         self.connection_frame.columnconfigure(1, weight=1)
         self.connection_frame.grid(row=4, column=0, pady=py, padx=px, sticky=tk.E + tk.W)
-        self.conn_status_var=tk.StringVar()
+        self.conn_status_var = tk.StringVar()
         self.conn_status_var.set('wait...')
 
         if ip_in == '': ip_in = ip_out  # in case remote input is not defined
         self.HW_input = None
-        self.task_state, self.task_state2, self.switch_type = [1] * len(sched_vector), '', [1] * len(sched_vector2)
+        self.task_state, self.switch_type = [[1] * len(sched_vector), [1] * len(sched_vector2)], ''
         self.nick, self.ip_out = nickname, ip_out
 
-        if num_buts == 1: cols = [0]
-        elif num_buts == 2: cols = [1, 0]
 
-
-        # self.label_var = tk.StringVar()   <----- probably not needed
         self.on_off_var = tk.IntVar()  # Enables/Disables All button's GUI
         self.on_off_var.set(1)
         self.enable_disable_sched_var = tk.IntVar()  # Enables/ Disables Sched ( task_state)
@@ -590,195 +594,149 @@ class CoreButton(ttk.Frame):
         # n Counter module
         self.Counter = TimeOutCounter(self.timers_frame, remote=1, sw=0)
         self.Counter.grid(row=1, column=1, pady=2, sticky=tk.W)
-        
-        ttk.Label(self.timers_frame, text="TimeOut: ", style="Blue2.TLabel").\
+
+        ttk.Label(self.timers_frame, text="TimeOut: ", style="Blue2.TLabel"). \
             grid(row=1, column=0, sticky=tk.E)
 
         # Run Gui
         self.build_gui()
 
-
         # run HW I/O
+        # TO RESTORE ALL
         # self.HW_output = HWRemoteOutput(self, ip_out, hw_out)
-        # self.Indicators = Indicators(self.HW_output, self.buttons_frame, pdx=8, cols=cols)
+        # self.Indicators = Indicators(self.HW_output, self.buttons_frame, pdx=8)
         # if not hw_in == []: self.HW_input = HWRemoteInput(self, ip_in, hw_in)
 
         # run Sch module
-        colspan=2
+        self.SchRun = []
+        colspan = 1
         if not sched_vector == []:
-            self.SchRun = ScheduledEvents(self.timers_frame, tasks=sched_vector, sw=0)
+            self.SchRun.append(ScheduledEvents(self.timers_frame, tasks=sched_vector, sw=0))
         else:
-            self.SchRun = ScheduledEvents(self.timers_frame)
+            self.SchRun[0]=ScheduledEvents(self.timers_frame)
+        self.SchRun[0].grid(row=0, column=0, pady=3, columnspan=colspan)
+
 
         # Optional for UPDOWN button only
         if not sched_vector2 == []:
-            colspan=1
-            self.SchRun2 = ScheduledEvents(self.timers_frame, tasks=sched_vector, sw=1)
-            self.SchRun2.grid(row=0, column=1, pady=3, columnspan=colspan)
-        self.SchRun.grid(row=0, column=0, pady=3, columnspan=colspan)
+            colspan = 1
+            self.SchRun.append(ScheduledEvents(self.timers_frame, tasks=sched_vector2, sw=1))
+            self.SchRun[1].grid(row=0, column=1, pady=3, columnspan=colspan)
+
 
         self.extras_gui()
         self.connection_gui()
-  
 
     def build_gui(self):
         raise NotImplementedError('You have to override method build_gui()')
 
-
     def extras_gui(self):
 
         ck1 = tk.Checkbutton(self.switches_frame, text='On/Off', \
-            variable=self.on_off_var, indicatoron=1, command=\
-            self.disable_but, bg='light steel blue')
+                             variable=self.on_off_var, indicatoron=1, command= \
+                                 self.disable_but, bg='light steel blue')
         ck1.grid(row=0, column=0, padx=2)
 
         ck2 = tk.Checkbutton(self.switches_frame, text='Schedule', \
-            variable=self.enable_disable_sched_var, indicatoron=1, \
-            command=lambda: self.disable_sched_task \
-            (state=self.enable_disable_sched_var.get()), \
-            bg='light steel blue')
+                             variable=self.enable_disable_sched_var, indicatoron=1, \
+                             command=lambda: self.disable_sched_task \
+                                 (task_num='all'), \
+                             bg='light steel blue')
         ck2.grid(row=0, column=1, padx=2)
 
-
         # to mark checkbot on/ off according active task
-        task_number = self.SchRun.get_state()[0][1]
-        self.enable_disable_sched_var.set(self.task_state[task_number])
+        # TO CHECK task_number = self.SchRun[0].get_state()[0][1]
+        self.enable_disable_sched_var.set(1)#self.task_state[task_number])
 
         # ttk.Button(self.switches_frame, text='Update Schedule', command=self.update_schedule).\
         # grid(row=8, column=0)
 
     def connection_gui(self):
-        ttk.Label(self.connection_frame,text=self.ip_out+' :', \
-            style='B.TLabel').grid(row=0, column=0)
-        self.conn_lbl = ttk.Label(self.connection_frame,textvariable=self.conn_status_var, style='G.TLabel')
+        ttk.Label(self.connection_frame, text=self.ip_out + ' :', \
+                  style='B.TLabel').grid(row=0, column=0)
+        self.conn_lbl = ttk.Label(self.connection_frame, textvariable=self.conn_status_var, style='G.TLabel')
         self.conn_lbl.grid(row=0, column=1)
-        
-
-    def switch_logic(self, sw):
-        # Overwritten By Button's method
-        pass
-
+    #
+    # def switch_logic(self, sw):
+    #     # Overwritten By Button's method
+    #     pass
 
     def sf_button_press(self, sw=0):
         self.switch_type = 'SFButton Switch'
-        self.Counter.on = self.but_stat[sw].get()
-        self.Counter.read_time()
+        #TO CHECK self.Counter.on = self.but_stat[sw].get()
+        #TO CHECK self.Counter.read_time()
         self.switch_logic(sw)
-        if self.SchRun.get_state()[0][0] == 1 and\
-            self.task_state[self.SchRun.get_state()[0][1]]==1 and\
-            self.but_stat[sw].get() == 0:
-            self.disable_sched_task()
-            print("sw=%d, run_state=%d"%(sw, self.SchRun.get_state()[0][0]))
-
+        for i, ButSch in enumerate(self.SchRun):
+            if ButSch.get_state()[0][0] == 1 and \
+                    self.task_state[i][ButSch.get_state()[0][1]] == 1 :
+                for i, current_but in enumerate(self.but_stat):
+                   current_but.get() == 0
+                # TO DELETE print("entered sf_dis_task")
+                self.disable_sched_task()
+                # TO DELETE print("sw=%d, run_state=%d" % (sw, self.SchRun.get_state()[0][0]))
 
     def sf_buttonAUX_press(self, sw=1):  # For MainButton Only
         self.switch_type = "MainsButton Switch"
-        self.execute_command(sw, self.but_stat[sw].get())  # set HWoutput on/ off
+        # TO RESTORE self.execute_command(sw, self.but_stat[sw].get())  # set HWoutput on/ off
         self.switch_logic(sw)
         if self.but_stat[sw].get() == 0:  # cancel only when mainswitch is set to off
             self.disable_sched_task()
-
 
     def ext_press(self, sw, state, type_s):
         self.switch_type = type_s
         self.but_stat[sw].set(state)
         self.switch_logic(sw)
         if not type_s == "Schedule Switch" and self.SchRun.get_state()[0][0] == 1 and self.but_stat[sw].get() == 0:
-            self.disable_sched_task(state)
+            self.disable_sched_task()
 
-
-    # def disable_sched_task(self, state=0, sw=0,task_num=None):
-    #
-    #     states = ['Cancelled', 'Enabled']
-    #     current_state = None
-    #     try:  # if there is a schedule
-    #         # if schedule in ON- disable it for next run
-    #         if task_num == None:
-    #             if not self.SchRun.get_state()[0][0] == -1:
-    #                 task_num = self.SchRun.get_state()[0][1]
-    #                 self.ext_press(sw=sw, state=state, type_s='Schedule Switch')
-    #                 current_state = self.task_state[task_num]
-    #             else:
-    #                 task_num = self.SchRun.get_state()[1].index(min(self.SchRun.get_state()[1]))
-    #                 self.task_state[task_num] = self.task_state[task_num]
-    #
-    #         self.task_state[task_num] = state
-    #
-    #         # Checkbox On/off if sched is active or not
-    #         self.enable_disable_sched_var.set(self.task_state[task_num])
-    #         if current_state != self.task_state[task_num]:
-    #             self.com.message("[ %s ][ Task %s: %s ]" \
-    #                 % (str(self.nick),task_num, states[state]))
-
-    def disable_sched_task(self, state=0, sw=0, task_num=None):
+    def disable_sched_task(self, state=None, sw=0, task_num=None):
 
         states = ['Cancelled', 'Enabled']
-        current_state = None
-
         try:  # if there is a schedule
-            # if schedule in ON- disable it for next run
-            if task_num == None:
-                if not self.SchRun.get_state()[0][0] == -1 and self.task_state[self.SchRun.get_state()[0][1]]==1:
-                    print("SchRun is On and task number:" ,self.task_state[self.SchRun.get_state()[0][1]],'is on')
-                    print('Set all tasks to 0')
-                    self.task_state = [0 for i in self.task_state]
-                    self.enable_disable_sched_var.set(0)
-                elif not self.SchRun.get_state()[0][0] == -1 and self.task_state[self.SchRun.get_state()[0][1]]==0:
-                    print("SchRun is On and task number:" ,self.task_state[self.SchRun.get_state()[0][1]],'is off')
-                    self.task_state = [1 for i in self.task_state]
-                    self.enable_disable_sched_var.set(1)
-                    print('Set all tasts to 1')
 
+            # all tasks - set "on" or "off"
+            if task_num == 'all':
+                for i, task in enumerate(self.task_state):
+                    self.task_state[i] = [self.enable_disable_sched_var.get() for i in task]
+                    print("ALL OFF")
+                    self.switch_logic(sw=i)
 
+            # specific task
+            elif task_num != 'all':
+                print("Current task off")
+                self.task_state[sw][self.SchRun[sw].get_state()[0][1]] = 0
+                self.switch_logic(sw)
 
-                # TO DELETE task_num = self.SchRun.get_state()[0][1]
-                    # Case of 2 Buttons ( UPNDOWN )
-            #         if len(self.buts)>1:
-            #             self.ext_press(sw=0, state=state, type_s='Schedule Switch')
-            #             self.ext_press(sw=1, state=state, type_s='Schedule Switch'))
-            #         current_state = self.task_state[task_num]
-            #     else:
-            #         task_num = self.SchRun.get_state()[1].index(min(self.SchRun.get_state()[1]))
-            #         self.task_state[task_num] = self.task_state[task_num]
-            #
-            # self.task_state[task_num] = state
-            #
-            # # Checkbox On/off if sched is active or not
-            # self.enable_disable_sched_var.set(self.task_state[task_num])
-            # if current_state != self.task_state[task_num]:
-            #     self.com.message("[ %s ][ Task %s: %s ]" \
-            #                      % (str(self.nick), task_num, states[state]))
+            # enable/ disable task regradless ScrRun state
+            elif state is not None and state is not None:
+                self.task_state[sw][task_num] = state
+                self.switch_logic(sw)
 
         except AttributeError:
             # No schedule to stop
             print("ATTR ERR")
             pass
-        print("tasks",self.task_state)
-
+        print("tasks", self.task_state)
 
     def execute_command(self, sw, stat, add_txt=''):
         if not self.HW_output.get_state()[sw] == stat:
             self.HW_output.set_state(sw, stat)
             self.but_stat[sw].set(stat)
 
-            text1=''
-            for i,current_but in enumerate(self.buts_names):
-                text1 = text1+'[ %s:%s ]'%(current_but, str(self.HW_output.get_state()[i]))
-                
-            self.com.message('[ %s ][ %s ]'%(self.nick,self.switch_type) + text1)
+            text1 = ''
+            for i, current_but in enumerate(self.buts_names):
+                text1 = text1 + '[ %s:%s ]' % (current_but, str(self.HW_output.get_state()[i]))
 
+            self.com.message('[ %s ][ %s ]' % (self.nick, self.switch_type) + text1)
 
     def get_state(self):
         return self.HW_output.get_state()
 
-        
     def device_status(self):
         return self.get_state(), self.SchRun.get_state()
 
-
     def update_schedule(self, new_sched=[]):
         self.SchRun.update_sched(new_sched)
-
 
     def close_all(self):
         self.SchRun.close_device()
@@ -794,45 +752,46 @@ class CoreButton(ttk.Frame):
         self.com.message(self.nick, 'Closed')
 
     def disable_but(self):
-        
+
         state = [tk.DISABLED, tk.NORMAL]
         # set gui to on/off
-        for but in self.buts:
+        for i, but in enumerate(self.buts):
             but.config(state=state[self.on_off_var.get()])
+            # self.execute_command(i, 0)  # Turn off sw=1
         # set run_schedule on/ off
-        self.disable_sched_task()
+        # self.disable_sched_task()
         self.enable_disable_sched_var.set(self.on_off_var.get())  # Uncheck sched checkbox
-        if len(self.buts)>1 :self.execute_command(1, 0)  # Turn off sw=1
 
-        
+        if self.on_off_var.get() == 0:
+            self.SchRun.close_device()
+        else:
+            self.SchRun.prep_to_run()
+
 
 
 class ToggleBut2(CoreButton):
     """ToggleBut2 Class"""
 
     def __init__(self, master, nickname="Gen.ToggleButton", hw_in=[], hw_out=[], \
-            ip_in='', ip_out='', sched_vector=[], buts_names=['Toggle']):
-
+                 ip_in='', ip_out='', sched_vector=[], buts_names=['Toggle']):
         self.buts_names = buts_names
         self.nick = nickname
         self.master = master
 
         CoreButton.__init__(self, master, nickname=nickname, hw_in=hw_in, \
-            hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
-            sched_vector=sched_vector, num_buts=1)
+                            hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
+                            sched_vector=sched_vector, num_buts=1)
 
-        
     def build_gui(self, height=3, width=13):
-
         self.button_0 = tk.Checkbutton(self.sub_frame, text=self.buts_names[0], \
-            variable=self.but_stat[0], indicatoron=0, height=height, width=width, \
-            command=self.sf_button_press)
+                                       variable=self.but_stat[0], indicatoron=0, height=height, width=width, \
+                                       command=self.sf_button_press)
         self.button_0.grid(row=0, column=0)
         self.buts.append(self.button_0)
 
-
-    def switch_logic(self, sw):
-        # self.execute_command(sw, self.but_stat[sw].get())
+    def switch_logic(self, sw=0):
+        # TO RESTORE self.execute_command(sw, self.but_stat[sw].get())
+        print("self.execute_command(sw=%d, self.but_stat[sw=%d].get()=%d)"%(sw,sw,self.but_stat[sw].get()))
         if self.but_stat[sw].get() == 0:  # Abourt Conter
             self.Counter.succ_end()
 
@@ -841,31 +800,29 @@ class UpDownButton2(CoreButton):
     """UpDown2 Class"""
 
     def __init__(self, master, nickname="Gen.UpDownButton", hw_in=[], \
-        hw_out=[], ip_in='', ip_out='', sched_vector=[],sched_vector2=[],\
-        buts_names=['DOWN', 'UP']):
+                 hw_out=[], ip_in='', ip_out='', sched_vector=[], sched_vector2=[], \
+                 buts_names=['DOWN', 'UP']):
 
         self.buts_names = buts_names
         self.master = master
         self.nick = nickname
 
         CoreButton.__init__(self, master, nickname=nickname, hw_in=hw_in, \
-            hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
-            sched_vector=sched_vector,sched_vector2=[], num_buts=2)
+                            hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
+                            sched_vector=sched_vector, sched_vector2=sched_vector2, num_buts=2)
 
-
-    def build_gui(self, height=2, width=13):
+    def build_gui(self, height=1, width=13):
         self.button_0 = tk.Checkbutton(self.sub_frame, text=self.buts_names[0], \
-            variable=self.but_stat[0], indicatoron=0, height=height, width=width, \
-            command=lambda: self.sf_button_press(0))
-        self.button_0.grid(row=1, column=0, pady=(2,0))
+                                       variable=self.but_stat[0], indicatoron=0, height=height, width=width, \
+                                       command=lambda: self.sf_button_press(0))
+        self.button_0.grid(row=1, column=0, pady=(2, 0))
         self.buts.append(self.button_0)
 
         self.button_1 = tk.Checkbutton(self.sub_frame, text=self.buts_names[1], \
-            variable=self.but_stat[1], indicatoron=0, height=height, width=width, \
-            command=lambda: self.sf_button_press(1))
+                                       variable=self.but_stat[1], indicatoron=0, height=height, width=width, \
+                                       command=lambda: self.sf_button_press(1))
         self.button_1.grid(row=0, column=0)
         self.buts.append(self.button_1)
-
 
     def switch_logic(self, sw):
         sw_i = [0, 1]
@@ -873,9 +830,9 @@ class UpDownButton2(CoreButton):
 
         if self.but_stat[sw_i[sw]].get() == 1:  # Pressed to turn on
             if self.but_stat[sw_i[sw - 1]].get() == 1:  # If other button is "on"
-                #print(sw_i[sw], self.but_stat[sw_i[sw - 1]].get())
+                # print(sw_i[sw], self.but_stat[sw_i[sw - 1]].get())
                 # Switch other button Off
-                #self.disable_sched_task(state=1,sw=sw_i[sw - 1])
+                # self.disable_sched_task(state=1,sw=sw_i[sw - 1])
                 self.but_stat[sw_i[sw - 1]].set(0)  # turn other off (relevant SFButton)
 
                 # Switch selected button On
@@ -885,105 +842,82 @@ class UpDownButton2(CoreButton):
             elif self.but_stat[sw_i[sw - 1]].get() == 0:  # if other is off
                 sleep(sleep_time)
                 print("self.execute_command(sw_i[sw], 1)  # turn on")
-                #print(sw_i[sw], self.but_stat[sw_i[sw - 1]].get())
+                # print(sw_i[sw], self.but_stat[sw_i[sw - 1]].get())
 
 
         elif self.but_stat[sw_i[sw]].get() == 0:  # if pressed to turn off
-            #print(sw_i[sw],self.but_stat[sw_i[sw - 1]].get())
+            # print(sw_i[sw],self.but_stat[sw_i[sw - 1]].get())
 
             print("self.execute_command(sw_i[sw], 0)#  turn off")
             ##Both lines below are in case of HW switch and sched_swhith together
-            #self.execute_command(sw_i[sw - 1], 0)
-            #self.but_stat[sw_i[sw - 1]].set(0)
-
+            # self.execute_command(sw_i[sw - 1], 0)
+            # self.but_stat[sw_i[sw - 1]].set(0)
 
 
 class MainsButton2(CoreButton):
     """Main2 Class"""
 
     def __init__(self, master, nickname="Gen.MainsButton", hw_in=[], hw_out=[], \
-            ip_in='', ip_out='', sched_vector=[], \
-            buts_names=['Toggle', 'MainSwitch']):
-                
+                 ip_in='', ip_out='', sched_vector=[], \
+                 buts_names=['Toggle', 'MainSwitch']):
+
         self.buts_names = buts_names
         self.master = master
         self.nick = nickname
-        
-        CoreButton.__init__(self, master, nickname=nickname, hw_in=hw_in, \
-            hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
-            sched_vector=sched_vector, num_buts=2)
 
-            
+        CoreButton.__init__(self, master, nickname=nickname, hw_in=hw_in, \
+                            hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
+                            sched_vector=sched_vector, num_buts=2)
+
     def build_gui(self, height=2, width=13):
-        
+
         self.button_0 = tk.Checkbutton(self.sub_frame, text=self.buts_names[0], \
-            variable=self.but_stat[0], indicatoron=0, height=height, \
-            width=width, command=self.sf_button_press)
-        self.button_0.grid(row=1, column=0, pady=(2,0), sticky=tk.W)
+                                       variable=self.but_stat[0], indicatoron=0, height=height, \
+                                       width=width, command=self.sf_button_press)
+        self.button_0.grid(row=1, column=0, pady=(2, 0), sticky=tk.W)
         self.buts.append(self.button_0)
 
         self.button_1 = tk.Checkbutton(self.sub_frame, text=self.buts_names[1], \
-            variable=self.but_stat[1], indicatoron=0, height=1, \
-            width=width, command=self.sf_buttonAUX_press)
+                                       variable=self.but_stat[1], indicatoron=0, height=1, \
+                                       width=width, command=self.sf_buttonAUX_press)
         self.button_1.grid(row=0, column=0)
         self.buts.append(self.button_1)
 
     def switch_logic(self, sw):
         if self.but_stat[0].get() == 1 and self.but_stat[1].get() == 1:  # Toggle on when Mains is on
-            self.execute_command(0, 1)
+        # TO RESTORE self.execute_command(0, 1)
+            pass
         elif self.but_stat[1].get() == 0 and self.but_stat[0].get() == 1:  # Toggle off after Mains is off
-            self.execute_command(0, 0)
+            # TO RESTORE self.execute_command(0, 0)
             self.Counter.succ_end()
             self.but_stat[0].set(0)
         elif self.but_stat[0].get() == 0:  # Stop Counter when toggle is pressed off
-            self.execute_command(0, 0)
+            # TO RESTORE self.execute_command(0, 0)
             self.Counter.succ_end()
-
 
 
 button_list = {1: 'UpDownButton', 2: 'ToggleButton', 3: 'MainsButton', 4: 'ErrBut'}
 
 if __name__ == "__main__":
     root = tk.Tk()
-    mainframe = ttk.Frame(root)
-    mainframe.grid()
-    frame1 = ttk.LabelFrame(mainframe, text="Main-Shutter", padding=5)
-    frame1.grid(row=0, column=0, sticky=tk.N, padx=5)
-    frame2 = ttk.LabelFrame(mainframe, text="UpnDown", padding=5)
-    frame2.grid(row=0, column=1, sticky=tk.N, padx=5)
-    frame3 = ttk.LabelFrame(mainframe, text="Toggle", padding=5)
-    frame3.grid(row=0, column=2, sticky=tk.N, padx=5)
-    frame4 = ttk.LabelFrame(mainframe, text="ErrorBut", padding=5)
-    frame4.grid(row=0, column=3, sticky=tk.N, padx=5)
 
-    # a = MainsButton(frame1, ip_out='192.168.2.114', hw_out=[5, 7], hw_in=[13, 21], height=3, width=15,ip_in='192.168.2.114', sched_vector=[[[5,3], "02:24:30", "23:12:10"], [[4], "1:42:00", "23:50:10"]])
-    # a.grid(row=0, column=0)
-
-    # c = UpDownButton(frame2, hw_out=[5,7], ip_out='192.168.2.113', nickname="UpDown", hw_in=[13, 21],sched_vector=[[[1], "*09:17:00", "20:42:10",1]])#,[[0], "*18:43:20", "21:05:30",1]])#,sched_vector_down=[[[1], "11:37:30", "11:38:00"], [[2], "14:26:40", "22:03:10"]])
-    # c.grid(row=0, column=1)
-
-    # b = ToggleButton(frame3, ip_out="192.168.2.113", hw_out=[5], hw_in=[19],sched_vector=[[[2], "23:30:00", "23:30:30"], [[6], "00:00:40", "23:59:00"]])
-    # b.grid(row=0, column=2)
-
-    # b.update_schedule(new_sched=[[[6], "03:30:00", "23:30:30"]])
-
-    # d= ErrBut(frame4, ip_out='192.168.2.114', hw_out=[5, 7], hw_in=[13, 21], height=3, width=15,ip_in='192.168.2.114', sched_vector=[[[5,3], "02:24:30", "23:12:10"], [[4], "1:42:00", "23:50:10"]])
-    # d.grid(row=0, column=3)
 
     e = ToggleBut2(root, nickname='LivingRoom Lights', ip_out='192.168.2.115', \
-            hw_out=[7], sched_vector=[[[1, 6,7], "02:24:30", "23:12:10"], \
-            [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
+                   hw_out=[7], sched_vector=[[[1, 6, 7,2], "02:24:30", "23:12:10"], \
+                                             [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
 
-    f = UpDownButton2(root, nickname='RoomWindow', ip_out='192.168.2.114', \
-        hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1, 2], "22:24:30", \
-        "23:12:10"], [[1], "1:42:00", "23:50:10"]],sched_vector2=[[[3], "22:24:30", \
-        "23:12:10"]])
-    f.grid(row=0, column=1, sticky=tk.S)
-    
-    g = MainsButton2(root, nickname='WaterBoiler', ip_out='192.168.2.113',\
-        hw_out=[12, 5], hw_in=[13, 21], sched_vector=[[[3, 5], \
-        "02:24:30", "23:55:10"], [[6,7], "1:42:00", "23:50:10"]])
-    g.grid(row=0, column=2, sticky=tk.S)
+    # f = UpDownButton2(root, nickname='RoomWindow', ip_out='192.168.2.114', \
+    #                   hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1], "22:24:30", \
+    #                                                                 "23:12:10"], [[1], "1:42:00", "23:50:10"]],
+    #                   sched_vector2=[[[2], "12:24:30", \
+    #                                   "23:12:10"]])
+    # f.grid(row=0, column=1, sticky=tk.S)
+    # #
+    # g = MainsButton2(root, nickname='WaterBoiler', ip_out='192.168.2.113', \
+    #                  hw_out=[12, 5], hw_in=[13, 21], sched_vector=[[[3, 5,2], \
+    #                                                                 "02:24:30", "23:55:10"],
+    #                                                                [[6, 7], "1:42:00", "23:50:10"]])
+    # g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()
