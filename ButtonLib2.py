@@ -40,14 +40,6 @@ class ScheduledEvents(ttk.Frame):
         self.style = ttk.Style()
         self.style.configure("Blue2.TLabel", background=self.master.master.master.bg)
 
-        # This loop is in case sched vector define in 3 place wich switch to pretate
-
-        # for i, current_task in enumerate(tasks):
-        #     try:
-        #         self.sw.append(current_task[3])
-        #     except IndexError:
-        #         self.sw.append(sw)
-
         self.remain_time_ent = ttk.Label(self, textvariable=self.ent_var, \
             **kwargs, anchor=tk.E, style="Blue2.TLabel")
         self.remain_time_ent.grid(row=0, column=0, sticky=tk.W + tk.E)
@@ -228,9 +220,7 @@ class ScheduledEvents(ttk.Frame):
                 sch_stat[1].index(sch_stat[2])] == 0:  # ButtonClass.task_state[sch_stat[0][1]] == 0:
                 update_label("Skip: " + str(sch_stat[2]), 'orange')
 
-        a = self.run_schedule()
-
-        check_state(a)
+        check_state(self.run_schedule())
 
         self.run_id = self.after(500, self.switch_descision)
 
@@ -625,7 +615,6 @@ class CoreButton(ttk.Frame):
             self.SchRun.append(ScheduledEvents(self.timers_frame, tasks=sched_vector2, sw=1))
             self.SchRun[1].grid(row=0, column=1, pady=3, columnspan=colspan)
 
-
         self.extras_gui()
         self.connection_gui()
 
@@ -657,29 +646,25 @@ class CoreButton(ttk.Frame):
                   style='B.TLabel').grid(row=0, column=0)
         self.conn_lbl = ttk.Label(self.connection_frame, textvariable=self.conn_status_var, style='G.TLabel')
         self.conn_lbl.grid(row=0, column=1)
-    #
-    # def switch_logic(self, sw):
-    #     # Overwritten By Button's method
-    #     pass
 
-    def sf_button_press(self, sw=0):
-        self.switch_type = 'SFButton Switch'
+
+    def sf_button_press(self, sw=0,type=''):
+
+        if type == '' :self.switch_type = 'SFButton Switch'
         #TO CHECK self.Counter.on = self.but_stat[sw].get()
         #TO CHECK self.Counter.read_time()
+        sw_i = [i for i in range(len(self.buts))]
         self.switch_logic(sw)
-        for i, ButSch in enumerate(self.SchRun):
-            if ButSch.get_state()[0][0] == 1 and \
-                    self.task_state[i][ButSch.get_state()[0][1]] == 1:
-                # Disable all SchRuns
-                self.disable_sched_task(sw=i)
-                print()
 
-    def sf_buttonAUX_press(self, sw=1):  # For MainButton Only
-        self.switch_type = "MainsButton Switch"
-        # TO RESTORE self.execute_command(sw, self.but_stat[sw].get())  # set HWoutput on/ off
-        self.switch_logic(sw)
-        if self.but_stat[sw].get() == 0:  # cancel only when mainswitch is set to off
-            self.disable_sched_task()
+        for i, ButSch in enumerate(self.SchRun):
+            if ButSch.get_state()[0][0] == 1 :
+                if self.switch_type == 'SFButton Switch': # For SF Buttons
+                    if self.task_state[i][ButSch.get_state()[0][1]] == 1:
+                        self.disable_sched_task(sw=i)
+
+                else: # For MainsButton Only
+                    if self.task_state[i][ButSch.get_state()[0][1]] == 0:
+                        self.disable_sched_task(sw=i)
 
     def ext_press(self, sw, state, type_s):
         self.switch_type = type_s
@@ -702,7 +687,6 @@ class CoreButton(ttk.Frame):
 
             # specific task
             elif task_num != 'all':
-                print("Single task off")
                 self.task_state[sw][self.SchRun[sw].get_state()[0][1]] = 0
                 self.switch_logic(sw)
 
@@ -714,7 +698,6 @@ class CoreButton(ttk.Frame):
         except AttributeError:
             # No schedule to stop
             print("ATTR ERR")
-            pass
         print("tasks", self.task_state)
 
     def execute_command(self, sw, stat, add_txt=''):
@@ -756,15 +739,16 @@ class CoreButton(ttk.Frame):
         # set gui to on/off
         for i, but in enumerate(self.buts):
             but.config(state=state[self.on_off_var.get()])
-            # self.execute_command(i, 0)  # Turn off sw=1
+            # TO RESTORE self.execute_command(i, 0)  # Turn off sw=1
         # set run_schedule on/ off
-        # self.disable_sched_task()
         self.enable_disable_sched_var.set(self.on_off_var.get())  # Uncheck sched checkbox
 
         if self.on_off_var.get() == 0:
-            self.SchRun.close_device()
+            for i in range(len(self.SchRun)):
+                self.SchRun[i].close_device()
         else:
-            self.SchRun.prep_to_run()
+            for i in range(len(self.SchRun)):
+                self.SchRun[i].prep_to_run()
 
 
 
@@ -879,7 +863,7 @@ class MainsButton2(CoreButton):
 
         self.button_1 = tk.Checkbutton(self.sub_frame, text=self.buts_names[1], \
                                        variable=self.but_stat[1], indicatoron=0, height=1, \
-                                       width=width, command=self.sf_buttonAUX_press)
+                                       width=width, command=lambda :self.sf_button_press(sw=1, type='MainsSwitch'))
         self.button_1.grid(row=0, column=0)
         self.buts.append(self.button_1)
 
@@ -903,21 +887,19 @@ if __name__ == "__main__":
 
 
     e = ToggleBut2(root, nickname='LivingRoom Lights', ip_out='192.168.2.114', \
-                   hw_out=[7], sched_vector=[[[4], "02:24:30", "23:12:10"], \
-                                             [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
+        hw_out=[7], sched_vector=[[[4], "02:24:30", "23:12:10"], \
+        [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
 
     f = UpDownButton2(root, nickname='RoomWindow', ip_out='192.168.2.114', \
         hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1], "22:24:30", \
-                                                                    "23:12:10"], [[4], "1:42:00", "23:50:10"]],
-                      sched_vector2=[[[3], "1:24:30", \
-                                      "23:12:10"]])
+        "23:12:10"], [[4], "1:42:00", "23:50:10"]],
+        sched_vector2=[[[3], "1:24:30","23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
-    # #
+
     g = MainsButton2(root, nickname='WaterBoiler', ip_out='192.168.2.113', \
-                     hw_out=[12, 5], hw_in=[13, 21], sched_vector=[[[3, 5,2], \
-                                                                    "02:24:30", "23:55:10"],
-                                                                   [[4, 7], "1:42:00", "23:50:10"]])
+        hw_out=[12, 5], hw_in=[13, 21], sched_vector=[[[3, 5,2], \
+        "02:24:30", "23:55:10"],[[4], "1:42:00", "23:50:10"]])
     g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()
