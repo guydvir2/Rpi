@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from time import sleep
 import datetime
-import gpiozero
-from gpiozero import OutputDevice
-from gpiozero.pins.pigpio import PiGPIOFactory
+# import gpiozero
+# from gpiozero import OutputDevice
+# from gpiozero.pins.pigpio import PiGPIOFactory
 import time
 import os
 
