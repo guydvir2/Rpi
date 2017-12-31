@@ -1,0 +1,7 @@
+
+0,ToggleButton,ElectricWindow,192.168.2.114,5,On
+1,MainsButton,Lights,192.168.2.113,"9,12",On
+2,ToggleButton,Garage Door,192.168.2.113,8,On
+3,ToggleButton,Oven,192.168.2.113,20,On
+4,UpDownButton,Window1,192.168.2.114,"13,17",On
+5,UpDownButton,Window2,192.168.2.114,"9,12",On
