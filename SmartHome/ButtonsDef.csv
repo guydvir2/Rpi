@@ -1,2 +1,4 @@
 
-0,MainsButton,Lights,192.168.2.113,9,12,On
+0,ToggleButton,Washer,192.168.2.114,12,15,1
+1,UpDownButton,Window,192.168.2.113,12,"15,19",1
+2,MainsButton,WaterBoiler,192.168.2.115,12,"15,19",1

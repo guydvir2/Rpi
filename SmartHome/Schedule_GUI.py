@@ -15,8 +15,8 @@ class AllButtons_GUI(ttk.Frame):
         self.master = master
         self.mframe = mainframe
         ttk.Frame.__init__(self, master)
-        self.reachable_ips=['192.168.2.113','192.168.2.114'] #,'192.168.2.115']
-        # self.master.write2log("Valid IP's to load:"+str(self.reachable_ips))
+        self.reachable_ips=['192.168.2.113','192.168.2.114','192.168.2.115']
+        self.master.write2log("Valid IP's to load:"+str(self.reachable_ips))
 
         self.reload_all()
 
@@ -25,46 +25,45 @@ class AllButtons_GUI(ttk.Frame):
         self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.extract_data_from_gui())
         self.master.read_data_from_files()
 
-
     def load_buttons_defs(self):
-          
+
+        self.args = []  # Dictionary of loaded buttons definitions, KWargs for GUIButtons Read But Defs from file
+
         #keys "hw_in","hw_out","dimension" - get special treatment in next for loop in extracting string values
-        self.button_keys=['type','nickname','ip_out','hw_out', 'ip_in', 'hw_in', 'dimension']
-        print(self.master.buts_defs)
-        #create KWargs for GUIButtons Read But Defs from file
-        self.args=[] # Dict! of loaded buttons definitions.
+        self.button_keys=['type','nickname','ip_out','hw_out','hw_in','on_off', 'ip_in','dimension']
+
         for i,but_defs in enumerate(self.master.buts_defs):#.data_from_file:
-            #self.button_in_use.append([but_defs[1], but_defs[3], but_defs[8]])
-            c,t={},2
-            for m in self.button_keys[1:5]:
+            c,t = {},2
+            for m in self.button_keys[1:6]:
+
+                # fields that get more than one parameter
                 if t == self.button_keys.index('hw_out')+1 or t == self.button_keys.index('hw_in')+1:
                     c[m] = self.master.xtrct_nums(but_defs[t])
-                elif t== self.button_keys.index('dimension')+1 :
+                elif t == self.button_keys.index('dimension')+1:
                     if not but_defs[t] == '':
-
                         if not self.master.xtrct_nums(but_defs[t])[1] == []:
                              c['height'] = self.master.xtrct_nums(but_defs[t])[1]
                         else:
                             c['height']=''
-                            
                         if not self.master.xtrct_nums(but_defs[t])[0] == []:
                             c['width']= self.master.xtrct_nums(but_defs[t])[0]
-                        else :
+                        else:
                             c['width']=''
+                    else:
+                        pass
+                else:
 
-                    else: pass 
-                        
-                else :  c[m] = but_defs[t]
-                t +=1
+                    # All other keys:
+                    c[m] = but_defs[t]
+                t += 1
                 
-            self.args.append(c) # contains all argument to load button
-
+            self.args.append(c)# contains all argument needed to define a button
 
     def get_sched_defs(self):
         #Import sched file to define button's sched
         dev_names=[] #Alias of device
         off_list = [] # items that are OFF in TimeTable GUI
-        for i,current_task in enumerate(self.master.sched_file):
+        for i, current_task in enumerate(self.master.sched_file):
             if current_task[1] == "Off" or not all(current_task[0:6]): off_list.append(i)
             self.sched_vector.append(current_task[3:6])
             self.sched_vector[i][0] = self.master.xtrct_nums(current_task[3])
@@ -90,42 +89,32 @@ class AllButtons_GUI(ttk.Frame):
 
     def checkFalse_err(self):
         # Fix err in combobox ( if saved as err and not err in current run )
-        for i,onoff_box in enumerate (self.master.ButConfigTable.RowClassCreator.all_sched_vars):
+        for i, onoff_box in enumerate(self.master.ButConfigTable.RowClassCreator.all_sched_vars):
             if i in [x[0] for x in self.but_not2load]:
                 print("box",i,'set to err')
                 self.master.ButConfigTable.RowClassCreator.all_sched_vars[i][8].set('err')
-            elif onoff_box[8].get()== 'err' and i not in [x[0] for x in self.but_not2load]:
+            elif onoff_box[8].get() == 'err' and i not in [x[0] for x in self.but_not2load]:
                 print("not err box",i)
                 self.master.ButConfigTable.RowClassCreator.all_sched_vars[i][8].set('On')
-                self.master.buts_defs[i][4]='On'
+                self.master.buts_defs[i][4] = 'On'
 
 
     def build_gui(self):
-        a=getattr(ButtonLib2,'ToggleButton')(self.mainframe, **self.args[0]) #ButtonLib2.ToggleButton(self.mainframe, **self.args[0])#nickname='LivingRoom Lights', ip_out='192.168.2.113', \
-        #hw_out=[22,6],hw_in=[13],sched_vector=[[[4], "02:24:30", "23:12:10"], \
-        #[[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
-        a.grid()
-        
-#        self.buts, x=[], 0
-#        for l,current_button in enumerate(self.master.buts_defs):
-#            #print(l, current_button)
-#            try:#load button if it in allowed ip list and not off in table
-#            # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
-#                if current_button[3] in self.reachable_ips:
-#                    self.buts.append('but_'+str(x))
-#                    
-#                    if current_button[6] =='On':
-#                        self.buts[x] = getattr(ButtonLib2,current_button[1])(self.mainframe, **self.args[l])
-#                        self.loaded_buts.append([x,self.args[l]['nickname']])
-##                    else:
-##                        self.buts[x] = getattr(ButtonLib2,'ErrBut')(self.mainframe,name=current_button[2])
-##                        self.loaded_buts.append([x,"ErrorBut"])
-#
-#                    self.buts[x].grid(row=0, column=x)
-#                    x +=1
-#            except  ValueError:
-#                self.master.write2log("Error loading Button"+str(l))
-#        self.master.write2log("Buttons loaded successfully: "+ str([x[1] for x in self.loaded_buts]))
+
+        self.buts, x=[], 0
+        for l, current_button in enumerate(self.master.buts_defs):
+            try:
+                # load button if it in allowed ip list and not off in table
+                # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
+                if current_button[3] in self.reachable_ips:
+                    #if current_button[6] =='On':
+                    self.buts.append(getattr(ButtonLib2,current_button[1])(self.mainframe, **self.args[l]))
+                    self.loaded_buts.append([x,self.args[l]['nickname']])
+                    self.buts[x].grid(row=0, column=x)
+                    x += 1
+            except ValueError:
+                self.master.write2log("Error loading Button"+str(l))
+        self.master.write2log("Buttons loaded successfully: "+ str([x[1] for x in self.loaded_buts]))
 #
 #        ttk.Button(self.mainframe,text="close",command=lambda :self.stop_start_but([0])).grid()
 #        #  lambda :self.close_spec_button(0))
@@ -181,7 +170,7 @@ class AllButtons_GUI(ttk.Frame):
         self.buts[x] = getattr(ButtonLib2,self.master.buts_defs[x][1])(self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
         self.buts[x].grid(row=0, column=x)
 
-    def stop_start_but(self,buts=[]):
+    def stop_start_but(self, buts=[]):
         self.prep_buttons()
         
         for but in buts:
@@ -290,14 +279,16 @@ class TimeTable_RowConfig(ttk.Frame):
             #On/Off
             self.var.append(tk.StringVar())
             self.var[1].set(data_from_file[i][1])
-            on_off_box = ttk.Combobox(inner_frame, width=5, textvariable=self.var[1], values=['On','Off'],state='readonly', justify=tk.CENTER)
+            on_off_box = ttk.Combobox(inner_frame, width=5, textvariable=self.var[1], values=['ON','OFF'],
+                                      state='readonly', justify=tk.CENTER)
             on_off_box.bind('<<ComboboxSelected>>',lambda event, arg=i: self.on_off_bind(event, arg))
             on_off_box.grid(row=i+1, column=1)
 
             #Device
             self.var.append(tk.StringVar())
             self.var[2].set(data_from_file[i][2])
-            device_entry = ttk.Combobox(inner_frame, width=12, textvariable=self.var[2], values=devs, state='readonly', justify=tk.CENTER)
+            device_entry = ttk.Combobox(inner_frame, width=12, textvariable=self.var[2], values=devs,
+                                        state='readonly', justify=tk.CENTER)
             device_entry.grid(row=i+1, column=2, padx=8)
 
             #Day
@@ -489,15 +480,13 @@ class Buttons_RowConfig(ttk.Frame):
             #Alias
             self.var.append(tk.StringVar())
             self.var[2].set(data_from_file[i][2])
-            alias_entry = ttk.Entry(inner_frame, width=18, textvariable=self.var[2],
-                                    justify=tk.CENTER)
+            alias_entry = ttk.Entry(inner_frame, width=18, textvariable=self.var[2],justify=tk.CENTER)
             alias_entry.grid(row=i+1, column=3)
 
             #IP OUT
             self.var.append(tk.StringVar())
             self.var[3].set(data_from_file[i][3])
-            ip_out_entry = ttk.Entry(inner_frame, width=12, textvariable=self.var[3], 
-                                     justify=tk.CENTER)
+            ip_out_entry = ttk.Entry(inner_frame, width=12, textvariable=self.var[3], justify=tk.CENTER)
             ip_out_entry.grid(row=i+1, column=4, padx=8)
 
             #GPIO OUT
@@ -517,7 +506,7 @@ class Buttons_RowConfig(ttk.Frame):
             self.var.append(tk.StringVar())
             self.var[5].set(data_from_file[i][5])
             gpio_in_entry = ttk.Entry(inner_frame, width=8, textvariable=self.var[5], justify=tk.CENTER)
-            gpio_in_entry.grid(row=i+1, column=7, padx=5)
+            gpio_in_entry.grid(row=i+1, column=6, padx=5)
 #
 #            #Button's dimensiob
 #            self.var.append(tk.StringVar())
@@ -668,7 +657,8 @@ class MainGUI(ttk.Frame):
     def __init__(self,master):
         ttk.Frame.__init__(self, master)
         
-        self.path = '/home/guy/PythonProjects/SmartHome/'
+        #self.path = '/home/guy/PythonProjects/SmartHome/'
+        self.path = 'd:/users/guydvir/Documents/GitHub/Rpi/SmartHome/'
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
         self.app_name='Pi Scheduler'
@@ -721,7 +711,7 @@ class MainGUI(ttk.Frame):
         self.write2log("Boot")
         self.butt_config_gui(2,0)
         self.buttons_gui(1,0)
-        #self.weekly_sched_gui(0,0)
+        self.weekly_sched_gui(0,0)
 
         
 
@@ -751,7 +741,7 @@ class MainGUI(ttk.Frame):
     def butt_config_gui(self,r=0,c=0):
         
         header='Button Configuration'
-        titles= ['No.','On/Off','Type','Alias', 'IP out','GPIO out']
+        titles= ['No.','On/Off','Type','Alias', 'IP out','I/O out','I/O in']
         filename= self.but_filename
         path = self.path
         defaults = ["A" for i in range(len(titles))]
@@ -791,9 +781,9 @@ class MainGUI(ttk.Frame):
             if current_but[2].get()==args[0]:
                 break
                 
-         #In case and bituuon if not off or err       
-        if self.ButConfigTable.RowClassCreator.all_sched_vars[i][8].get() in ['Off','err']:
-            self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[int(args[2])][1].set('Off')
+         #In case and button if not off or err
+        if self.ButConfigTable.RowClassCreator.all_sched_vars[i][6].get() in ['OFF']:
+            self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[int(args[2])][1].set('OFF')
 
 
         self.FileManSched.save_to_file(mat=self.WeekSched_TimeTable.extract_data_from_gui())
