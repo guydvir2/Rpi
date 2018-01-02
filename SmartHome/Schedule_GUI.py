@@ -657,8 +657,8 @@ class MainGUI(ttk.Frame):
     def __init__(self,master):
         ttk.Frame.__init__(self, master)
         
-        #self.path = '/home/guy/PythonProjects/SmartHome/'
-        self.path = 'd:/users/guydvir/Documents/GitHub/Rpi/SmartHome/'
+        self.path = '/home/guy/PythonProjects/SmartHome/'
+       # self.path = 'd:/users/guydvir/Documents/GitHub/Rpi/SmartHome/'
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
         self.app_name='Pi Scheduler'
@@ -710,8 +710,8 @@ class MainGUI(ttk.Frame):
         self.log_window()
         self.write2log("Boot")
         self.butt_config_gui(2,0)
-        self.buttons_gui(1,0)
-        self.weekly_sched_gui(0,0)
+#        self.buttons_gui(1,0)
+#        self.weekly_sched_gui(0,0)
 
         
 

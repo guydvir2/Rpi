@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from time import sleep
 import datetime
-# import gpiozero
-# import pigpio
-# from gpiozero import OutputDevice
-# from gpiozero.pins.pigpio import PiGPIOFactory
+import gpiozero
+import pigpio
+from gpiozero import OutputDevice
+from gpiozero.pins.pigpio import PiGPIOFactory
 import time
 import os
 
@@ -189,13 +189,8 @@ class ScheduledEvents(ttk.Frame):
             if not sch_stat [0][0] ==-1 and ButtonClass.task_state[self.sw][sch_stat[0][1]] == 1:
 
                 ## TTO CHECK what is sw ( change to self.sw)
-                if not bool(sch_stat[0][0]) == 1:# ButtonClass.get_state()[self.sw]:#[sch_stat[0][1]]]:
+                if not bool(sch_stat[0][0]) == ButtonClass.get_state()[self.sw]:#[sch_stat[0][1]]]:
                     ButtonClass.ext_press(self.sw, sch_stat[0][0], "Schedule Switch")
-
-                # TO DELETE
-                # ButtonClass.ext_press(sw[sch_stat[0][1]], sch_stat[0][0], "Schedule Switch")
-                # ButtonClass.ext_press(self.sw, sch_stat[0][0], "Schedule Switch")
-                pass
 
             # Reset task status after sched end ( in case it was cancelled )
             elif sch_stat[0][0] == 0 and ButtonClass.task_state[self.sw][sch_stat[0][1]] == 0:
@@ -218,7 +213,7 @@ class ScheduledEvents(ttk.Frame):
 
             # Disable future task
             elif sch_stat[0][0] == -1 and ButtonClass.task_state[self.sw][
-                sch_stat[1].index(sch_stat[2])] == 0:  # ButtonClass.task_state[sch_stat[0][1]] == 0:
+                sch_stat[1].index(sch_stat[2])] == 0: 
                 update_label("Skip: " + str(sch_stat[2]), 'orange')
 
         check_state(self.run_schedule())
@@ -393,7 +388,7 @@ class Indicators:
         self.frame = frame
         self.x = 0
         self.update_indicators()
-       # print(self.master.get_state())
+        # print(self.master.get_state())
         self.run_id = None
 
     def update_indicators(self):
@@ -627,9 +622,9 @@ class CoreButton(ttk.Frame):
         if self.pigpio_valid(self.ip_out) ==1:
             print("Reach")
 
-            # self.HW_output = HWRemoteOutput(self, ip_out, hw_out)
-            # self.Indicators = Indicators(self.HW_output, self.buttons_frame, pdx=8)
-            # if not hw_in == []: self.HW_input = HWRemoteInput(self, ip_in, hw_in)
+            self.HW_output = HWRemoteOutput(self, ip_out, hw_out)
+            self.Indicators = Indicators(self.HW_output, self.buttons_frame, pdx=8)
+            if not hw_in == []: self.HW_input = HWRemoteInput(self, ip_in, hw_in)
     
         elif self.pigpio_valid(self.ip_out) == 0:
             print("Fail to reach")
@@ -637,10 +632,10 @@ class CoreButton(ttk.Frame):
 
         if self.on_off_var.get() == 0:
             self.disable_but()
+            pass
 
     def pigpio_valid(self, address):
-        return 1
-
+  
         if pigpio.pi(address).connected == True:
             result =1
         else:
@@ -720,8 +715,6 @@ class CoreButton(ttk.Frame):
 
     def disable_sched_task(self, state=None, sw=0, task_num=None):
 
-        #print("in disable task")
-        #states = ['Cancelled', 'Enabled']
         try:  # if there is a schedule
 
             # all tasks - set "on" or "off"
@@ -792,14 +785,14 @@ class CoreButton(ttk.Frame):
         for i, but in enumerate(self.buts):
             but.config(state=state[self.on_off_var.get()])
             # TO RESTORE
-            # self.execute_command(i, 0)  # Turn off sw=1
+            self.execute_command(i, 0)  # Turn off sw=1
         # set run_schedule on/ off
         self.enable_disable_sched_var.set(self.on_off_var.get())  # Uncheck sched checkbox
 
         if self.on_off_var.get() == 0:
             for i in range(len(self.SchRun)):
                 self.SchRun[i].close_device()
-            # self.Indicators.close_device()
+            self.Indicators.close_device()
         else:
             for i in range(len(self.SchRun)):
                 self.SchRun[i].prep_to_run()
@@ -958,21 +951,20 @@ if __name__ == "__main__":
     root = tk.Tk()
 
 
-    # e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
-    #     hw_out=[22,6],hw_in=[13],sched_vector=[[[4], "02:24:30", "23:12:10"], \
-    #     [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
-    # e.grid(row=0, column=0, sticky=tk.S)
-    #
-    # f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.115', \
-    #     hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1], "22:24:30", \
-    #     "23:12:10"], [[4,5], "12:56:00", "23:50:10"]],
-    #     sched_vector2=[[[3], "1:24:30","23:12:10"]])
-    # f.grid(row=0, column=1, sticky=tk.S)
-    #
-    # g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.114', \
-    #     hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 2], \
-    #     "02:24:30", "23:55:10"],[[4,5], "13:47:20", "23:50:10"]])
-    # g.grid(row=0, column=2, sticky=tk.S)
-    a=TimeOutCounter()
-    a.grid()
+    e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
+        hw_out=[22,6],hw_in=[13],sched_vector=[[[4], "02:24:30", "23:12:10"], \
+        [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
+    e.grid(row=0, column=0, sticky=tk.S)
+    
+    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \
+        hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1], "22:24:30", \
+        "23:12:10"], [[4,5], "12:56:00", "23:50:10"]],
+        sched_vector2=[[[3], "1:24:30","23:12:10"]])
+    f.grid(row=0, column=1, sticky=tk.S)
+    
+    g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.114', \
+        hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 2], \
+        "02:24:30", "23:55:10"],[[4,5], "13:47:20", "23:50:10"]])
+    g.grid(row=0, column=2, sticky=tk.S)
+
     root.mainloop()
