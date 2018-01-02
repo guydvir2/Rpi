@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 
 0,ToggleButton,Washer,192.168.2.114,12,15,1
 1,UpDownButton,Window,192.168.2.113,12,"15,19",1
 2,MainsButton,WaterBoiler,192.168.2.115,12,"15,19",1
+=======
+
+0,ToggleButton,Washer,192.168.2.114,12,15,1
+>>>>>>> eedecbb2e18e459c4b265abec2a6d42e234d771d
