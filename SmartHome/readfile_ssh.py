@@ -1,7 +1,9 @@
 import subprocess
 #from gpiozero import OutputDevice
 #from gpiozero.pins.pigpio import PiGPIOFactory
-import  pigpio
+
+#import  pigpio
+
 #from gpiozero.Factory import release_all
 
 import os

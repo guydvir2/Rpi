@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from time import sleep
 import datetime
-import gpiozero
-import pigpio
-from gpiozero import OutputDevice
-from gpiozero.pins.pigpio import PiGPIOFactory
+# import gpiozero
+# import pigpio
+# from gpiozero import OutputDevice
+# from gpiozero.pins.pigpio import PiGPIOFactory
 import time
 import os
 
@@ -107,27 +107,23 @@ class ScheduledEvents(ttk.Frame):
 
                 # Today
                 if day_in_task == datetime.date.today().isoweekday():
-                    start_time = datetime.datetime.strptime(current_task[1], \
-                                                            '%H:%M:%S').time()
-                    stop_time = datetime.datetime.strptime(current_task[2], \
-                                                           '%H:%M:%S').time()
+                    start_time = datetime.datetime.strptime(current_task[1],'%H:%M:%S').time()
+                    stop_time = datetime.datetime.strptime(current_task[2],'%H:%M:%S').time()
 
                     # Before Time
                     if start_time > datetime.datetime.now().time():
                         self.result_vector[i][m] = -1
                         new_date = datetime.datetime.combine(datetime.date.today() \
-                                                             + datetime.timedelta(day_diff), datetime.datetime. \
-                                                             strptime(current_task[1], '%H:%M:%S').time())
+                                + datetime.timedelta(day_diff), datetime.datetime. \
+                                strptime(current_task[1], '%H:%M:%S').time())
 
                     # In Time
                     elif start_time < (datetime.datetime.now() - \
-                                       datetime.timedelta(seconds=1)).time() and \
-                            (datetime.datetime.now() + datetime.timedelta(seconds=1)). \
-                                    time() < stop_time:
+                            datetime.timedelta(seconds=1)).time() and \
+                            (datetime.datetime.now() + datetime.timedelta(seconds=1)). time() < stop_time:
                         self.result_vector[i][m] = 1
                         new_date = datetime.datetime.combine(datetime.date.today(), \
-                                                             datetime.datetime.strptime(current_task[2],
-                                                                                        '%H:%M:%S').time())
+                                datetime.datetime.strptime(current_task[2],'%H:%M:%S').time())
                         # print("innnn")
 
                     # Time to Off
@@ -137,15 +133,15 @@ class ScheduledEvents(ttk.Frame):
                         self.result_vector[i][m] = 0
                         # print("offff")
                         new_date = datetime.datetime.combine(datetime.date.today() \
-                                                             + datetime.timedelta(7), datetime.datetime. \
-                                                             strptime(current_task[1], '%H:%M:%S').time())
+                                + datetime.timedelta(7), datetime.datetime. \
+                                strptime(current_task[1], '%H:%M:%S').time())
 
                     # Byond Command Times
                     else:
                         self.result_vector[i][m] = -1
                         new_date = datetime.datetime.combine(datetime.date.today() \
-                                                             + datetime.timedelta(7), datetime.datetime.strptime \
-                                                                 (current_task[1], '%H:%M:%S').time())
+                                + datetime.timedelta(7), datetime.datetime.strptime \
+                                (current_task[1], '%H:%M:%S').time())
 
                 # Day in Future
                 elif day_in_task > datetime.date.today().isoweekday():
@@ -158,8 +154,8 @@ class ScheduledEvents(ttk.Frame):
                 elif day_in_task < datetime.date.today().isoweekday():
                     self.result_vector[i][m] = -1
                     new_date = datetime.datetime.combine(datetime.date.today() \
-                                                         + datetime.timedelta(7 + day_diff), datetime.datetime. \
-                                                         strptime(current_task[1], '%H:%M:%S').time())
+                            + datetime.timedelta(7 + day_diff), datetime.datetime. \
+                            strptime(current_task[1], '%H:%M:%S').time())
 
                 self.future_on[i][m] = chop_microseconds(new_date - datetime.datetime.now())
 
@@ -167,7 +163,7 @@ class ScheduledEvents(ttk.Frame):
 
     def get_state(self):
         ans, min_time = [-1, -1], []
-        for x, res_vec in enumerate(self.result_vector):
+        for x, res_vec in enumerate(self.result_vector): # can be [ -1 off, 1 on, 0 during shutdown : 2 seconds ]
             min_time.append(min(self.future_on[x]))
             for op in res_vec:
                 if op in [0, 1]:
@@ -186,13 +182,14 @@ class ScheduledEvents(ttk.Frame):
 
             # sw  to pass to x_switch method
             # if task is on ---------** and task_state is On ----------_**
-            if not sch_stat [0][0] ==-1 and ButtonClass.task_state[self.sw][sch_stat[0][1]] == 1:
+            if not sch_stat [0][0] == -1 and ButtonClass.task_state[self.sw][sch_stat[0][1]] == 1:
 
                 ## TTO CHECK what is sw ( change to self.sw)
-                if not bool(sch_stat[0][0]) == ButtonClass.get_state()[self.sw]:#[sch_stat[0][1]]]:
+                # If it is not alreay pressed: do press
+                if not bool(sch_stat[0][0]) == 1: #ButtonClass.get_state()[self.sw]:#[sch_stat[0][1]]]:
                     ButtonClass.ext_press(self.sw, sch_stat[0][0], "Schedule Switch")
 
-            # Reset task status after sched end ( in case it was cancelled )
+            # Reset task status after sched end ( in case it was cancelled ) - set task_state back to "1"
             elif sch_stat[0][0] == 0 and ButtonClass.task_state[self.sw][sch_stat[0][1]] == 0:
                 ButtonClass.task_state[self.sw][sch_stat[0][1]] = 1
                 update_label("task %s restored" % str(sch_stat[0][1]), 'green')
@@ -207,14 +204,20 @@ class ScheduledEvents(ttk.Frame):
                 # ButtonClass.task_state[sch_stat[0][1]] == 1:
                 update_label('wait: ' + str(sch_stat[2]), 'red')
 
-            # Stop running sch when it is aready ON
+            # Stop running sch when it is aready ON, but will run next time
             elif sch_stat[0][0] == 1 and ButtonClass.task_state[self.sw][sch_stat[0][1]] == 0:
-                update_label("cancelled: " + str(sch_stat[2]), 'red')
+                update_label("abort: " + str(sch_stat[2]), 'red')
 
-            # Disable future task
+            # skip future task - task state will return to 1 at end
             elif sch_stat[0][0] == -1 and ButtonClass.task_state[self.sw][
                 sch_stat[1].index(sch_stat[2])] == 0: 
                 update_label("Skip: " + str(sch_stat[2]), 'orange')
+
+            # Dont run task and don't reset ( stays off )
+            elif ButtonClass.task_state[self.sw][sch_stat[1].index(sch_stat[2])] == -2:
+                update_label("Cancelled: " + str(sch_stat[2]), 'orange')
+
+
 
         check_state(self.run_schedule())
 
@@ -622,19 +625,20 @@ class CoreButton(ttk.Frame):
         if self.pigpio_valid(self.ip_out) ==1:
             print("Reach")
 
-            self.HW_output = HWRemoteOutput(self, ip_out, hw_out)
-            self.Indicators = Indicators(self.HW_output, self.buttons_frame, pdx=8)
-            if not hw_in == []: self.HW_input = HWRemoteInput(self, ip_in, hw_in)
+            # self.HW_output = HWRemoteOutput(self, ip_out, hw_out)
+            # self.Indicators = Indicators(self.HW_output, self.buttons_frame, pdx=8)
+            # if not hw_in == []: self.HW_input = HWRemoteInput(self, ip_in, hw_in)
     
         elif self.pigpio_valid(self.ip_out) == 0:
             print("Fail to reach")
             self.unSuccLoad()
 
         if self.on_off_var.get() == 0:
-            self.disable_but()
+            # self.disable_but()
             pass
 
     def pigpio_valid(self, address):
+        return 1
   
         if pigpio.pi(address).connected == True:
             result =1
@@ -665,9 +669,11 @@ class CoreButton(ttk.Frame):
         # to mark checkbot on/ off according active task
         # TO CHECK task_number = self.SchRun[0].get_state()[0][1]
         self.enable_disable_sched_var.set(1)#self.task_state[task_number])
+        def settocan():
+            self.task_state[0][0]=-2
 
-        # ttk.Button(self.switches_frame, text='Update Schedule', command=self.update_schedule).\
-        # grid(row=8, column=0)
+        ttk.Button(self.switches_frame, text='Update Schedule', command=settocan).\
+        grid(row=8, column=0)
 
     def connection_gui(self):
         ttk.Label(self.connection_frame, text=self.ip_out + ' :', \
@@ -785,7 +791,7 @@ class CoreButton(ttk.Frame):
         for i, but in enumerate(self.buts):
             but.config(state=state[self.on_off_var.get()])
             # TO RESTORE
-            self.execute_command(i, 0)  # Turn off sw=1
+            # self.execute_command(i, 0)  # Turn off sw=1
         # set run_schedule on/ off
         self.enable_disable_sched_var.set(self.on_off_var.get())  # Uncheck sched checkbox
 
@@ -953,7 +959,7 @@ if __name__ == "__main__":
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
         hw_out=[22,6],hw_in=[13],sched_vector=[[[4], "02:24:30", "23:12:10"], \
-        [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
+        [[1], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
     
     f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \

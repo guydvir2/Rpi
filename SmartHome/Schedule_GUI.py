@@ -5,8 +5,6 @@ import readfile_ssh
 import datetime
 
 
-
-
 class AllButtons_GUI(ttk.Frame):
     """AllButtons GUI Class"""
     
@@ -192,7 +190,6 @@ class TimeTable_RowConfig(ttk.Frame):
 
     class ListPopUpWindow(tk.Toplevel):
         #Creates only popup windows in some Entries
-
         def __init__(self,master,list1=["1","2","3"],text1='Enter Text', var='', title=[],bg='', multi='no'):
             tk.Toplevel.__init__(self, master)
             self.master = master
@@ -232,27 +229,25 @@ class TimeTable_RowConfig(ttk.Frame):
             self.external_var.set(list(self.items_selected))
             self.destroy()
 
-
     def __init__(self, master, data_from_file, titles=[], connected_devices=[]):
         ttk.Frame.__init__(self, master)
-        self.master = master
 
         self.mainframe = ttk.Frame(self)
         self.mainframe.grid()
-        self.time_left_vector=[]
-        self.all_sched_vars=[]
+        self.time_left_vector, self.all_sched_vars = [], []
         self.build_gui(data_from_file, titles, connected_devices)
         self.update_time_table()
-        
+
+        self.style = ttk.Style()
+        self.style.configure('TabLabel.TLabel', background='yellow')
 
     def build_gui(self, data_from_file, title=[], connected_devices=[]):
         
         def headers(m,n):
 
             titles = title
-
             for i in range(len(titles)):
-                ttk.Label(inner_frame,text=titles[i], style ='Title.TLabel').grid(row=m, column=n+i, padx=5, pady=5)
+                ttk.Label(inner_frame,text=titles[i]).grid(row=m, column=n+i, padx=5, pady=5)
 
         def pop_days(event, days_var):
             days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -267,7 +262,8 @@ class TimeTable_RowConfig(ttk.Frame):
         
         # Create Rows in Table
         devs = connected_devices
-        for i in range (len(data_from_file)):
+        for i, current_sched in enumerate(data_from_file):
+            px=2
             
             #Task#
             self.var=[]
@@ -278,7 +274,7 @@ class TimeTable_RowConfig(ttk.Frame):
 
             #On/Off
             self.var.append(tk.StringVar())
-            self.var[1].set(data_from_file[i][1])
+            self.var[1].set(current_sched[1])
             on_off_box = ttk.Combobox(inner_frame, width=5, textvariable=self.var[1], values=['ON','OFF'],
                                       state='readonly', justify=tk.CENTER)
             on_off_box.bind('<<ComboboxSelected>>',lambda event, arg=i: self.on_off_bind(event, arg))
@@ -286,41 +282,41 @@ class TimeTable_RowConfig(ttk.Frame):
 
             #Device
             self.var.append(tk.StringVar())
-            self.var[2].set(data_from_file[i][2])
+            self.var[2].set(current_sched[2])
             device_entry = ttk.Combobox(inner_frame, width=12, textvariable=self.var[2], values=devs,
                                         state='readonly', justify=tk.CENTER)
-            device_entry.grid(row=i+1, column=2, padx=8)
+            device_entry.grid(row=i+1, column=2, padx=px)
 
             #Day
             self.var.append(tk.StringVar())
-            self.var[3].set(data_from_file[i][3])
+            self.var[3].set(current_sched[3])
             days_entry = ttk.Entry(inner_frame, width=12, textvariable=self.var[3], justify=tk.CENTER)
-            days_entry.grid(row=i+1, column=3, padx=8)
+            days_entry.grid(row=i+1, column=3, padx=px)
 
             #start
             self.var.append(tk.StringVar())
-            self.var[4].set(data_from_file[i][4])
+            self.var[4].set(current_sched[4])
             time_on_entry = ttk.Entry(inner_frame, width=9, textvariable=self.var[4], justify=tk.CENTER)
-            time_on_entry.grid(row=i+1, column=4, padx=8)
+            time_on_entry.grid(row=i+1, column=4, padx=px)
 
             #Stop
             self.var.append(tk.StringVar())
-            self.var[5].set(data_from_file[i][5])
+            self.var[5].set(current_sched[5])
             time_off_entry = ttk.Entry(inner_frame, width=9, textvariable=self.var[5], justify=tk.CENTER)
-            time_off_entry.grid(row=i+1, column=5, padx=8)
+            time_off_entry.grid(row=i+1, column=5, padx=px)
 
             #TimeLeft
             self.var.append(tk.StringVar())
-            self.var[6].set('No Schedule/ Off')#data_from_file[i][6])
-            time_left_entry = ttk.Entry(inner_frame, width=15, textvariable=self.var[6], justify=tk.CENTER)
-            time_left_entry.grid(row=i+1, column=6, padx=8)
+            self.var[6].set('No Schedule/ Off')#current_sched[6])
+            time_left_entry = ttk.Entry(inner_frame, width=20, textvariable=self.var[6], justify=tk.CENTER)
+            time_left_entry.grid(row=i+1, column=6, padx=px)
 
             #Skip
             self.var.append(tk.StringVar())
             self.var[7].set('On')
             skip_button = ttk.Combobox(inner_frame, width=5, textvariable=self.var[7], values=['On','Off'],state='readonly', justify=tk.CENTER)
             skip_button.bind('<<ComboboxSelected>>',lambda event, x=i: self.but_callback(event,x))
-            skip_button.grid(row=i+1, column=7, padx=8)
+            skip_button.grid(row=i+1, column=7, padx=px)
             
             self.time_left_vector.append(time_left_entry)
             self.all_sched_vars.append(self.var)
@@ -366,6 +362,8 @@ class TimeTable_RowConfig(ttk.Frame):
 
     def update_time_table(self):
         def update_run():
+            for
+            print(MainGUI.ButtonNote.buts[0].SchRun[0].get_state())
             #goes thru only On tasks
             for i, current_task in enumerate(relations_vector):
                 try:
@@ -458,7 +456,7 @@ class Buttons_RowConfig(ttk.Frame):
         headers(0,0)
         
         # Create Rows in Table
-        for i in range (len(data_from_file)):
+        for i, current_but in enumerate (data_from_file):#range (len(data_from_file)):
             
             #No#
             self.var=[]
@@ -471,7 +469,7 @@ class Buttons_RowConfig(ttk.Frame):
             
             #Device Type
             self.var.append(tk.StringVar())
-            self.var[1].set(data_from_file[i][1])
+            self.var[1].set(current_but[1])
             device_entry = ttk.Combobox(inner_frame, width=12, 
                     textvariable=self.var[1], values=list(buttons_type.values()) ,
                     state='readonly', justify=tk.CENTER)
@@ -479,46 +477,48 @@ class Buttons_RowConfig(ttk.Frame):
             
             #Alias
             self.var.append(tk.StringVar())
-            self.var[2].set(data_from_file[i][2])
+            self.var[2].set(current_but[2])
             alias_entry = ttk.Entry(inner_frame, width=18, textvariable=self.var[2],justify=tk.CENTER)
             alias_entry.grid(row=i+1, column=3)
 
             #IP OUT
             self.var.append(tk.StringVar())
-            self.var[3].set(data_from_file[i][3])
+            self.var[3].set(current_but[3])
             ip_out_entry = ttk.Entry(inner_frame, width=12, textvariable=self.var[3], justify=tk.CENTER)
             ip_out_entry.grid(row=i+1, column=4, padx=8)
 
             #GPIO OUT
             self.var.append(tk.StringVar())
-            self.var[4].set(data_from_file[i][4])
+            self.var[4].set(current_but[4])
             gpio_out_entry = ttk.Entry(inner_frame, width=8, textvariable=self.var[4], 
                                        justify=tk.CENTER)
             gpio_out_entry.grid(row=i+1, column=5, padx=8)
 
 #            #IP IN
 #            self.var.append(tk.StringVar())
-#            self.var[5].set(data_from_file[i][5])
+#            self.var[5].set(current_but[5])
 #            ip_in_entry = ttk.Entry(inner_frame, width=12, textvariable=self.var[5], justify=tk.CENTER)
 #            ip_in_entry.grid(row=i+1, column=6, padx=8)
 
             #GPIO IN
             self.var.append(tk.StringVar())
-            self.var[5].set(data_from_file[i][5])
+            self.var[5].set(current_but[5])
             gpio_in_entry = ttk.Entry(inner_frame, width=8, textvariable=self.var[5], justify=tk.CENTER)
             gpio_in_entry.grid(row=i+1, column=6, padx=5)
 #
 #            #Button's dimensiob
 #            self.var.append(tk.StringVar())
-#            self.var[7].set(data_from_file[i][7])
+#            self.var[7].set(current_but[7])
 #            dimen_entry = ttk.Entry(inner_frame, width=5, textvariable=self.var[7])
 #            dimen_entry.grid(row=i+1, column=8, padx=8)
 
             #Device on/off
-            self.var.append(tk.StringVar())
-            self.var[6].set(data_from_file[i][6])
+            #self.var.append(tk.StringVar())
+            self.var.append(tk.IntVar())
+            self.var[6].set(current_but[6])
             self.onoff_var=tk.StringVar()
-            device_entry = ttk.Combobox(inner_frame, width=4, textvariable=self.var[6], values=['On','Off'] ,state='readonly', justify=tk.CENTER)
+            #device_entry = ttk.Combobox(inner_frame, width=4, textvariable=self.var[6], values=['On','Off'] ,state='readonly', justify=tk.CENTER)
+            device_entry = ttk.Checkbutton(inner_frame, variable=self.var[6])
             device_entry.grid(row=i+1, column=1, padx=8)
             device_entry.bind('<<ComboboxSelected>>',lambda event, arg=i: self.switch_sched_off(event, arg))
 
@@ -656,9 +656,10 @@ class MainGUI(ttk.Frame):
     
     def __init__(self,master):
         ttk.Frame.__init__(self, master)
-        
-        self.path = '/home/guy/PythonProjects/SmartHome/'
-       # self.path = 'd:/users/guydvir/Documents/GitHub/Rpi/SmartHome/'
+
+        # self.path = '/home/guy/PythonProjects/SmartHome/'
+        self.path = 'd:/users/guydvir/Documents/GitHub/Rpi/SmartHome/'
+
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
         self.app_name='Pi Scheduler'
@@ -678,8 +679,7 @@ class MainGUI(ttk.Frame):
     def save_data_to_file(self):
         self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
         self.FileManSched.save_to_file(mat=self.WeekSched_TimeTable.extract_data_from_gui())
-        
-        
+
     def reload_all(self):
         self.main_frame = ttk.Frame(self)
         self.main_frame.grid()
@@ -710,10 +710,9 @@ class MainGUI(ttk.Frame):
         self.log_window()
         self.write2log("Boot")
         self.butt_config_gui(2,0)
-#        self.buttons_gui(1,0)
-#        self.weekly_sched_gui(0,0)
 
-        
+        self.buttons_gui(1,0)
+        self.weekly_sched_gui(0,0)
 
     def weekly_sched_gui(self,r=0, c=0):
         
@@ -729,14 +728,15 @@ class MainGUI(ttk.Frame):
             self.connected_devices.append(dev[2])
 
         #method does not load file ( it can), but it uses data already loaded
-        self.WeekSched_TimeTable= Generic_UI_Table(self.sched_tab, TimeTable_RowConfig, titles=titles, path=path, filename='', defaults=defaults, header=header, data=self.sched_file, connected_devices=self.connected_devices)
+        self.WeekSched_TimeTable= Generic_UI_Table(self.sched_tab, TimeTable_RowConfig, titles=titles, path=path,
+                                                   filename='', defaults=defaults, header=header, data=self.sched_file,
+                                                   connected_devices=self.connected_devices)
         self.WeekSched_TimeTable.grid(row=r, column=c)
 
         ttk.Button(self.sched_tab,text="Close&Open All GUI", command=self.close_for_reload).grid(row=1, column=0)
         ttk.Button(self.sched_tab,text="Save Schedule", command=self.save_data_to_file).grid(row=1, column=1)
 
         self.write2log("Weekly schedule GUI started")
-
 
     def butt_config_gui(self,r=0,c=0):
         
@@ -752,7 +752,6 @@ class MainGUI(ttk.Frame):
         self.ButConfigTable= Generic_UI_Table(self.config_but_tab, Buttons_RowConfig, titles=titles, path=path, filename='', defaults=defaults, header=header, data=self.buts_defs, buttons_type=buttons_type)
         self.ButConfigTable.grid(row=r, column=c)
         self.write2log("Buttons config GUI loaded")
-
 
     def buttons_gui(self,r=0,c=0):
         
