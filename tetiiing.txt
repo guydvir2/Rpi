@@ -1,6 +1,0 @@
-this is a test at test branch
-This is written while in master branch
-this is via master
-this is via test
-HEKKKO
-
