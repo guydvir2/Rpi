@@ -20,14 +20,17 @@ class AllButtons_GUI(ttk.Frame):
 
     def reload_data_files(self):
         #self.master.save_data_to_file()
-        self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.extract_data_from_gui())
+        self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.\
+                extract_data_from_gui())
         self.master.read_data_from_files()
 
     def load_buttons_defs(self):
 
-        self.args = []  # Dictionary of loaded buttons definitions, KWargs for GUIButtons Read But Defs from file
+        self.args = []  # Dictionary of loaded buttons definitions, KWargs for
+                        #GUIButtons Read But Defs from file
 
-        #keys "hw_in","hw_out","dimension" - get special treatment in next for loop in extracting string values
+        #keys "hw_in","hw_out","dimension" - get special treatment in next for 
+        #loop in extracting string values
         self.button_keys=['type','nickname','ip_out','hw_out','hw_in','on_off', 'ip_in','dimension']
 
         for i,but_defs in enumerate(self.master.buts_defs):#.data_from_file:
@@ -106,25 +109,33 @@ class AllButtons_GUI(ttk.Frame):
                 # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
                 if current_button[3] in self.reachable_ips:
                     #if current_button[6] =='On':
-                    self.buts.append(getattr(ButtonLib2,current_button[1])(self.mainframe, **self.args[l]))
+                    self.buts.append(getattr(ButtonLib2,current_button[1])\
+                            (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x,self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1
             except ValueError:
                 self.master.write2log("Error loading Button"+str(l))
-        self.master.write2log("Buttons loaded successfully: "+ str([x[1] for x in self.loaded_buts]))
+        self.master.write2log("Buttons loaded successfully: "+ str([x[1] \
+            for x in self.loaded_buts]))
 #
 #        ttk.Button(self.mainframe,text="close",command=lambda :self.stop_start_but([0])).grid()
 #        #  lambda :self.close_spec_button(0))
 
     def list_buts_to_load(self):
         #loads only buttons complies certain IP as in self.readchable_ips
-        self.but2load = [[i, current_but[2], current_but[3]] for i,current_but in enumerate(self.master.buts_defs) if current_but[3] in self.reachable_ips]
+        self.but2load = [[i, current_but[2], current_but[3]] \
+            for i,current_but in enumerate(self.master.buts_defs) \
+            if current_but[3] in self.reachable_ips]
 
-        self.but_not2load = [[i, current_but[2], current_but[3]] for i,current_but in enumerate(self.master.buts_defs) if not current_but[3] in self.reachable_ips]
+        self.but_not2load = [[i, current_but[2], current_but[3]] \
+            for i,current_but in enumerate(self.master.buts_defs) \
+            if not current_but[3] in self.reachable_ips]
 
-        self.master.write2log("Trying to load:"+str([loaded[1] for i,loaded in enumerate(self.but2load)]))
-        self.master.write2log("Not trying to load:"+str([loaded[1] for i,loaded in enumerate(self.but_not2load)]))
+        self.master.write2log("Trying to load:"+str([loaded[1] \
+            for i,loaded in enumerate(self.but2load)]))
+        self.master.write2log("Not trying to load:"+str([loaded[1] \
+            for i,loaded in enumerate(self.but_not2load)]))
 
     def prep_buttons(self):
         self.reload_data_files()
@@ -156,7 +167,8 @@ class AllButtons_GUI(ttk.Frame):
             print("close",x)
             print(self.args[0],self.master.buts_defs[0])
             self.prep_buttons()
-            self.buts[x] = getattr(ButtonLib2,self.master.buts_defs[x][1])(self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
+            self.buts[x] = getattr(ButtonLib2,self.master.buts_defs[x][1])\
+                (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
             self.buts[x].grid(row=0, column=x)
 
     def update_schedule(self):
@@ -165,7 +177,8 @@ class AllButtons_GUI(ttk.Frame):
         #print(self.args[x]['sched_vector'])
         #self.buts[x].update_schedule(self.args[x]["sched_vector"])
         self.buts[x].close_all()
-        self.buts[x] = getattr(ButtonLib2,self.master.buts_defs[x][1])(self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
+        self.buts[x] = getattr(ButtonLib2,self.master.buts_defs[x][1])\
+            (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
         self.buts[x].grid(row=0, column=x)
 
     def stop_start_but(self, buts=[]):
@@ -174,9 +187,11 @@ class AllButtons_GUI(ttk.Frame):
         for but in buts:
             self.buts[but].close_all()
             if self.master.buts_defs[but][8]=='On':
-                self.buts[but] = getattr(ButtonLib2,self.master.buts_defs[but][1])(self.mainframe, **self.args[int(self.master.buts_defs[but][0])])
+                self.buts[but] = getattr(ButtonLib2,self.master.buts_defs[but][1])\
+                    (self.mainframe, **self.args[int(self.master.buts_defs[but][0])])
             else:
-                self.buts[but] = getattr(ButtonLib2,'ErrBut')(self.mainframe,name=self.master.buts_defs[but][2])
+                self.buts[but] = getattr(ButtonLib2,'ErrBut')\
+                    (self.mainframe,name=self.master.buts_defs[but][2])
                 self.loaded_buts.append([but,"ErrorBut"])
                 
             self.buts[but].grid(row=0, column=but)
@@ -362,8 +377,8 @@ class TimeTable_RowConfig(ttk.Frame):
 
     def update_time_table(self):
         def update_run():
-            for
-            print(MainGUI.ButtonNote.buts[0].SchRun[0].get_state())
+            
+            ## delete print(MainGUI.ButtonNote.buts[0].SchRun[0].get_state())
             #goes thru only On tasks
             for i, current_task in enumerate(relations_vector):
                 try:
@@ -657,8 +672,8 @@ class MainGUI(ttk.Frame):
     def __init__(self,master):
         ttk.Frame.__init__(self, master)
 
-        # self.path = '/home/guy/PythonProjects/SmartHome/'
-        self.path = 'd:/users/guydvir/Documents/GitHub/Rpi/SmartHome/'
+        self.path = '/home/guy/PythonProjects/SmartHome/'
+#        self.path = 'd:/users/guydvir/Documents/GitHub/Rpi/SmartHome/'
 
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
@@ -719,7 +734,7 @@ class MainGUI(ttk.Frame):
         header='Weekly Schedule'
         titles = ['Task #', 'On/Off','Device','Day','Start Time', 'Stop Time', 'Time Left', 'Skip Run']
         path = self.path
-        filename = self.sched_filename
+        #filename = self.sched_filename
         defaults = [1, 1, 1,[3,4,5,6], "23:07:00", "01:08:00",'','Hi!']
 
         #import configured devices names into timetable
@@ -728,13 +743,16 @@ class MainGUI(ttk.Frame):
             self.connected_devices.append(dev[2])
 
         #method does not load file ( it can), but it uses data already loaded
-        self.WeekSched_TimeTable= Generic_UI_Table(self.sched_tab, TimeTable_RowConfig, titles=titles, path=path,
-                                                   filename='', defaults=defaults, header=header, data=self.sched_file,
-                                                   connected_devices=self.connected_devices)
+        self.WeekSched_TimeTable= Generic_UI_Table(self.sched_tab, \
+            TimeTable_RowConfig, titles=titles, path=path,
+            filename='', defaults=defaults, header=header, data=self.sched_file,
+            connected_devices=self.connected_devices)
         self.WeekSched_TimeTable.grid(row=r, column=c)
 
-        ttk.Button(self.sched_tab,text="Close&Open All GUI", command=self.close_for_reload).grid(row=1, column=0)
-        ttk.Button(self.sched_tab,text="Save Schedule", command=self.save_data_to_file).grid(row=1, column=1)
+        ttk.Button(self.sched_tab,text="Close&Open All GUI", \
+            command=self.close_for_reload).grid(row=1, column=0)
+        ttk.Button(self.sched_tab,text="Save Schedule", \
+            command=self.save_data_to_file).grid(row=1, column=1)
 
         self.write2log("Weekly schedule GUI started")
 
@@ -749,7 +767,10 @@ class MainGUI(ttk.Frame):
         buttons_type = getattr(ButtonLib2,'button_list') # Get Button type from ButtonLib
 
         #method does not load file ( it can), but it uses data already loaded
-        self.ButConfigTable= Generic_UI_Table(self.config_but_tab, Buttons_RowConfig, titles=titles, path=path, filename='', defaults=defaults, header=header, data=self.buts_defs, buttons_type=buttons_type)
+        self.ButConfigTable= Generic_UI_Table(self.config_but_tab, \
+            Buttons_RowConfig, titles=titles, path=path, filename='', \
+            defaults=defaults, header=header, data=self.buts_defs, \
+            buttons_type=buttons_type)
         self.ButConfigTable.grid(row=r, column=c)
         self.write2log("Buttons config GUI loaded")
 
@@ -758,18 +779,22 @@ class MainGUI(ttk.Frame):
         self.ButtonNote = AllButtons_GUI(self, self.buttons_tab)
         self.ButtonNote.grid(row=0, column=0)
 
-        ttk.Button(self.buttons_tab, text="Disconnect Buttons", command=self.ButtonNote.close_for_reload).grid(row=0,column=1)
-        ttk.Button(self.buttons_tab, text="Reload Buttons", command=self.ButtonNote.reload_all).grid(row=0,column=2)
+        ttk.Button(self.buttons_tab, text="Disconnect Buttons",\
+            command=self.ButtonNote.close_for_reload).grid(row=0,column=1)
+        ttk.Button(self.buttons_tab, text="Reload Buttons", \
+            command=self.ButtonNote.reload_all).grid(row=0,column=2)
 
         self.write2log("Buttons GUI loaded")
 
     #A bind to change on/off in timetable AFTER changes by user in button config.
     def bind_on_off(self,args):
         print(args[0],"is set to",args[1] )
-        for i, current_device in enumerate (self.WeekSched_TimeTable.RowClassCreator.all_sched_vars):
+        for i, current_device in enumerate (self.WeekSched_TimeTable.\
+                RowClassCreator.all_sched_vars):
             if args[0] == current_device[2].get():
                 self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[i][1].set(args[1])
-                print("Schedule Task #",self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[i][0].get(), "set to",args[1])
+                print("Schedule Task #",self.WeekSched_TimeTable.RowClassCreator\
+                    .all_sched_vars[i][0].get(), "set to",args[1])
             
         self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
         self.read_data_from_files()

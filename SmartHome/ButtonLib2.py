@@ -200,12 +200,6 @@ class ScheduledEvents(ttk.Frame):
                 update_label("task %s restored" % str(sch_stat[0][1]), 'green')
                 print("task:", sch_stat[0][1], "Schedule restored")
                 
-            # Switching off for 2 task_states : 0, -1  ( 0 resets to 1 after run , AKA skip,
-#                # -1 is for permanent cancel of task)
-#            elif ButtonClass.task_state[self.sw][sch_stat[0][1]]  <= 0 and \
-#                ButtonClass.get_state()[self.sw] != 0:
-#                ButtonClass.ext_press(self.sw, 0, "Manual Task abort")
-#                
                 
             # Coloring text :                
                 
@@ -233,9 +227,9 @@ class ScheduledEvents(ttk.Frame):
             elif ButtonClass.task_state[self.sw][sch_stat[0][1]] == -1:
                 update_label("Cancel: " + str(sch_stat[2]), 'red')
             
-            print("Name: %s, Switch#: %d, Task-States: %s, Current task: %s, %s, HW_State: %s"%\
-                    (ButtonClass.nick, self.sw, str(ButtonClass.task_state[self.sw]),\
-                    str(sch_stat[0]),str(sch_stat[2]),ButtonClass.get_state()[self.sw]))
+#            print("Name: %s, Switch#: %d, Task-States: %s, Current task: %s, %s, HW_State: %s"%\
+#                    (ButtonClass.nick, self.sw, str(ButtonClass.task_state[self.sw]),\
+#                    str(sch_stat[0]),str(sch_stat[2]),ButtonClass.get_state()[self.sw]))
 
         check_state(self.run_schedule())
 
@@ -883,7 +877,8 @@ class UpDownButton(CoreButton):
     """UpDown2 Class"""
 
     def __init__(self, master, nickname="Gen.UpDownButton", hw_in=[], \
-        hw_out=[], ip_in='', ip_out='', sched_vector=[], sched_vector2=[], buts_names=['DOWN', 'UP'], on_off=1):
+        hw_out=[], ip_in='', ip_out='', sched_vector=[], sched_vector2=[], \
+        buts_names=['DOWN', 'UP'], on_off=1):
 
         self.buts_names = buts_names
         self.master = master
@@ -891,7 +886,8 @@ class UpDownButton(CoreButton):
 
         CoreButton.__init__(self, master, nickname=nickname, hw_in=hw_in, \
             hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
-            sched_vector=sched_vector, sched_vector2=sched_vector2, num_buts=2, on_off=on_off)
+            sched_vector=sched_vector, sched_vector2=sched_vector2, num_buts=2, \
+            on_off=on_off)
 
         # Disabke Counter in this Button
         self.Counter.grid_forget()
@@ -987,19 +983,19 @@ if __name__ == "__main__":
 
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
-        hw_out=[22,6],hw_in=[13],sched_vector=[[[6], "02:24:30", "23:12:10"], \
+        hw_out=[6],hw_in=[13],sched_vector=[[[6], "02:24:30", "23:12:10"], \
         [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
     
-#    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \
-#        hw_out=[5, 7], hw_in=[13, 21], sched_vector=[[[1], "22:24:30", \
-#        "23:12:10"], [[4,5], "12:56:00", "23:50:10"]],
-#        sched_vector2=[[[3], "1:24:30","23:12:10"]])
-#    f.grid(row=0, column=1, sticky=tk.S)
-#    
-    #g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.114', \
-        #hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 2], \
-        #"02:24:30", "23:55:10"],[[4,5], "13:47:20", "23:50:10"]])
-    #g.grid(row=0, column=2, sticky=tk.S)
+    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \
+        hw_out=[5, 7], hw_in=[9, 21], sched_vector=[[[1], "22:24:30", \
+        "23:12:10"], [[4,5], "12:56:00", "23:50:10"]])#,
+        #sched_vector2=[[[3], "1:24:30","23:12:10"]])
+    f.grid(row=0, column=1, sticky=tk.S)
+    
+    g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.115', \
+        hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 2], \
+        "02:24:30", "23:55:10"],[[4,5], "13:47:20", "23:50:10"]])
+    g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()
