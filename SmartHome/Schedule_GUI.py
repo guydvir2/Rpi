@@ -257,6 +257,8 @@ class TimeTable_RowConfig(ttk.Frame):
         self.style.configure('TabLabel.TLabel', background='yellow')
 
     def build_gui(self, data_from_file, title=[], connected_devices=[]):
+
+        Button_GUI=self.master.master.master.master.master.master.master.ButtonNote
         
         def headers(m,n):
 
@@ -274,7 +276,9 @@ class TimeTable_RowConfig(ttk.Frame):
         
         # Create Table Header
         headers(0,0)
-        
+
+        print(Button_GUI.args)
+
         # Create Rows in Table
         devs = connected_devices
         for i, current_sched in enumerate(data_from_file):
@@ -290,9 +294,9 @@ class TimeTable_RowConfig(ttk.Frame):
             #On/Off
             self.var.append(tk.StringVar())
             self.var[1].set(current_sched[1])
-            on_off_box = ttk.Combobox(inner_frame, width=5, textvariable=self.var[1], values=['ON','OFF'],
-                                      state='readonly', justify=tk.CENTER)
-            on_off_box.bind('<<ComboboxSelected>>',lambda event, arg=i: self.on_off_bind(event, arg))
+            # on_off_box = ttk.Combobox(inner_frame, width=5, textvariable=self.var[1], values=['ON','OFF'],state='readonly', justify=tk.CENTER)
+            on_off_box = ttk.Checkbutton(inner_frame, variable=self.var[1])
+            # on_off_box.bind('<<ComboboxSelected>>',lambda event, arg=i: self.on_off_bind(event, arg))
             on_off_box.grid(row=i+1, column=1)
 
             #Device
@@ -329,8 +333,8 @@ class TimeTable_RowConfig(ttk.Frame):
             #Skip
             self.var.append(tk.StringVar())
             self.var[7].set('On')
-            skip_button = ttk.Combobox(inner_frame, width=5, textvariable=self.var[7], values=['On','Off'],state='readonly', justify=tk.CENTER)
-            skip_button.bind('<<ComboboxSelected>>',lambda event, x=i: self.but_callback(event,x))
+            skip_button = ttk.Button(inner_frame, width=5, textvariable=self.var[7])#, values=['On','Off'],state='readonly', justify=tk.CENTER)
+            #skip_button.bind('<<ComboboxSelected>>',lambda event, x=i: self.but_callback(event,x))
             skip_button.grid(row=i+1, column=7, padx=px)
             
             self.time_left_vector.append(time_left_entry)
@@ -672,8 +676,8 @@ class MainGUI(ttk.Frame):
     def __init__(self,master):
         ttk.Frame.__init__(self, master)
 
-        self.path = '/home/guy/PythonProjects/SmartHome/'
-#        self.path = 'd:/users/guydvir/Documents/GitHub/Rpi/SmartHome/'
+        #self.path = '/home/guy/PythonProjects/SmartHome/'
+        self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
 
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
@@ -689,6 +693,14 @@ class MainGUI(ttk.Frame):
         
         self.FileManSched=readfile_ssh.LoadFile(filename=self.sched_filename, path=self.path)
         self.sched_file= self.FileManSched.data_from_file
+
+        for i, current_sched in enumerate(self.sched_file):
+            counter = 0
+            for x in range(i):
+                print(current_sched[2])
+                print(i,x)
+
+
 
     #save both file
     def save_data_to_file(self):

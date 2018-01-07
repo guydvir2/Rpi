@@ -1,5 +1,5 @@
 
-0,ON,WaterBoiler,"2,5",15:25:00,21:00:00,No Schedule/ Off,On
-1,ON,Lights,3,20:09:00,21:10:00,No Schedule/ Off,On
-2,ON,Window,6,14:05:00,23:55:55,No Schedule/ Off,On
-3,OFF,Lights,4,18:40:30,18:40:55,No Schedule/ Off,On
+0,1,WaterBoiler,"2,5",15:25:00,21:00:00,No Schedule/ Off,On,,
+1,1,Lights,3,20:09:00,21:10:00,No Schedule/ Off,On,,
+2,1,Window,6,14:05:00,23:55:55,No Schedule/ Off,On,,
+3,1,Lights,4,18:40:30,18:40:55,No Schedule/ Off,On,,
