@@ -328,8 +328,8 @@ class TimeTable_RowConfig(ttk.Frame):
             #TimeLeft
             self.var.append(tk.StringVar())
             self.var[6].set('No Schedule/ Off')#current_sched[6])
-            time_left_entry = ttk.Entry(inner_frame, width=20, textvariable=self.var[6], justify=tk.CENTER)
-            time_left_entry.grid(row=i+1, column=6, padx=px)
+            self.time_left_entry = ttk.Entry(inner_frame, width=20, textvariable=self.var[6], justify=tk.CENTER)
+            self.time_left_entry.grid(row=i+1, column=6, padx=px)
 
             #Skip
             self.var.append(tk.StringVar())
@@ -382,64 +382,31 @@ class TimeTable_RowConfig(ttk.Frame):
 
     def update_time_table(self):
         def update_run():
-            #print(MainGUI.sched_file)
-            for i, cur_timeleft in enumerate(self.all_sched_vars):
-                #cur_timeleft[6].set(MainGUI.ButtonNote.buts.get_state)
-                print(MainGUI.ButtonNote.buts[1].SchRun[0].get_state())
-            # ## delete print(MainGUI.ButtonNote.buts[0].SchRun[0].get_state())
-            # #goes thru only On tasks
-            # for i, current_task in enumerate(relations_vector):
-            #     try:
-            #         Sched_Current_button = MainGUI.ButtonNote.buts[current_task[3]].SchRun
-            #             #current_task[0] - task # timetable
-            #             #current_task[1] - task # of schedule
-            #             #current_task[2] - on/off of button
-            #             #current_task[3] - buttin # in config table
-            #     except AttributeError:
-            #         print('But with no SchRun')
-            #
-            #
-            #     if current_task[2]=='On':
-            #         pass
-                    #self.all_sched_vars[current_task[0]][6].set(Sched_Current_button.get_state()[1][current_task[1]])
-               
-                    ##Color of text:
-                    ##print(i,Sched_Current_button.get_state()[0][0],Sched_Current_button.master.task_state[current_task[1]])
-                    #if Sched_Current_button.get_state()[0][0] == 1:
-                    ##Task_state in 1 ( task enabled )- check master's state directly
-                        #if Sched_Current_button.master.task_state[current_task[1]]==1:
-                            ## This is the task wich is On ( button may have more that one schd task)
-                            #if current_task[1] == Sched_Current_button.get_state()[0][1]:
-                                #self.time_left_vector[i].config(foreground='green')
-                            #else:
-                                #self.time_left_vector[i].config(foreground='red')
-                        #else:
-                            #self.time_left_vector[i].config(foreground='orange')
-                    #else:
-                        #if Sched_Current_button.master.task_state[current_task[1]]==0:
-                            #self.time_left_vector[i].config(foreground='orange')
-                        #else:
-                            #self.time_left_vector[i].config(foreground='red')
-                        
-        
-                ###When Schd is Off
-                ##if Sched_Current_button.get_state()[0][0] == -1:
-                #else:
-                    #self.time_left_vector[i].config(foreground='red')
-                    ###if Sched_Current_button.master.task_state[current_task[1]]==0:
-                        ###self.time_left_vector[i].config(foreground='orange')
-                        
-            self.run_id = self.after(1000,update_run)
+            for i, current_task in enumerate(self.all_sched_vars):
+                if current_task[1].get() == 1:
+                    current_task[6].set(MainGUI.ButtonNote.buts[relations_vector[i][1]].\
+                                        SchRun[0].get_state()[1][relations_vector[i][2]])
+
+
+            self.run_id = self.after(1000, update_run)
 
         #Shortcut to Main
         MainGUI = self.master.master.master.master.master.master.master
-        temp_list, relations_vector=[], []
+        relations_vector = []
         
         # #list in weekly schedule
-        for i,current_timetable_row in enumerate(self.all_sched_vars):
-            #list of run buttons
-            for m,current_button in enumerate(MainGUI.ButtonNote.loaded_buts):
-                if current_timetable_row[2].get()==current_button[1]:
+        for i, current_timetable_row in enumerate(self.all_sched_vars):
+            v = []
+            for m, current_button in enumerate(MainGUI.ButtonNote.buts):
+                if current_timetable_row[2].get() == current_button.nick:
+                    v = [i, m, MainGUI.findtasknum(i)]
+            relations_vector.append(v)
+
+            # self.all_sched_vars[i][6].set('3')
+            # print(MainGUI.ButtonNote.buts[1].nick)#SchRun[0].get_state())
+            # for m,current_button in enumerate(MainGUI.ButtonNote.loaded_buts):
+            #     if current_timetable_row[2].get()==current_button[1]:
+            #         pass
                     #if current_timetable_row[1].get() == 'On':
         #                 #temp_list store device's name to count repititions
         #             temp_list.append(current_timetable_row[2].get())
@@ -681,8 +648,8 @@ class MainGUI(ttk.Frame):
         ttk.Frame.__init__(self, master)
 
         #self.path = '/home/guy/PythonProjects/SmartHome/'
-        #self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
-        self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
+        self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
+        #self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
 
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
@@ -699,11 +666,11 @@ class MainGUI(ttk.Frame):
         self.FileManSched=readfile_ssh.LoadFile(filename=self.sched_filename, path=self.path)
         self.sched_file= self.FileManSched.data_from_file
 
-        self.findtasknum(3)
+        #self.findtasknum(3)
 
     def findtasknum(self,m):
         task_num = list(np.array(self.sched_file)[:m+1,2]).count(self.sched_file[m][2])
-        print(m, self.sched_file[m][2],task_num)
+        #print(m, self.sched_file[m][2],task_num)
         return task_num-1
 
     #save both file

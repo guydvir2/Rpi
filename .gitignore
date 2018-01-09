@@ -1,5 +1,5 @@
 # Byte-compiled / optimized / DLL files
-SmartHome/__pycache__/
+/SmartHome/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -24,7 +24,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-__pychace__/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -101,4 +100,4 @@ ENV/
 # mypy
 .mypy_cache/
 
-.DS_Store
+*.DS_Store
