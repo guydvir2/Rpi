@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 import readfile_ssh
 import datetime
+import numpy as np
 
 
 class AllButtons_GUI(ttk.Frame):
@@ -205,7 +206,7 @@ class TimeTable_RowConfig(ttk.Frame):
 
     class ListPopUpWindow(tk.Toplevel):
         #Creates only popup windows in some Entries
-        def __init__(self,master,list1=["1","2","3"],text1='Enter Text', var='', title=[],bg='', multi='no'):
+        def __init__(self,master,list1=["1","2","3"],text1='Enter Text', var='', title='',bg='', multi='no'):
             tk.Toplevel.__init__(self, master)
             self.master = master
             self.external_var = var
@@ -244,7 +245,7 @@ class TimeTable_RowConfig(ttk.Frame):
             self.external_var.set(list(self.items_selected))
             self.destroy()
 
-    def __init__(self, master, data_from_file, titles=[], connected_devices=[]):
+    def __init__(self, master, data_from_file, titles='', connected_devices=[]):
         ttk.Frame.__init__(self, master)
 
         self.mainframe = ttk.Frame(self)
@@ -256,7 +257,7 @@ class TimeTable_RowConfig(ttk.Frame):
         self.style = ttk.Style()
         self.style.configure('TabLabel.TLabel', background='yellow')
 
-    def build_gui(self, data_from_file, title=[], connected_devices=[]):
+    def build_gui(self, data_from_file, title='', connected_devices=[]):
 
         Button_GUI=self.master.master.master.master.master.master.master.ButtonNote
         
@@ -277,7 +278,7 @@ class TimeTable_RowConfig(ttk.Frame):
         # Create Table Header
         headers(0,0)
 
-        print(Button_GUI.args)
+        # print(Button_GUI.args)
 
         # Create Rows in Table
         devs = connected_devices
@@ -381,22 +382,25 @@ class TimeTable_RowConfig(ttk.Frame):
 
     def update_time_table(self):
         def update_run():
-            
-            ## delete print(MainGUI.ButtonNote.buts[0].SchRun[0].get_state())
-            #goes thru only On tasks
-            for i, current_task in enumerate(relations_vector):
-                try:
-                    Sched_Current_button = MainGUI.ButtonNote.buts[current_task[3]].SchRun
-                        #current_task[0] - task # timetable
-                        #current_task[1] - task # of schedule
-                        #current_task[2] - on/off of button
-                        #current_task[3] - buttin # in config table
-                except AttributeError:
-                    print('But with no SchRun')
-
-
-                if current_task[2]=='On':
-                    pass
+            #print(MainGUI.sched_file)
+            for i, cur_timeleft in enumerate(self.all_sched_vars):
+                #cur_timeleft[6].set(MainGUI.ButtonNote.buts.get_state)
+                print(MainGUI.ButtonNote.buts[1].SchRun[0].get_state())
+            # ## delete print(MainGUI.ButtonNote.buts[0].SchRun[0].get_state())
+            # #goes thru only On tasks
+            # for i, current_task in enumerate(relations_vector):
+            #     try:
+            #         Sched_Current_button = MainGUI.ButtonNote.buts[current_task[3]].SchRun
+            #             #current_task[0] - task # timetable
+            #             #current_task[1] - task # of schedule
+            #             #current_task[2] - on/off of button
+            #             #current_task[3] - buttin # in config table
+            #     except AttributeError:
+            #         print('But with no SchRun')
+            #
+            #
+            #     if current_task[2]=='On':
+            #         pass
                     #self.all_sched_vars[current_task[0]][6].set(Sched_Current_button.get_state()[1][current_task[1]])
                
                     ##Color of text:
@@ -431,18 +435,18 @@ class TimeTable_RowConfig(ttk.Frame):
         MainGUI = self.master.master.master.master.master.master.master
         temp_list, relations_vector=[], []
         
-        #list in weekly schedule
+        # #list in weekly schedule
         for i,current_timetable_row in enumerate(self.all_sched_vars):
             #list of run buttons
             for m,current_button in enumerate(MainGUI.ButtonNote.loaded_buts):
                 if current_timetable_row[2].get()==current_button[1]:
                     #if current_timetable_row[1].get() == 'On':
-                        #temp_list store device's name to count repititions
-                    temp_list.append(current_timetable_row[2].get())
-                    relations_vector.append([i,temp_list.count(temp_list[-1])-1,current_timetable_row[1].get(),current_button[0]])
-                    #else:
-                        ##when task is off relation_vector[1]='' - not counted as another task
-                        #relations_vector.append([i,'',current_timetable_row[1].get(),current_button[0]])
+        #                 #temp_list store device's name to count repititions
+        #             temp_list.append(current_timetable_row[2].get())
+        #             relations_vector.append([i,temp_list.count(temp_list[-1])-1,current_timetable_row[1].get(),current_button[0]])
+        #             #else:
+        #                 ##when task is off relation_vector[1]='' - not counted as another task
+        #                 #relations_vector.append([i,'',current_timetable_row[1].get(),current_button[0]])
         update_run()
         
     def reload_time_table(self):
@@ -677,7 +681,8 @@ class MainGUI(ttk.Frame):
         ttk.Frame.__init__(self, master)
 
         #self.path = '/home/guy/PythonProjects/SmartHome/'
-        self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
+        #self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
+        self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
 
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
@@ -694,13 +699,12 @@ class MainGUI(ttk.Frame):
         self.FileManSched=readfile_ssh.LoadFile(filename=self.sched_filename, path=self.path)
         self.sched_file= self.FileManSched.data_from_file
 
-        for i, current_sched in enumerate(self.sched_file):
-            counter = 0
-            for x in range(i):
-                print(current_sched[2])
-                print(i,x)
+        self.findtasknum(3)
 
-
+    def findtasknum(self,m):
+        task_num = list(np.array(self.sched_file)[:m+1,2]).count(self.sched_file[m][2])
+        print(m, self.sched_file[m][2],task_num)
+        return task_num-1
 
     #save both file
     def save_data_to_file(self):
