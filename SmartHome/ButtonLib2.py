@@ -51,6 +51,7 @@ class ScheduledEvents(ttk.Frame):
 
         if self.tasks != []:
             self.result_vector, self.future_on = [0] * len(self.tasks), [0] * len(self.tasks)
+            self.empty_sched = False
 
             if self.check_integrity_time_table() == 0:
                 self.run_schedule()
@@ -58,6 +59,9 @@ class ScheduledEvents(ttk.Frame):
                 print("Errors in TimeTable")
 
             self.switch_descision()
+
+        else:
+            self.empty_sched = True
 
     def update_sched(self, tasks=[]):
 
@@ -167,12 +171,16 @@ class ScheduledEvents(ttk.Frame):
         return self.get_state()
 
     def get_state(self):
-        ans, min_time = [-1, -1], []
-        for x, res_vec in enumerate(self.result_vector):
-            min_time.append(min(self.future_on[x]))
-            for op in res_vec:
-                if op in [0, 1]:
-                    ans = [op, x]  # op state = on/off x= task number
+        if self.empty_sched is False:
+            ans, min_time = [-1, -1], []
+            for x, res_vec in enumerate(self.result_vector):
+                min_time.append(min(self.future_on[x]))
+                for op in res_vec:
+                    if op in [0, 1]:
+                        ans = [op, x]  # op state = on/off x= task number
+        # Case of empty schedule
+        else:
+            ans, min_time = [-2, -2],[-2]
 
         return [ans, min_time, min(min_time)]
 
@@ -191,9 +199,9 @@ class ScheduledEvents(ttk.Frame):
             if not sch_stat [0][0] == -1 :#and ButtonClass.task_state[self.sw][sch_stat[0][1]] == 1:
                 ## if sched state ---** is not equal to HW state : do make switch
                 # FIX
-                # if (sch_stat[0][0]) != ButtonClass.get_state()[self.sw]:
-                #     ButtonClass.ext_press(self.sw, sch_stat[0][0], "Schedule Switch")
-                pass
+                if (sch_stat[0][0]) != 1 :# ButtonClass.get_state()[self.sw]:
+                    ButtonClass.ext_press(self.sw, sch_stat[0][0], "Schedule Switch")
+                    pass
 
             # Reset task status after sched end ( in case it was cancelled )
             elif sch_stat[0][0] == 0 and ButtonClass.task_state[self.sw]\
@@ -494,6 +502,7 @@ class HWRemoteOutput:
             nick = 'RemoteOutput Device'
         else:
             nick = self.master.nick
+
         factory = PiGPIOFactory(host=ip)
         self.output_pins = ["Pin_" + str(output_pins[i]) for i in range(len(output_pins))]
         for sw in range(len(self.output_pins)):
@@ -970,19 +979,19 @@ class MainsButton(CoreButton):
     def switch_logic(self, sw):
 
         if self.but_stat[1].get() == 0 :#and self.but_stat[0].get() == 0:
-            self.execute_command(1,0)
-            self.execute_command(0, 0)
+            # self.execute_command(1,0)
+            # self.execute_command(0, 0)
             self.but_stat[0].set(0)
             self.Counter.succ_end()
 
         elif self.but_stat[1].get() == 1 and self.but_stat[0].get() == 0:
-            self.execute_command(1,1)
-            self.execute_command(0, 0)
-
+            # self.execute_command(1,1)
+            # self.execute_command(0, 0)
+            pass
         elif self.but_stat[1].get() == 1 and self.but_stat[0].get() == 1:
-            self.execute_command(1,1)
-            self.execute_command(0, 1)
-
+            # self.execute_command(1,1)
+            # self.execute_command(0, 1)
+            pass
 
 
 button_list = {1: 'UpDownButton', 2: 'ToggleButton', 3: 'MainsButton'}
@@ -992,18 +1001,17 @@ if __name__ == "__main__":
 
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
-        hw_out=[6],hw_in=[13],sched_vector=[[[7], "02:24:30", "23:12:10"], \
+        hw_out=[6],hw_in=[13],sched_vector=[[[4], "02:24:30", "23:12:10"], \
         [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
     
     f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \
         hw_out=[5, 7], hw_in=[9, 21], sched_vector=[[[1], "22:24:30", \
-        "23:12:10"], [[4,5], "12:56:00", "23:50:10"]])#,
-        #sched_vector2=[[[3], "1:24:30","23:12:10"]])
+        "23:12:10"], [[4,5], "12:56:00", "23:50:10"]],sched_vector2=[[[3], "1:24:30","23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
-    
+    #
     g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.115', \
-        hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 2], \
+        hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 4], \
         "02:24:30", "23:55:10"],[[4,5], "13:47:20", "23:50:10"]])
     g.grid(row=0, column=2, sticky=tk.S)
 

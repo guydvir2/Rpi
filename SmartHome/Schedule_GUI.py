@@ -251,6 +251,7 @@ class TimeTable_RowConfig(ttk.Frame):
         self.mainframe = ttk.Frame(self)
         self.mainframe.grid()
         self.time_left_vector, self.all_sched_vars = [], []
+        self.relations_vector = []
         self.build_gui(data_from_file, titles, connected_devices)
         self.update_time_table()
 
@@ -293,10 +294,11 @@ class TimeTable_RowConfig(ttk.Frame):
             task_num.grid(row=i+1, column=0)
 
             #On/Off
-            self.var.append(tk.StringVar())
+            self.var.append(tk.IntVar())
             self.var[1].set(current_sched[1])
             # on_off_box = ttk.Combobox(inner_frame, width=5, textvariable=self.var[1], values=['ON','OFF'],state='readonly', justify=tk.CENTER)
-            on_off_box = ttk.Checkbutton(inner_frame, variable=self.var[1])
+            on_off_box = ttk.Checkbutton(inner_frame, variable=self.var[1], \
+                        command=lambda arg=i: self.on_off_cb(arg,self.all_sched_vars[arg][1].get()))
             # on_off_box.bind('<<ComboboxSelected>>',lambda event, arg=i: self.on_off_bind(event, arg))
             on_off_box.grid(row=i+1, column=1)
 
@@ -328,8 +330,8 @@ class TimeTable_RowConfig(ttk.Frame):
             #TimeLeft
             self.var.append(tk.StringVar())
             self.var[6].set('No Schedule/ Off')#current_sched[6])
-            self.time_left_entry = ttk.Entry(inner_frame, width=20, textvariable=self.var[6], justify=tk.CENTER)
-            self.time_left_entry.grid(row=i+1, column=6, padx=px)
+            time_left_entry = ttk.Entry(inner_frame, width=20, textvariable=self.var[6], justify=tk.CENTER)
+            time_left_entry.grid(row=i+1, column=6, padx=px)
 
             #Skip
             self.var.append(tk.StringVar())
@@ -344,7 +346,18 @@ class TimeTable_RowConfig(ttk.Frame):
 
     def on_off_bind(self,event, i):
         self.reload_time_table()
-        self.master.master.master.master.master.master.master.disable_sched_in_gui([self.all_sched_vars[i][2].get(),self.all_sched_vars[i][1].get(),self.all_sched_vars[i][0].get()])
+        self.master.master.master.master.master.master.master.disable_sched_in_gui(\
+            [self.all_sched_vars[i][2].get(),self.all_sched_vars[i][1].get(),self.all_sched_vars[i][0].get()])
+
+
+    def on_off_cb(self,i, val):
+
+        # Shortcut to Main
+        if val == 0:
+            val =-1 # this value represent cacel of task ( not renewing )
+        MainGUI = self.master.master.master.master.master.master.master
+        MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
+            task_state[0][self.relations_vector[i][2]] = val
 
 
     def but_callback(self,event,x):
@@ -379,14 +392,27 @@ class TimeTable_RowConfig(ttk.Frame):
                 elif MainGUI.ButtonNote.buts[i].task_state[dev_task_num]==1:
                     MainGUI.ButtonNote.buts[i].task_state[dev_task_num]=0
 
-
     def update_time_table(self):
+
         def update_run():
             for i, current_task in enumerate(self.all_sched_vars):
-                if current_task[1].get() == 1:
-                    current_task[6].set(MainGUI.ButtonNote.buts[relations_vector[i][1]].\
-                                        SchRun[0].get_state()[1][relations_vector[i][2]])
 
+                # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently
+                if MainGUI.ButtonNote.buts[self.relations_vector[i][1]]. \
+                        task_state[0][self.relations_vector[i][2]] in [0,1]:
+                    current_task[1].set(MainGUI.ButtonNote.buts[self.relations_vector[i][1]]. \
+                    task_state[0][self.relations_vector[i][2]])
+                # if task was set to -1 ( not valid in checkbutton value ) by button's gui, set ckbutton to "off"
+                elif MainGUI.ButtonNote.buts[self.relations_vector[i][1]]. \
+                        task_state[0][self.relations_vector[i][2]] == -1:
+                    current_task[1].set(0)
+
+                #Update Clock when task checkbutton is enabled
+                if current_task[1].get() == 1:
+                    current_task[6].set(MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
+                                        SchRun[0].get_state()[1][self.relations_vector[i][2]])
+                else:
+                    current_task[6].set('Cancelled')
 
             self.run_id = self.after(1000, update_run)
 
@@ -400,7 +426,7 @@ class TimeTable_RowConfig(ttk.Frame):
             for m, current_button in enumerate(MainGUI.ButtonNote.buts):
                 if current_timetable_row[2].get() == current_button.nick:
                     v = [i, m, MainGUI.findtasknum(i)]
-            relations_vector.append(v)
+            self.relations_vector.append(v)
 
             # self.all_sched_vars[i][6].set('3')
             # print(MainGUI.ButtonNote.buts[1].nick)#SchRun[0].get_state())
@@ -415,7 +441,7 @@ class TimeTable_RowConfig(ttk.Frame):
         #                 ##when task is off relation_vector[1]='' - not counted as another task
         #                 #relations_vector.append([i,'',current_timetable_row[1].get(),current_button[0]])
         update_run()
-        
+
     def reload_time_table(self):
         self.after_cancel(self.run_id)
         self.update_time_table()

@@ -7,37 +7,34 @@ Created on Wed Jan 10 23:51:51 2018
 
 import tkinter as tk
 
-def ck1_event(event,val):
-    var1.set('Ck1 is:'+ str(val))
-    v2.set(v1.get())
 
-def ck2_event(event,val):
-    var2.set('Ck1 is:'+ str(val))    
+def ck_cb(txt, v):
+    v1.set(v)
+    v2.set(v)
+    print(txt + " pressed")
+
+
 root = tk.Tk()
 
-v1=tk.IntVar()
-ck1=tk.Checkbutton(root,variable=v1)
+v1 = tk.BooleanVar()
+txt1 = "CheckButton1"
+ck1 = tk.Checkbutton(root, variable=v1, text=txt1, command=lambda: ck_cb(txt=txt1, v=v1.get()))
 ck1.grid(row=0, column=0)
 
-var1=tk.StringVar()
-var1.set('CK1')
-lbl1=tk.Label(root, textvariable=var1)
+var1 = tk.StringVar()
+var1.set('Not pressed')
+lbl1 = tk.Label(root, textvariable=var1)
 lbl1.grid(row=0, column=1)
-ck1.bind('<Button-1>',lambda event: ck1_event(event,val=v1.get()))
 
-v2=tk.IntVar()
-ck2=tk.Checkbutton(root, variable=v2)
+v2 = tk.BooleanVar()
+txt2 = "CheckButton2"
+ck2 = tk.Checkbutton(root, variable=v2, text=txt2, command=lambda: ck_cb(txt=txt2, v=v2.get()))
 ck2.grid(row=1, column=0)
 
-var2=tk.StringVar()
-var2.set('CK2')
-lbl2=tk.Label(root, textvariable=var2)
+var2 = tk.StringVar()
+var2.set('Not pressed')
+lbl2 = tk.Label(root, textvariable=var2)
 lbl2.grid(row=1, column=1)
-
-ck2.bind('<Button-1>',lambda event: ck2_event(event,val=v2.get()))
-#ck2.bind('<Button-1>',lambda a=v2.get() :v1.set(a))
-
-
 
 
 root.mainloop()
