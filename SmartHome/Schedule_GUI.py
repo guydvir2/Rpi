@@ -413,6 +413,19 @@ class TimeTable_RowConfig(ttk.Frame):
                                         SchRun[0].get_state()[1][self.relations_vector[i][2]])
                 else:
                     current_task[6].set('Cancelled')
+                    self.time_left_vector[i]['foreground'] = 'red'
+
+                # print(i, MainGUI.ButtonNote.buts[self.relations_vector[i][1]]. \
+                #     SchRun[0].result_vector[0])
+
+                if MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
+                                        SchRun[0].result_vector[0][0] == 1:
+                    col = 'green'
+                elif MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
+                                        SchRun[0].result_vector[0][0] == -1:
+                    col = 'red'
+
+                self.time_left_vector[i]['foreground'] = col
 
             self.run_id = self.after(1000, update_run)
 
@@ -428,18 +441,6 @@ class TimeTable_RowConfig(ttk.Frame):
                     v = [i, m, MainGUI.findtasknum(i)]
             self.relations_vector.append(v)
 
-            # self.all_sched_vars[i][6].set('3')
-            # print(MainGUI.ButtonNote.buts[1].nick)#SchRun[0].get_state())
-            # for m,current_button in enumerate(MainGUI.ButtonNote.loaded_buts):
-            #     if current_timetable_row[2].get()==current_button[1]:
-            #         pass
-                    #if current_timetable_row[1].get() == 'On':
-        #                 #temp_list store device's name to count repititions
-        #             temp_list.append(current_timetable_row[2].get())
-        #             relations_vector.append([i,temp_list.count(temp_list[-1])-1,current_timetable_row[1].get(),current_button[0]])
-        #             #else:
-        #                 ##when task is off relation_vector[1]='' - not counted as another task
-        #                 #relations_vector.append([i,'',current_timetable_row[1].get(),current_button[0]])
         update_run()
 
     def reload_time_table(self):
@@ -674,8 +675,9 @@ class MainGUI(ttk.Frame):
         ttk.Frame.__init__(self, master)
 
         #self.path = '/home/guy/PythonProjects/SmartHome/'
-        self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
+        # self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
         #self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
+        self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
 
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
