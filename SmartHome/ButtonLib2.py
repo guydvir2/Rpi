@@ -236,10 +236,7 @@ class ScheduledEvents(ttk.Frame):
         # Stop running sch when it is aready ON
             elif ButtonClass.task_state[self.sw][sch_stat[0][1]] == -1:
                 update_label("Cancel: " + str(sch_stat[2]), 'red')
-            
-#            print("Name: %s, Switch#: %d, Task-States: %s, Current task: %s, %s, HW_State: %s"%\
-#                    (ButtonClass.nick, self.sw, str(ButtonClass.task_state[self.sw]),\
-#                    str(sch_stat[0]),str(sch_stat[2]),ButtonClass.get_state()[self.sw]))
+
 
         check_state(self.run_schedule())
 
@@ -450,7 +447,6 @@ class Indicators:
             self.master.master.conn_status_var.set('Stop')
             self.frame.after_cancel(self.run_id)
             self.x = 0
-
 
 
 class HWRemoteInput:
@@ -856,8 +852,6 @@ class CoreButton(ttk.Frame):
         self.ck2.config(state=state[0])
         for sch in self.SchRun:
             sch.close_device()
-
-
 
 
 class ToggleButton(CoreButton):

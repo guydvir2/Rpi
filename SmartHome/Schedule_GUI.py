@@ -336,102 +336,62 @@ class TimeTable_RowConfig(ttk.Frame):
             #Skip
             self.var.append(tk.StringVar())
             self.var[7].set('On')
-            skip_button = ttk.Button(inner_frame, width=5, textvariable=self.var[7])#, values=['On','Off'],state='readonly', justify=tk.CENTER)
-            #skip_button.bind('<<ComboboxSelected>>',lambda event, x=i: self.but_callback(event,x))
-            skip_button.grid(row=i+1, column=7, padx=px)
+            skip_button = ttk.Button(inner_frame, width=5, textvariable=self.var[7], \
+                                     command=lambda arg=i: self.but_callback(arg))
+            skip_button.grid(row=i+1, column=7, padx=px, pady=5)
             
             self.time_left_vector.append(time_left_entry)
             self.all_sched_vars.append(self.var)
 
-
-    def on_off_bind(self,event, i):
-        self.reload_time_table()
-        self.master.master.master.master.master.master.master.disable_sched_in_gui(\
-            [self.all_sched_vars[i][2].get(),self.all_sched_vars[i][1].get(),self.all_sched_vars[i][0].get()])
-
-
-    def on_off_cb(self,i, val):
+    def on_off_cb(self, i, val):
 
         # Shortcut to Main
         if val == 0:
-            val =-1 # this value represent cacel of task ( not renewing )
+            val = -1 # this value represent cancel of task ( not renewing )
         MainGUI = self.master.master.master.master.master.master.master
         MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
             task_state[0][self.relations_vector[i][2]] = val
 
-
-    def but_callback(self,event,x):
-        #This method create skip (self.task_state) of sched task
-        #Each time entering to this method it changes state from on to off.
-        # additinal use is when task is active and in On state, pressing SKIP
-        # will cancel this task. it is not reversible for now
-        result_vector = []
+    def but_callback(self, x):
         MainGUI = self.master.master.master.master.master.master.master
-        #What device was selected in time table GUI 
-        selected_device_in_gui = self.all_sched_vars[x][2].get()
+        but = MainGUI.ButtonNote.buts[self.relations_vector[x][1]]
+        task = but.task_state[0][self.relations_vector[x][2]]
 
-        #get # of task vector of selected device
-        for i, current_sch_task in enumerate(self.all_sched_vars):
-            if selected_device_in_gui == current_sch_task[2].get():
-                result_vector.append(i)
-                
-        dev_task_num = result_vector.index(int(self.all_sched_vars[x][0].get()))
+        if task == 0:
+            but.task_state[0][self.relations_vector[x][2]] = 1
+            self.all_sched_vars[x][7].set('On')
+        else:
+            but.task_state[0][self.relations_vector[x][2]] = 0
+            self.all_sched_vars[x][7].set('Skip')
 
-        #match device in GUI with loaded devices
-        for i,current_loaded_device in enumerate(MainGUI.ButConfigTable.RowClassCreator.all_sched_vars):
-            #disable/enable state of task
-            if current_loaded_device[2].get() == selected_device_in_gui:
-                if MainGUI.ButtonNote.buts[i].SchRun.get_state()[0][0]==1 and MainGUI.ButtonNote.buts[i].SchRun.get_state()[0][1] == dev_task_num:
-                    sw_vector=MainGUI.ButtonNote.buts[i].SchRun.sw
-                    if MainGUI.ButtonNote.buts[i].task_state[dev_task_num]==1:
-                        MainGUI.ButtonNote.buts[i].ext_press(sw=sw_vector[dev_task_num],state=0,type_s='UI-Skip')
-                #Change state of task_state from off to on
-                elif MainGUI.ButtonNote.buts[i].task_state[dev_task_num]==0:
-                    MainGUI.ButtonNote.buts[i].task_state[dev_task_num]=1
-                #Change state of task_state from on to off    
-                elif MainGUI.ButtonNote.buts[i].task_state[dev_task_num]==1:
-                    MainGUI.ButtonNote.buts[i].task_state[dev_task_num]=0
 
     def update_time_table(self):
 
         def update_run():
-            for i, current_task in enumerate(self.all_sched_vars):
+            def text_to_entry(text, color):
+                current_task[6].set(text)
+                self.time_left_vector[a]['foreground'] = color
+
+            for a, current_task in enumerate(self.all_sched_vars):
+                but = MainGUI.ButtonNote.buts[self.relations_vector[a][1]]
+                task = but.task_state[0][self.relations_vector[a][2]]
 
                 # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently
-                if MainGUI.ButtonNote.buts[self.relations_vector[i][1]]. \
-                        task_state[0][self.relations_vector[i][2]] in [0,1]:
-                    current_task[1].set(MainGUI.ButtonNote.buts[self.relations_vector[i][1]]. \
-                    task_state[0][self.relations_vector[i][2]])
-                # if task was set to -1 ( not valid in checkbutton value ) by button's gui, set ckbutton to "off"
-                elif MainGUI.ButtonNote.buts[self.relations_vector[i][1]]. \
-                        task_state[0][self.relations_vector[i][2]] == -1:
-                    current_task[1].set(0)
-
-                #Update Clock when task checkbutton is enabled
-                if current_task[1].get() == 1:
-                    current_task[6].set(MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
-                                        SchRun[0].get_state()[1][self.relations_vector[i][2]])
-                else:
-                    current_task[6].set('Cancelled')
-                    self.time_left_vector[i]['foreground'] = 'red'
-
-                # print(i, MainGUI.ButtonNote.buts[self.relations_vector[i][1]]. \
-                #     SchRun[0].result_vector[0])
-
-                if MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
-                                        SchRun[0].result_vector[0][0] == 1:
-                    col = 'green'
-                elif MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
-                                        SchRun[0].result_vector[0][0] == -1:
-                    col = 'red'
-
-                self.time_left_vector[i]['foreground'] = col
+                if but.SchRun[0].get_state()[0][0] == 1 and task == 1:
+                   text_to_entry('on: '+str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'green')
+                elif but.SchRun[0].get_state()[0][0] == 1 and task == 0:
+                    text_to_entry('aborted: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'red')
+                elif task == -1: #but.SchRun[0].get_state()[0][0] == 1 and
+                    text_to_entry('cancelled: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'red')
+                elif but.SchRun[0].get_state()[0][0] == -1 and task == 1:
+                    text_to_entry('wait: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'red')
+                elif but.SchRun[0].get_state()[0][0] == -1 and task == 0:
+                    text_to_entry('skip: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'orange')
 
             self.run_id = self.after(1000, update_run)
 
         #Shortcut to Main
         MainGUI = self.master.master.master.master.master.master.master
-        relations_vector = []
         
         # #list in weekly schedule
         for i, current_timetable_row in enumerate(self.all_sched_vars):
@@ -797,36 +757,36 @@ class MainGUI(ttk.Frame):
 
         self.write2log("Buttons GUI loaded")
 
-    #A bind to change on/off in timetable AFTER changes by user in button config.
-    def bind_on_off(self,args):
-        print(args[0],"is set to",args[1] )
-        for i, current_device in enumerate (self.WeekSched_TimeTable.\
-                RowClassCreator.all_sched_vars):
-            if args[0] == current_device[2].get():
-                self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[i][1].set(args[1])
-                print("Schedule Task #",self.WeekSched_TimeTable.RowClassCreator\
-                    .all_sched_vars[i][0].get(), "set to",args[1])
-            
-        self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
-        self.read_data_from_files()
-        
-    #A bind to change verify if valid to change timetable GUI according state of buttonconfig
-    def disable_sched_in_gui(self,args):
-        for i,current_but in enumerate(self.ButConfigTable.RowClassCreator.all_sched_vars):
-            if current_but[2].get()==args[0]:
-                break
-                
-         #In case and button if not off or err
-        if self.ButConfigTable.RowClassCreator.all_sched_vars[i][6].get() in ['OFF']:
-            self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[int(args[2])][1].set('OFF')
-
-
-        self.FileManSched.save_to_file(mat=self.WeekSched_TimeTable.extract_data_from_gui())
-        self.read_data_from_files()
+    # #A bind to change on/off in timetable AFTER changes by user in button config.
+    # def bind_on_off(self,args):
+    #     print(args[0],"is set to",args[1] )
+    #     for i, current_device in enumerate (self.WeekSched_TimeTable.\
+    #             RowClassCreator.all_sched_vars):
+    #         if args[0] == current_device[2].get():
+    #             self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[i][1].set(args[1])
+    #             print("Schedule Task #",self.WeekSched_TimeTable.RowClassCreator\
+    #                 .all_sched_vars[i][0].get(), "set to",args[1])
+    #
+    #     self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
+    #     self.read_data_from_files()
+    #
+    # #A bind to change verify if valid to change timetable GUI according state of buttonconfig
+    # def disable_sched_in_gui(self,args):
+    #     for i,current_but in enumerate(self.ButConfigTable.RowClassCreator.all_sched_vars):
+    #         if current_but[2].get()==args[0]:
+    #             break
+    #
+    #      #In case and button if not off or err
+    #     if self.ButConfigTable.RowClassCreator.all_sched_vars[i][6].get() in ['OFF']:
+    #         self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[int(args[2])][1].set('OFF')
+    #
+    #
+    #     self.FileManSched.save_to_file(mat=self.WeekSched_TimeTable.extract_data_from_gui())
+    #     self.read_data_from_files()
         
     def log_window (self):
         #Create log Tab
-        self.text_tab = tk.Text(self.activity_log_tab, width=145, height=16, bg='yellow')
+        self.text_tab = tk.Text(self.activity_log_tab, width=145, height=16, bg='snow4')
         self.text_tab.grid(row=0, column=0, sticky= tk.E+tk.W)
         scrollbar = ttk.Scrollbar(self.activity_log_tab)
         scrollbar.grid(row=0, column=1, sticky=tk.N + tk.S)
