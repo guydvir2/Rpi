@@ -60,7 +60,7 @@ class AllButtons_GUI(ttk.Frame):
                 t += 1
 
             self.args.append(c)# contains all argument needed to define a button
-
+        print(self.args)
     def get_sched_defs(self):
         #Import sched file to define button's sched
         dev_names=[] #Alias of device
@@ -88,17 +88,6 @@ class AllButtons_GUI(ttk.Frame):
             for t,sched in enumerate(self.device_list_sched):
                 if sched[0] in args['nickname']:
                     args['sched_vector'] = self.device_list_sched[t][2]
-
-    # def checkFalse_err(self):
-    #     # Fix err in combobox ( if saved as err and not err in current run )
-    #     for i, onoff_box in enumerate(self.master.ButConfigTable.RowClassCreator.all_sched_vars):
-    #         if i in [x[0] for x in self.but_not2load]:
-    #             print("box",i,'set to err')
-    #             self.master.ButConfigTable.RowClassCreator.all_sched_vars[i][8].set('err')
-    #         elif onoff_box[8].get() == 'err' and i not in [x[0] for x in self.but_not2load]:
-    #             print("not err box",i)
-    #             self.master.ButConfigTable.RowClassCreator.all_sched_vars[i][8].set('On')
-    #             self.master.buts_defs[i][4] = 'On'
 
     def build_gui(self):
 
@@ -279,8 +268,6 @@ class TimeTable_RowConfig(ttk.Frame):
         # Create Table Header
         headers(0,0)
 
-        # print(Button_GUI.args)
-
         # Create Rows in Table
         devs = connected_devices
         for i, current_sched in enumerate(data_from_file):
@@ -340,6 +327,11 @@ class TimeTable_RowConfig(ttk.Frame):
                                      command=lambda arg=i: self.but_callback(arg))
             skip_button.grid(row=i+1, column=7, padx=px, pady=5)
 
+            # ButtonID
+            self.var.append(tk.StringVar())
+            self.var[8].set(current_sched[0])
+
+
             self.time_left_vector.append(time_left_entry)
             self.all_sched_vars.append(self.var)
 
@@ -358,7 +350,7 @@ class TimeTable_RowConfig(ttk.Frame):
         task = but.task_state[0][self.relations_vector[x][2]]
 
         # If checkbox is "on" ( sched not cancelled)
-        if self.all_sched_vars[x][1]==1:
+        if self.all_sched_vars[x][1] == 1:
             if task == 0:
                 but.task_state[0][self.relations_vector[x][2]] = 1
                 self.all_sched_vars[x][7].set('On')
@@ -398,11 +390,12 @@ class TimeTable_RowConfig(ttk.Frame):
         for i, current_timetable_row in enumerate(self.all_sched_vars):
             v = []
             for m, current_button in enumerate(MainGUI.ButtonNote.buts):
-                if current_timetable_row[2].get() == current_button.nick:
+                if current_button.nick in current_timetable_row[2].get():
                     v = [i, m, MainGUI.findtasknum(i)]
             self.relations_vector.append(v)
+        print(self.relations_vector)
 
-        update_run()
+        # update_run()
 
     def reload_time_table(self):
         self.after_cancel(self.run_id)
@@ -431,7 +424,7 @@ class Buttons_RowConfig(ttk.Frame):
         def headers(m,n):
             titles = title
             for i in range(len(titles)):
-                ttk.Label(inner_frame,text=titles[i], style ='Title.TLabel').grid(row=m, column=n+i, padx=5, pady=5)
+                ttk.Label(inner_frame,text=titles[i], style='Title.TLabel').grid(row=m, column=n+i, padx=5, pady=5)
         inner_frame = ttk.Frame(self)
         inner_frame.grid()
 
@@ -439,16 +432,17 @@ class Buttons_RowConfig(ttk.Frame):
         headers(0,0)
 
         # Create Rows in Table
+        # MainGUI = self.master.master.master.master.master.master.master
         for i, current_but in enumerate (data_from_file):#range (len(data_from_file)):
 
             #No#
             self.var=[]
             self.var=[tk.StringVar()]
-            self.var[0].set(i)
+            num = '#%03d'%i
+            self.var[0].set(num)
             task_num = ttk.Label(inner_frame, textvariable=self.var[0],
                                  justify=tk.CENTER)
             task_num.grid(row=i+1, column=0)
-
 
             #Device Type
             self.var.append(tk.StringVar())
@@ -507,9 +501,9 @@ class Buttons_RowConfig(ttk.Frame):
 
             self.all_sched_vars.append(self.var)
 
-    def switch_sched_off(self, event,i):
-        #print(self.all_sched_vars[i][8].get())
-        self.master.master.master.master.master.master.master.bind_on_off([self.all_sched_vars[i][2].get(),self.all_sched_vars[i][8].get()])
+    # def switch_sched_off(self, event,i):
+    #     #print(self.all_sched_vars[i][8].get())
+    #     self.master.master.master.master.master.master.master.bind_on_off([self.all_sched_vars[i][2].get(),self.all_sched_vars[i][8].get()])
 
 
 class Generic_UI_Table(ttk.Frame):
@@ -712,12 +706,17 @@ class MainGUI(ttk.Frame):
         titles = ['Task #', 'On/Off','Device','Day','Start Time', 'Stop Time', 'Time Left', 'Skip Run']
         path = self.path
         #filename = self.sched_filename
-        defaults = [1, 1, 1,[3,4,5,6], "23:07:00", "01:08:00",'','Hi!']
+        defaults = [0, 1, 1,[3,4,5,6], "23:07:00", "01:08:00",'','On']
 
         #import configured devices names into timetable
         dev_names = readfile_ssh.LoadFile(filename=self.but_filename, path=self.path).data_from_file
+        print(dev_names)
         for dev in dev_names: #device's Aliases to show in timetable
-            self.connected_devices.append(dev[2])
+            if dev[1] == 'UpDownButton':
+                self.connected_devices.append(dev[2]+'[Up]')
+                self.connected_devices.append(dev[2]+'[Down]')
+            else:
+                self.connected_devices.append(dev[2])
 
         #method does not load file ( it can), but it uses data already loaded
         self.WeekSched_TimeTable= Generic_UI_Table(self.sched_tab, \
@@ -763,32 +762,6 @@ class MainGUI(ttk.Frame):
 
         self.write2log("Buttons GUI loaded")
 
-    # #A bind to change on/off in timetable AFTER changes by user in button config.
-    # def bind_on_off(self,args):
-    #     print(args[0],"is set to",args[1] )
-    #     for i, current_device in enumerate (self.WeekSched_TimeTable.\
-    #             RowClassCreator.all_sched_vars):
-    #         if args[0] == current_device[2].get():
-    #             self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[i][1].set(args[1])
-    #             print("Schedule Task #",self.WeekSched_TimeTable.RowClassCreator\
-    #                 .all_sched_vars[i][0].get(), "set to",args[1])
-    #
-    #     self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
-    #     self.read_data_from_files()
-    #
-    # #A bind to change verify if valid to change timetable GUI according state of buttonconfig
-    # def disable_sched_in_gui(self,args):
-    #     for i,current_but in enumerate(self.ButConfigTable.RowClassCreator.all_sched_vars):
-    #         if current_but[2].get()==args[0]:
-    #             break
-    #
-    #      #In case and button if not off or err
-    #     if self.ButConfigTable.RowClassCreator.all_sched_vars[i][6].get() in ['OFF']:
-    #         self.WeekSched_TimeTable.RowClassCreator.all_sched_vars[int(args[2])][1].set('OFF')
-    #
-    #
-    #     self.FileManSched.save_to_file(mat=self.WeekSched_TimeTable.extract_data_from_gui())
-    #     self.read_data_from_files()
 
     def log_window (self):
         #Create log Tab
@@ -802,7 +775,6 @@ class MainGUI(ttk.Frame):
 
         log_button = ttk.Button(self.activity_log_tab, text="Save log")#, command=self.save_log)
         log_button.grid(row=1, column=0, sticky=tk.E, pady=10)
-
 
     def write2log(self,text_in):
         self.text_tab.config(state=tk.NORMAL)

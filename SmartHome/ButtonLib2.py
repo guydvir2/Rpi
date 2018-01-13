@@ -858,10 +858,11 @@ class ToggleButton(CoreButton):
     """ToggleButton Class"""
 
     def __init__(self, master, nickname="Gen.ToggleButton", hw_in=[], hw_out=[], \
-                 ip_in='', ip_out='', sched_vector=[], buts_names=['Toggle'],on_off=1):
+                 ip_in='', ip_out='', sched_vector=[], buts_names=['Toggle'],on_off=1, id=None):
         self.buts_names = buts_names
         self.nick = nickname
         self.master = master
+        self.id = id
 
         CoreButton.__init__(self, master, nickname=nickname, hw_in=hw_in, \
             hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
@@ -887,11 +888,12 @@ class UpDownButton(CoreButton):
 
     def __init__(self, master, nickname="Gen.UpDownButton", hw_in=[], \
         hw_out=[], ip_in='', ip_out='', sched_vector=[], sched_vector2=[], \
-        buts_names=['DOWN', 'UP'], on_off=1):
+        buts_names=['DOWN', 'UP'], on_off=1, id=None):
 
         self.buts_names = buts_names
         self.master = master
         self.nick = nickname
+        self.id = id
 
         CoreButton.__init__(self, master, nickname=nickname, hw_in=hw_in, \
             hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
@@ -944,11 +946,12 @@ class MainsButton(CoreButton):
     """Main2 Class"""
 
     def __init__(self, master, nickname="Gen.MainsButton", hw_in=[], hw_out=[],
-            ip_in='', ip_out='', sched_vector=[], buts_names=['Toggle', 'MainSwitch'],on_off=1):
+            ip_in='', ip_out='', sched_vector=[], buts_names=['Toggle', 'MainSwitch'],on_off=1, id=None):
 
         self.buts_names = buts_names
         self.master = master
         self.nick = nickname
+        self.id = id
 
         CoreButton.__init__(self, master, nickname=nickname, hw_in=hw_in, \
             hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \
