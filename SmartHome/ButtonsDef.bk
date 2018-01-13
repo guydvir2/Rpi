@@ -1,0 +1,4 @@
+
+0,MainsButton,WaterHeater,192.168.2.113,"6,26","15,19",1
+1,UpDownButton,GuysWindow,192.168.2.115,12,"15,19",1
+2,ToggleButton,Lights,192.168.2.115,13,"17,21",1

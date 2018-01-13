@@ -66,7 +66,8 @@ class AllButtons_GUI(ttk.Frame):
         dev_names=[] #Alias of device
         off_list = [] # items that are OFF in TimeTable GUI
         for i, current_task in enumerate(self.master.sched_file):
-            if current_task[1] == "Off" or not all(current_task[0:6]): off_list.append(i)
+            if current_task[1] == "Off" or not all(current_task[0:6]):
+                off_list.append(i)
             self.sched_vector.append(current_task[3:6])
             self.sched_vector[i][0] = self.master.xtrct_nums(current_task[3])
             dev_names.append(current_task[2])
@@ -88,18 +89,16 @@ class AllButtons_GUI(ttk.Frame):
                 if sched[0] in args['nickname']:
                     args['sched_vector'] = self.device_list_sched[t][2]
 
-
-    def checkFalse_err(self):
-        # Fix err in combobox ( if saved as err and not err in current run )
-        for i, onoff_box in enumerate(self.master.ButConfigTable.RowClassCreator.all_sched_vars):
-            if i in [x[0] for x in self.but_not2load]:
-                print("box",i,'set to err')
-                self.master.ButConfigTable.RowClassCreator.all_sched_vars[i][8].set('err')
-            elif onoff_box[8].get() == 'err' and i not in [x[0] for x in self.but_not2load]:
-                print("not err box",i)
-                self.master.ButConfigTable.RowClassCreator.all_sched_vars[i][8].set('On')
-                self.master.buts_defs[i][4] = 'On'
-
+    # def checkFalse_err(self):
+    #     # Fix err in combobox ( if saved as err and not err in current run )
+    #     for i, onoff_box in enumerate(self.master.ButConfigTable.RowClassCreator.all_sched_vars):
+    #         if i in [x[0] for x in self.but_not2load]:
+    #             print("box",i,'set to err')
+    #             self.master.ButConfigTable.RowClassCreator.all_sched_vars[i][8].set('err')
+    #         elif onoff_box[8].get() == 'err' and i not in [x[0] for x in self.but_not2load]:
+    #             print("not err box",i)
+    #             self.master.ButConfigTable.RowClassCreator.all_sched_vars[i][8].set('On')
+    #             self.master.buts_defs[i][4] = 'On'
 
     def build_gui(self):
 
@@ -109,10 +108,9 @@ class AllButtons_GUI(ttk.Frame):
                 # load button if it in allowed ip list and not off in table
                 # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
                 if current_button[3] in self.reachable_ips:
-                    #if current_button[6] =='On':
-                    self.buts.append(getattr(ButtonLib2,current_button[1])\
+                    self.buts.append(getattr(ButtonLib2, current_button[1])\
                             (self.mainframe, **self.args[l]))
-                    self.loaded_buts.append([x,self.args[l]['nickname']])
+                    self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1
             except ValueError:
@@ -162,7 +160,7 @@ class AllButtons_GUI(ttk.Frame):
 
         self.master.write2log("Shutting all buttons...Done!")
 
-    def close_spec_button(self,x=None):
+    def close_spec_button(self, x=None):
         if x in range(len(self.master.buts_defs)):
             self.buts[x].close_all()
             print("close",x)
@@ -254,6 +252,8 @@ class TimeTable_RowConfig(ttk.Frame):
         self.relations_vector = []
         self.build_gui(data_from_file, titles, connected_devices)
         self.update_time_table()
+        # Fix uncheck checkbox at boot
+        self.correct_chkbx()
 
         self.style = ttk.Style()
         self.style.configure('TabLabel.TLabel', background='yellow')
@@ -357,13 +357,14 @@ class TimeTable_RowConfig(ttk.Frame):
         but = MainGUI.ButtonNote.buts[self.relations_vector[x][1]]
         task = but.task_state[0][self.relations_vector[x][2]]
 
-        if task == 0:
-            but.task_state[0][self.relations_vector[x][2]] = 1
-            self.all_sched_vars[x][7].set('On')
-        else:
-            but.task_state[0][self.relations_vector[x][2]] = 0
-            self.all_sched_vars[x][7].set('Skip')
-
+        # If checkbox is "on" ( sched not cancelled)
+        if self.all_sched_vars[x][1]==1:
+            if task == 0:
+                but.task_state[0][self.relations_vector[x][2]] = 1
+                self.all_sched_vars[x][7].set('On')
+            else:
+                but.task_state[0][self.relations_vector[x][2]] = 0
+                self.all_sched_vars[x][7].set('Skip')
 
     def update_time_table(self):
 
@@ -406,7 +407,12 @@ class TimeTable_RowConfig(ttk.Frame):
     def reload_time_table(self):
         self.after_cancel(self.run_id)
         self.update_time_table()
-        
+
+    def correct_chkbx(self):
+        for i, current_sched in enumerate(self.all_sched_vars):
+            if current_sched[1].get() == 0:
+                self.on_off_cb(i, current_sched[1].get())
+
 
 
 class Buttons_RowConfig(ttk.Frame):
