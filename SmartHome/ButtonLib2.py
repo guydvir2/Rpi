@@ -530,6 +530,7 @@ class HWRemoteOutput:
 
 class CoreButton(ttk.Frame):
 
+    ButtonID = 0
     def __init__(self, master, nickname='CoreBut.inc', hw_in=[], hw_out=[], ip_in='', \
                  ip_out='', sched_vector=[], sched_vector2=[], num_buts=1,on_off=1):
 
@@ -560,7 +561,7 @@ class CoreButton(ttk.Frame):
         self.main_frame.grid()
 
         # Display nickname of button
-        ttk.Label(self.main_frame, text=self.nick+'\n'+str(self.id), style="Title.TLabel").grid(row=0, column=0)
+        ttk.Label(self.main_frame, text=self.nick, style="Title.TLabel").grid(row=0, column=0)
 
         self.buttons_frame = ttk.Frame(self.main_frame, height=80, width=140, \
             style="Blue2.TFrame")
@@ -652,6 +653,11 @@ class CoreButton(ttk.Frame):
         self.build_gui()
         self.extras_gui()
         self.connection_gui()
+
+        # Unique Button ID
+        self.UniqID = '#%03d' % CoreButton.ButtonID
+        CoreButton.ButtonID += 1
+
 
 
     def pigpio_valid(self, address):
@@ -945,12 +951,11 @@ class MainsButton(CoreButton):
     """Main2 Class"""
 
     def __init__(self, master, nickname="Gen.MainsButton", hw_in=[], hw_out=[],
-            ip_in='', ip_out='', sched_vector=[], buts_names=['Toggle', 'MainSwitch'],on_off=1, id=None):
+            ip_in='', ip_out='', sched_vector=[], buts_names=['Toggle', 'MainSwitch'],on_off=1):
 
         self.buts_names = buts_names
         self.master = master
         self.nick = nickname
-        self.id = id
 
         CoreButton.__init__(self, master, nickname=nickname, hw_in=hw_in, \
             hw_out=hw_out, ip_in=ip_in, ip_out=ip_out, \

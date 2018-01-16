@@ -32,11 +32,12 @@ class AllButtons_GUI(ttk.Frame):
 
         #keys "hw_in","hw_out","dimension" - get special treatment in next for
         #loop in extracting string values
-        self.button_keys=['type','nickname','ip_out','hw_out','hw_in','on_off', 'ip_in','dimension']
+        self.button_keys=['id','type','nickname','ip_out','hw_out','hw_in','on_off','ip_in','dimension']
 
-        for i,but_defs in enumerate(self.master.buts_defs):#.data_from_file:
-            c,t = {},2
-            for m in self.button_keys[1:6]:
+        start_key=2
+        for i, but_defs in enumerate(self.master.buts_defs):#.data_from_file:
+            c, t = {}, start_key
+            for m in self.button_keys[start_key:6]:
 
                 # fields that get more than one parameter
                 if t == self.button_keys.index('hw_out')+1 or t == self.button_keys.index('hw_in')+1:
@@ -54,8 +55,7 @@ class AllButtons_GUI(ttk.Frame):
                     else:
                         pass
                 else:
-
-                    # All other keys:
+                    # All other keys which are not "special":
                     c[m] = but_defs[t]
                 t += 1
 
@@ -98,14 +98,14 @@ class AllButtons_GUI(ttk.Frame):
                 # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
                 if current_button[3] in self.reachable_ips:
                     self.buts.append(getattr(ButtonLib2, current_button[1])\
-                            (self.mainframe, **self.args[l],id='3'))
+                            (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1
             except ValueError:
                 self.master.write2log("Error loading Button"+str(l))
-        self.master.write2log("Buttons loaded successfully: "+ str([x[1] \
-            for x in self.loaded_buts]))
+        self.master.write2log("Buttons loaded successfully: "+str([x[1] \
+                for x in self.loaded_buts]))
 #
 #        ttk.Button(self.mainframe,text="close",command=lambda :self.stop_start_but([0])).grid()
 #        #  lambda :self.close_spec_button(0))
@@ -635,9 +635,9 @@ class MainGUI(ttk.Frame):
         ttk.Frame.__init__(self, master)
 
         #self.path = '/home/guy/PythonProjects/SmartHome/'
-        # self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
-        #self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
-        self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
+        self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
+        # self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
+        # self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
 
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
