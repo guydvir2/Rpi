@@ -8,7 +8,7 @@ import socket
 import urllib.request
 
 class HWRemoteOutput:
-    
+
 #This Class creates Hardware state of ""gpio_pins"" of RPi at "ip"
     def __init__(self, ip, output_pins):
         factory = PiGPIOFactory(host=ip)
@@ -38,7 +38,7 @@ class HWRemoteInput:
     def __init__(self, master, ip, input_pins):
         self.master = master
         factory = PiGPIOFactory(host=ip)
-        
+
         self.input_pins= ["Pin_"+str(input_pins[i]) for i in range(len(input_pins))]
         for sw in range(len(self.input_pins)):
             self.input_pins[sw] = gpiozero.Button(input_pins[sw], pin_factory=factory)
@@ -76,7 +76,7 @@ class HWstateGUI:
         self.frame = ttk.Frame(self.master, padding=10)
         self.indicators = []
         self.frame.grid()
-        
+
         for i in range(len(self.gpio_pins)):
             txtvar = StringVar()
             txtvar.set("null")
@@ -85,7 +85,7 @@ class HWstateGUI:
             self.indicators.append([indicator_label,txtvar])
             indicator_name=ttk.Label(self.frame, text=switch_names[i])
             indicator_name.grid(row=1, column=i, pady=5)
-            
+
         ip_label = ttk.Label(self.frame,text="IP of Remote GPIO: %s"%ip)
         ip_label.grid(row = 2, columnspan = 5, sticky = E+W)
 
@@ -128,7 +128,7 @@ class SFButtonsGUI:
             led_var.set(" ")
             led.grid(row=0, column=i, pady=0, sticky=W)
 
-            
+
             c = ttk.Checkbutton(self.framein, text="Switch " + str(i), variable=button_var,width=8, onvalue="on", offvalue="off",command=lambda arg=[i, button_var, entry_var]: self.cb(arg))
             c.grid(column=i, pady=5, padx=30, row=0, sticky=E)
             button_var.set("off")
@@ -148,7 +148,7 @@ class SFButtonsGUI:
             stl='Green.TLabel'
         if state=='off':
             stl='Red.TLabel'
-            
+
         self.leds[num].configure(style=stl)
         self.status[num][1].set(state)
 
@@ -186,9 +186,9 @@ class SplashWindow(Toplevel):
         self.configure(background=bg)
         splash_style.configure('Title.TLabel',font=('Helvetica',14),foreground="midnight blue")
         splash_style.configure('.',background=bg)
-        
+
         self.build_gui()
-        
+
     def build_gui(self):
         frame1 = ttk.Frame(self, padding=5)
         frame1.grid(pady=10)
@@ -196,7 +196,7 @@ class SplashWindow(Toplevel):
         frame2.grid(row=1, column=0, pady=10,padx=10)
         ypad=10
         self.checks=[]
-        
+
         header1 = ttk.Label(frame1, text=app_name+"Viewer", style='Title.TLabel')
         header1.grid(row=0, column=0)
         header2 = ttk.Label(frame1, text="Enter IP of station, and select GUI components", justify=CENTER)
@@ -210,28 +210,28 @@ class SplashWindow(Toplevel):
         ent_var.set(local_ip)
         ip_entry= ttk.Entry(frame2, textvariable= ent_var, width=12)
         ip_entry.grid(row=0, column=1, pady=ypad)
-        
+
         c1_var=IntVar()
         c1_var.set(1)
         c1 = ttk.Checkbutton(frame2, text="Buttons", variable=c1_var)
         c1.grid(row=0, column=2, pady =ypad)
-        
+
         c2_var=IntVar()
         c2_var.set(0)
         c2 = ttk.Checkbutton(frame2, text="Input State",variable=c2_var)
         c2.grid(row=0, column=3)
-        
+
         c3_var=IntVar()
         c3_var.set(1)
         c3 = ttk.Checkbutton(frame2, text="Output State",variable=c3_var)
         c3.grid(row=0, column=4)
-        
+
         but1 = ttk.Button(frame2,text="Continue", command=self.close_window)
         but1.grid(row=2, column=4)
         but2 = ttk.Button(frame2,text="Abort", command=self.master.destroy)
         but2.grid(row=2, column=3)
         self.checks.append([ent_var,c1_var,c2_var,c3_var])
-        
+
     def get_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
@@ -245,17 +245,17 @@ class SplashWindow(Toplevel):
         global var
         var=self.checks[0]
         self.destroy()
-        
-        
+
+
 class ContorlGPIOWindow:
     def __init__(self,master,bg, ip='', output_pins=[13,17,6,26],input_pins = [21,4,5,27],with_sf_bt=0 , with_hw_bt=0,with_hw_st=1, switch_names=[]):
-        
+
         self.master = master
         if ip == '':
-            ip = self.get_ip()[0]            
+            ip = self.get_ip()[0]
         self.styles(bg)
         self.master.config(bg=bg)
-        
+
         #This value from popup window
         if with_hw_st == 1:
             self.create_output(ip, output_pins, switch_names)
@@ -263,7 +263,7 @@ class ContorlGPIOWindow:
             self.create_input(ip, input_pins, switch_names)
         if with_sf_bt == 1:
             self.create_SFButtons(output_pins)
-        
+
         self.update_gui()
 
     def create_output(self, ip, output_pins, switch_names):
@@ -282,7 +282,7 @@ class ContorlGPIOWindow:
         frame3= ttk.LabelFrame(self.master, text="Software Buttons")
         frame3.grid(row = 2, column = 0, pady = 20)
         self.SFButs = SFButtonsGUI(self, frame3,len(output_pins))
-        
+
 
     def styles(self,bg):
         bg_labelframe = bg
@@ -294,7 +294,7 @@ class ContorlGPIOWindow:
         style.configure('TLabelframe',background=bg_labelframe)
         style.configure('.',background=bg_labelframe)
 
-        
+
     def get_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
@@ -331,5 +331,3 @@ App = ContorlGPIOWindow(root,backg_color, ip = var[0].get(), with_sf_bt=var[1].g
 
 root.deiconify()
 root.mainloop()
-
-

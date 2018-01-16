@@ -98,7 +98,7 @@ class AllButtons_GUI(ttk.Frame):
                 # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
                 if current_button[3] in self.reachable_ips:
                     self.buts.append(getattr(ButtonLib2, current_button[1])\
-                            (self.mainframe, **self.args[l]))
+                            (self.mainframe, **self.args[l],id='3'))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1

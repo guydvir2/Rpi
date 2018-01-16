@@ -41,8 +41,7 @@ class ScheduledEvents(ttk.Frame):
         self.style = ttk.Style()
         self.style.configure("Blue2.TLabel", background=self.master.master.master.bg)
 
-        self.remain_time_ent = ttk.Label(self, textvariable=self.ent_var, \
-            **kwargs, anchor=tk.E, style="Blue2.TLabel")
+        self.remain_time_ent = ttk.Label(self, textvariable=self.ent_var,**kwargs, anchor=tk.E, style="Blue2.TLabel")
         self.remain_time_ent.grid(row=0, column=0, sticky=tk.W + tk.E)
 
         self.prep_to_run()
@@ -561,7 +560,7 @@ class CoreButton(ttk.Frame):
         self.main_frame.grid()
 
         # Display nickname of button
-        ttk.Label(self.main_frame, text=self.nick, style="Title.TLabel").grid(row=0, column=0)
+        ttk.Label(self.main_frame, text=self.nick+'\n'+str(self.id), style="Title.TLabel").grid(row=0, column=0)
 
         self.buttons_frame = ttk.Frame(self.main_frame, height=80, width=140, \
             style="Blue2.TFrame")
@@ -999,7 +998,7 @@ if __name__ == "__main__":
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
         hw_out=[6],hw_in=[13],sched_vector=[[[4], "02:24:30", "23:12:10"], \
-        [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
+        [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]], id='#000')
     e.grid(row=0, column=0, sticky=tk.S)
 
     f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \
