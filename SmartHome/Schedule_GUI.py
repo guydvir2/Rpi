@@ -60,7 +60,7 @@ class AllButtons_GUI(ttk.Frame):
                 t += 1
 
             self.args.append(c)# contains all argument needed to define a button
-        print(self.args)
+        # print(self.args)
     def get_sched_defs(self):
         #Import sched file to define button's sched
         dev_names=[] #Alias of device
@@ -283,10 +283,8 @@ class TimeTable_RowConfig(ttk.Frame):
             #On/Off
             self.var.append(tk.IntVar())
             self.var[1].set(current_sched[1])
-            # on_off_box = ttk.Combobox(inner_frame, width=5, textvariable=self.var[1], values=['ON','OFF'],state='readonly', justify=tk.CENTER)
-            on_off_box = ttk.Checkbutton(inner_frame, variable=self.var[1], \
+            on_off_box = ttk.Checkbutton(inner_frame, variable=self.var[1],
                         command=lambda arg=i: self.on_off_cb(arg,self.all_sched_vars[arg][1].get()))
-            # on_off_box.bind('<<ComboboxSelected>>',lambda event, arg=i: self.on_off_bind(event, arg))
             on_off_box.grid(row=i+1, column=1)
 
             #Device
@@ -330,6 +328,8 @@ class TimeTable_RowConfig(ttk.Frame):
             # ButtonID
             self.var.append(tk.StringVar())
             self.var[8].set(current_sched[0])
+
+            print(i, current_sched[0])
 
 
             self.time_left_vector.append(time_left_entry)
@@ -635,9 +635,9 @@ class MainGUI(ttk.Frame):
         ttk.Frame.__init__(self, master)
 
         #self.path = '/home/guy/PythonProjects/SmartHome/'
-        self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
+        # self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
         # self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
-        # self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
+        self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
 
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'

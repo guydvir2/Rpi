@@ -560,8 +560,13 @@ class CoreButton(ttk.Frame):
             relief=tk.RIDGE, padding=2)
         self.main_frame.grid()
 
+        # Unique Button ID
+        self.UniqID = '#%03d' % CoreButton.ButtonID
+        CoreButton.ButtonID += 1
+
         # Display nickname of button
-        ttk.Label(self.main_frame, text=self.nick, style="Title.TLabel").grid(row=0, column=0)
+        ttk.Label(self.main_frame, text=self.nick+'\n'+self.UniqID,
+                  style="Title.TLabel").grid(row=0, column=0)
 
         self.buttons_frame = ttk.Frame(self.main_frame, height=80, width=140, \
             style="Blue2.TFrame")
@@ -653,10 +658,6 @@ class CoreButton(ttk.Frame):
         self.build_gui()
         self.extras_gui()
         self.connection_gui()
-
-        # Unique Button ID
-        self.UniqID = '#%03d' % CoreButton.ButtonID
-        CoreButton.ButtonID += 1
 
 
 
