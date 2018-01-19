@@ -16,26 +16,24 @@ class AllButtons_GUI(ttk.Frame):
         ttk.Frame.__init__(self, master)
         self.reachable_ips=['192.168.2.113','192.168.2.114','192.168.2.115']
         self.master.write2log("Valid IP's to load:"+str(self.reachable_ips))
+        self.args = []  # Dictionary of loaded buttons definitions, KWargs for
+                        # GUIButtons Read But Defs from file
 
         self.reload_all()
 
     def reload_data_files(self):
-        #self.master.save_data_to_file()
-        self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.\
-                extract_data_from_gui())
+        self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.
+                                             extract_data_from_gui())
         self.master.read_data_from_files()
 
     def load_buttons_defs(self):
 
-        self.args = []  # Dictionary of loaded buttons definitions, KWargs for
-                        #GUIButtons Read But Defs from file
+        # keys "hw_in","hw_out","dimension" - get special treatment in next for
+        # loop in extracting string values
+        self.button_keys = ['id', 'type', 'nickname', 'ip_out', 'hw_out','hw_in','on_off','ip_in','dimension']
 
-        #keys "hw_in","hw_out","dimension" - get special treatment in next for
-        #loop in extracting string values
-        self.button_keys=['id','type','nickname','ip_out','hw_out','hw_in','on_off','ip_in','dimension']
-
-        start_key=2
-        for i, but_defs in enumerate(self.master.buts_defs):#.data_from_file:
+        start_key = 2
+        for i, but_defs in enumerate(self.master.buts_defs):
             c, t = {}, start_key
             for m in self.button_keys[start_key:6]:
 
@@ -59,14 +57,17 @@ class AllButtons_GUI(ttk.Frame):
                     c[m] = but_defs[t]
                 t += 1
 
-            self.args.append(c)# contains all argument needed to define a button
+            # a dict contains all argument needed to define a button
+            self.args.append(c)
         # print(self.args)
+
     def get_sched_defs(self):
-        #Import sched file to define button's sched
-        dev_names=[] #Alias of device
+
+        # Import sched file to define button's sched
+        dev_names = [] # Alias of device
         off_list = [] # items that are OFF in TimeTable GUI
         for i, current_task in enumerate(self.master.sched_file):
-            if current_task[1] == "Off" or not all(current_task[0:6]):
+            if current_task[1] == "0" or not all(current_task[0:6]):
                 off_list.append(i)
             self.sched_vector.append(current_task[3:6])
             self.sched_vector[i][0] = self.master.xtrct_nums(current_task[3])
@@ -84,10 +85,15 @@ class AllButtons_GUI(ttk.Frame):
                     self.device_list_sched[x][1].append(i)
                     self.device_list_sched[x][2].append(self.sched_vector[i])
 
-        for x,args in enumerate(self.args):
+        # Update sched_vector into self.args
+        for args in self.args:
             for t,sched in enumerate(self.device_list_sched):
-                if sched[0] in args['nickname']:
+                if args['nickname'] == sched[0]:
                     args['sched_vector'] = self.device_list_sched[t][2]
+                    break
+                elif args['nickname'] in sched[0] and '[UP]' in sched[0].upper(): # Valid to Window UP sched
+                        args['sched_vector2'] = self.device_list_sched[t][2]
+
 
     def build_gui(self):
 
@@ -97,6 +103,7 @@ class AllButtons_GUI(ttk.Frame):
                 # load button if it in allowed ip list and not off in table
                 # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
                 if current_button[3] in self.reachable_ips:
+                    # print(self.args)
                     self.buts.append(getattr(ButtonLib2, current_button[1])\
                             (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
@@ -183,9 +190,6 @@ class AllButtons_GUI(ttk.Frame):
                 self.loaded_buts.append([but,"ErrorBut"])
 
             self.buts[but].grid(row=0, column=but)
-
-
-
 
 
 class TimeTable_RowConfig(ttk.Frame):
@@ -329,7 +333,7 @@ class TimeTable_RowConfig(ttk.Frame):
             self.var.append(tk.StringVar())
             self.var[8].set(current_sched[0])
 
-            print(i, current_sched[0])
+            # print(i, current_sched[0])
 
 
             self.time_left_vector.append(time_left_entry)
@@ -393,7 +397,7 @@ class TimeTable_RowConfig(ttk.Frame):
                 if current_button.nick in current_timetable_row[2].get():
                     v = [i, m, MainGUI.findtasknum(i)]
             self.relations_vector.append(v)
-        print(self.relations_vector)
+        # print(self.relations_vector)
 
         # update_run()
 
@@ -405,7 +409,6 @@ class TimeTable_RowConfig(ttk.Frame):
         for i, current_sched in enumerate(self.all_sched_vars):
             if current_sched[1].get() == 0:
                 self.on_off_cb(i, current_sched[1].get())
-
 
 
 class Buttons_RowConfig(ttk.Frame):
@@ -710,7 +713,7 @@ class MainGUI(ttk.Frame):
 
         #import configured devices names into timetable
         dev_names = readfile_ssh.LoadFile(filename=self.but_filename, path=self.path).data_from_file
-        print(dev_names)
+        # print(dev_names)
         for dev in dev_names: #device's Aliases to show in timetable
             if dev[1] == 'UpDownButton':
                 self.connected_devices.append(dev[2]+'[Up]')

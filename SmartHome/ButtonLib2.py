@@ -26,7 +26,6 @@ class Com2Log:
         except AttributeError:
             print(text2)
 
-
 class ScheduledEvents(ttk.Frame):
 
     def __init__(self, master, tasks=[], sw=[0], **kwargs):
@@ -247,7 +246,6 @@ class ScheduledEvents(ttk.Frame):
             self.ent_var.set("Not Active")
             self.remain_time_ent['foreground'] = 'red'
 
-
 class TimeOutCounter(ttk.Frame):
     """TimeoutCounter Class"""
 
@@ -401,7 +399,6 @@ class TimeOutCounter(ttk.Frame):
         if self.run_id != None:
             self.after_cancel(self.run_id)
 
-
 class Indicators:
     # This Calss displays output state of GPIO
     def __init__(self, master, frame, pdy=0, pdx=3, cols=[]):
@@ -447,7 +444,6 @@ class Indicators:
             self.frame.after_cancel(self.run_id)
             self.x = 0
 
-
 class HWRemoteInput:
     # This class create a link between input_pins(HW buttons) to output pins
     def __init__(self, master=None, ip='', input_pins=[]):
@@ -486,7 +482,6 @@ class HWRemoteInput:
         for sw in self.output_pins:
             sw.close()
         print("Device shut done")
-
 
 class HWRemoteOutput:
     # This Class creates Hardware state of ""gpio_pins"" of RPi at "ip"
@@ -527,8 +522,8 @@ class HWRemoteOutput:
         self.output_pins[0].close()
         self.com.message("Device shut done")
 
-
 class CoreButton(ttk.Frame):
+    """ THIS IS CORE BUTTON CLASS"""
 
     ButtonID = 0
     def __init__(self, master, nickname='CoreBut.inc', hw_in=[], hw_out=[], ip_in='', \
@@ -784,8 +779,6 @@ class CoreButton(ttk.Frame):
             # No schedule to stop
             print("ATTR ERR")
 
-
-
     def execute_command(self, sw, stat, add_txt=''):
         # FIX
         if not self.HW_output.get_state()[sw] == stat:
@@ -888,7 +881,6 @@ class ToggleButton(CoreButton):
         if self.but_stat[sw].get() == 0:  # Abourt Conter
             self.Counter.succ_end()
 
-
 class UpDownButton(CoreButton):
     """UpDown2 Class"""
 
@@ -947,7 +939,6 @@ class UpDownButton(CoreButton):
              self.execute_command(sw_i[sw], 0)#  turn off")
              sleep(sleep_time)
 
-
 class MainsButton(CoreButton):
     """Main2 Class"""
 
@@ -995,7 +986,6 @@ class MainsButton(CoreButton):
             # self.execute_command(0, 1)
             pass
 
-
 button_list = {1: 'UpDownButton', 2: 'ToggleButton', 3: 'MainsButton'}
 
 if __name__ == "__main__":
@@ -1003,18 +993,18 @@ if __name__ == "__main__":
 
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
-        hw_out=[6],hw_in=[13],sched_vector=[[[4], "02:24:30", "23:12:10"], \
-        [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]], id='#000')
+        hw_out=[6],hw_in=[13])#,sched_vector=[[[4], "02:24:30", "23:12:10"],
+        # [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
 
     f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \
-        hw_out=[5, 7], hw_in=[9, 21], sched_vector=[[[1], "22:24:30", \
-        "23:12:10"], [[4,5], "12:56:00", "23:50:10"]],sched_vector2=[[[3], "1:24:30","23:12:10"]])
+        hw_out=[5, 7], hw_in=[9, 21], sched_vector2=[[[1], "22:24:30", \
+        "23:12:10"], [[4,5], "12:56:00", "23:50:10"]],sched_vector=[[[3], "1:24:30","23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
     #
     g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.115', \
-        hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 4], \
-        "02:24:30", "23:55:10"],[[4,5], "13:47:20", "23:50:10"]])
+        hw_out=[7, 5], hw_in=[13])#, sched_vector=[[[3, 4], \
+        # "02:24:30", "23:55:10"],[[4,5], "13:47:20", "23:50:10"]])
     g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()
