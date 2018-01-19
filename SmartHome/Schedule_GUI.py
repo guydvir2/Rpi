@@ -14,12 +14,30 @@ class AllButtons_GUI(ttk.Frame):
         self.master = master
         self.mframe = mainframe
         ttk.Frame.__init__(self, master)
-        self.reachable_ips=['192.168.2.113','192.168.2.114','192.168.2.115']
+        self.reachable_ips=['192.168.2.115', '192.168.2.113']
         self.master.write2log("Valid IP's to load:"+str(self.reachable_ips))
         self.args = []  # Dictionary of loaded buttons definitions, KWargs for
                         # GUIButtons Read But Defs from file
 
+        self.buts = []
         self.reload_all()
+
+    def prep_buttons(self):
+        # self.reload_data_files()
+        # self.list_buts_to_load()
+        # self.checkFalse_err()
+        self.reload_data_files()
+        self.load_buttons_defs()
+        self.get_sched_defs()
+
+    def reload_all(self):
+        self.mainframe = ttk.LabelFrame(self.mframe, text="Button")
+        self.mainframe.grid(padx=5, pady=5)
+
+        self.loaded_buts, self.sched_vector, self.but2load = [], [], []
+
+        self.prep_buttons()
+        self.build_gui()
 
     def reload_data_files(self):
         self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.
@@ -88,66 +106,29 @@ class AllButtons_GUI(ttk.Frame):
         # Update sched_vector into self.args
         for args in self.args:
             for t,sched in enumerate(self.device_list_sched):
-                if args['nickname'] == sched[0]:
+                if args['nickname'] == sched[0] or '[DOWN]' in sched[0].upper():
                     args['sched_vector'] = self.device_list_sched[t][2]
-                    break
                 elif args['nickname'] in sched[0] and '[UP]' in sched[0].upper(): # Valid to Window UP sched
                         args['sched_vector2'] = self.device_list_sched[t][2]
 
-
     def build_gui(self):
 
-        self.buts, x=[], 0
+        x = 0
+
         for l, current_button in enumerate(self.master.buts_defs):
             try:
                 # load button if it in allowed ip list and not off in table
                 # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
                 if current_button[3] in self.reachable_ips:
-                    # print(self.args)
-                    self.buts.append(getattr(ButtonLib2, current_button[1])\
-                            (self.mainframe, **self.args[l]))
+                    self.buts.append(getattr(ButtonLib2, current_button[1])
+                                     (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1
+
             except ValueError:
                 self.master.write2log("Error loading Button"+str(l))
-        self.master.write2log("Buttons loaded successfully: "+str([x[1] \
-                for x in self.loaded_buts]))
-#
-#        ttk.Button(self.mainframe,text="close",command=lambda :self.stop_start_but([0])).grid()
-#        #  lambda :self.close_spec_button(0))
-
-    def list_buts_to_load(self):
-        #loads only buttons complies certain IP as in self.readchable_ips
-        self.but2load = [[i, current_but[2], current_but[3]] \
-            for i,current_but in enumerate(self.master.buts_defs) \
-            if current_but[3] in self.reachable_ips]
-
-        self.but_not2load = [[i, current_but[2], current_but[3]] \
-            for i,current_but in enumerate(self.master.buts_defs) \
-            if not current_but[3] in self.reachable_ips]
-
-        self.master.write2log("Trying to load:"+str([loaded[1] \
-            for i,loaded in enumerate(self.but2load)]))
-        self.master.write2log("Not trying to load:"+str([loaded[1] \
-            for i,loaded in enumerate(self.but_not2load)]))
-
-    def prep_buttons(self):
-        self.reload_data_files()
-        self.list_buts_to_load()
-        # self.checkFalse_err()
-        self.reload_data_files()
-        self.load_buttons_defs()
-        self.get_sched_defs()
-
-    def reload_all(self):
-        self.mainframe = ttk.LabelFrame(self.mframe, text="Button")
-        self.mainframe.grid(padx=5,pady=5)
-
-        self.loaded_buts,self.sched_vector, self.but2load=[], [], []
-
-        self.prep_buttons()
-        self.build_gui()
+        self.master.write2log("Buttons loaded successfully: "+str([x[1] for x in self.loaded_buts]))
 
     def close_for_reload(self):
         for but in self.buts:
@@ -156,23 +137,13 @@ class AllButtons_GUI(ttk.Frame):
 
         self.master.write2log("Shutting all buttons...Done!")
 
-    def close_spec_button(self, x=None):
-        if x in range(len(self.master.buts_defs)):
-            self.buts[x].close_all()
-            print("close",x)
-            print(self.args[0],self.master.buts_defs[0])
-            self.prep_buttons()
-            self.buts[x] = getattr(ButtonLib2,self.master.buts_defs[x][1])\
-                (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
-            self.buts[x].grid(row=0, column=x)
-
     def update_schedule(self):
         self.prep_buttons()
-        x=2
-        #print(self.args[x]['sched_vector'])
-        #self.buts[x].update_schedule(self.args[x]["sched_vector"])
+        x = 2
+        # print(self.args[x]['sched_vector'])
+        # self.buts[x].update_schedule(self.args[x]["sched_vector"])
         self.buts[x].close_all()
-        self.buts[x] = getattr(ButtonLib2,self.master.buts_defs[x][1])\
+        self.buts[x] = getattr(ButtonLib2, self.master.buts_defs[x][1]) \
             (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
         self.buts[x].grid(row=0, column=x)
 
@@ -181,15 +152,40 @@ class AllButtons_GUI(ttk.Frame):
 
         for but in buts:
             self.buts[but].close_all()
-            if self.master.buts_defs[but][8]=='On':
-                self.buts[but] = getattr(ButtonLib2,self.master.buts_defs[but][1])\
+            if self.master.buts_defs[but][8] == 'On':
+                self.buts[but] = getattr(ButtonLib2, self.master.buts_defs[but][1]) \
                     (self.mainframe, **self.args[int(self.master.buts_defs[but][0])])
             else:
-                self.buts[but] = getattr(ButtonLib2,'ErrBut')\
-                    (self.mainframe,name=self.master.buts_defs[but][2])
-                self.loaded_buts.append([but,"ErrorBut"])
+                self.buts[but] = getattr(ButtonLib2, 'ErrBut') \
+                    (self.mainframe, name=self.master.buts_defs[but][2])
+                self.loaded_buts.append([but, "ErrorBut"])
 
             self.buts[but].grid(row=0, column=but)
+
+    # def close_spec_button(self, x=None):
+    #     if x in range(len(self.master.buts_defs)):
+    #         self.buts[x].close_all()
+    #         print("close",x)
+    #         print(self.args[0],self.master.buts_defs[0])
+    #         self.prep_buttons()
+    #         self.buts[x] = getattr(ButtonLib2,self.master.buts_defs[x][1])\
+    #             (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
+    #         self.buts[x].grid(row=0, column=x)
+
+    # def list_buts_to_load(self):
+    #     #loads only buttons complies certain IP as in self.readchable_ips
+    #     self.but2load = [[i, current_but[2], current_but[3]] \
+    #         for i,current_but in enumerate(self.master.buts_defs) \
+    #         if current_but[3] in self.reachable_ips]
+    #
+    #     self.but_not2load = [[i, current_but[2], current_but[3]] \
+    #         for i,current_but in enumerate(self.master.buts_defs) \
+    #         if not current_but[3] in self.reachable_ips]
+    #
+    #     self.master.write2log("Trying to load:"+str([loaded[1] \
+    #         for i,loaded in enumerate(self.but2load)]))
+    #     self.master.write2log("Not trying to load:"+str([loaded[1] \
+    #         for i,loaded in enumerate(self.but_not2load)]))
 
 
 class TimeTable_RowConfig(ttk.Frame):
@@ -372,17 +368,18 @@ class TimeTable_RowConfig(ttk.Frame):
             for a, current_task in enumerate(self.all_sched_vars):
                 but = MainGUI.ButtonNote.buts[self.relations_vector[a][1]]
                 task = but.task_state[0][self.relations_vector[a][2]]
+                sch_index = self.relations_vector[a][3]
 
                 # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently
-                if but.SchRun[0].get_state()[0][0] == 1 and task == 1:
+                if but.SchRun[sch_index].get_state()[0][0] == 1 and task == 1:
                    text_to_entry('on: '+str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'green')
-                elif but.SchRun[0].get_state()[0][0] == 1 and task == 0:
+                elif but.SchRun[sch_index].get_state()[0][0] == 1 and task == 0:
                     text_to_entry('aborted: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'red')
                 elif task == -1: #but.SchRun[0].get_state()[0][0] == 1 and
                     text_to_entry('cancelled: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'red')
-                elif but.SchRun[0].get_state()[0][0] == -1 and task == 1:
+                elif but.SchRun[sch_index].get_state()[0][0] == -1 and task == 1:
                     text_to_entry('wait: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'red')
-                elif but.SchRun[0].get_state()[0][0] == -1 and task == 0:
+                elif but.SchRun[sch_index].get_state()[0][0] == -1 and task == 0:
                     text_to_entry('skip: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'orange')
 
             self.run_id = self.after(1000, update_run)
@@ -395,11 +392,12 @@ class TimeTable_RowConfig(ttk.Frame):
             v = []
             for m, current_button in enumerate(MainGUI.ButtonNote.buts):
                 if current_button.nick in current_timetable_row[2].get():
-                    v = [i, m, MainGUI.findtasknum(i)]
+                    v = [i, m, MainGUI.findtasknum(i)[0],MainGUI.findtasknum(i)[1]]
+                    # v = [index, but#, tsk#, SchRun#]
             self.relations_vector.append(v)
-        # print(self.relations_vector)
+        print(self.relations_vector)
 
-        # update_run()
+        update_run()
 
     def reload_time_table(self):
         self.after_cancel(self.run_id)
@@ -474,17 +472,13 @@ class Buttons_RowConfig(ttk.Frame):
                                        justify=tk.CENTER)
             gpio_out_entry.grid(row=i+1, column=5, padx=8)
 
-#            #IP IN
-#            self.var.append(tk.StringVar())
-#            self.var[5].set(current_but[5])
-#            ip_in_entry = ttk.Entry(inner_frame, width=12, textvariable=self.var[5], justify=tk.CENTER)
-#            ip_in_entry.grid(row=i+1, column=6, padx=8)
 
             #GPIO IN
             self.var.append(tk.StringVar())
             self.var[5].set(current_but[5])
             gpio_in_entry = ttk.Entry(inner_frame, width=8, textvariable=self.var[5], justify=tk.CENTER)
             gpio_in_entry.grid(row=i+1, column=6, padx=5)
+
 #
 #            #Button's dimensiob
 #            self.var.append(tk.StringVar())
@@ -492,8 +486,17 @@ class Buttons_RowConfig(ttk.Frame):
 #            dimen_entry = ttk.Entry(inner_frame, width=5, textvariable=self.var[7])
 #            dimen_entry.grid(row=i+1, column=8, padx=8)
 
+              # IP IN
+#            self.var.append(tk.StringVar())
+#            self.var[5].set(current_but[5])
+#            ip_in_entry = ttk.Entry(inner_frame, width=12, textvariable=self.var[5], justify=tk.CENTER)
+#            ip_in_entry.grid(row=i+1, column=6, padx=8)
+
+    # def switch_sched_off(self, event,i):
+    #     #print(self.all_sched_vars[i][8].get())
+    #     self.master.master.master.master.master.master.master.bind_on_off([self.all_sched_vars[i][2].get(),self.all_sched_vars[i][8].get()])
+
             #Device on/off
-            #self.var.append(tk.StringVar())
             self.var.append(tk.IntVar())
             self.var[6].set(current_but[6])
             self.onoff_var=tk.StringVar()
@@ -503,10 +506,6 @@ class Buttons_RowConfig(ttk.Frame):
             device_entry.bind('<<ComboboxSelected>>',lambda event, arg=i: self.switch_sched_off(event, arg))
 
             self.all_sched_vars.append(self.var)
-
-    # def switch_sched_off(self, event,i):
-    #     #print(self.all_sched_vars[i][8].get())
-    #     self.master.master.master.master.master.master.master.bind_on_off([self.all_sched_vars[i][2].get(),self.all_sched_vars[i][8].get()])
 
 
 class Generic_UI_Table(ttk.Frame):
@@ -649,7 +648,6 @@ class MainGUI(ttk.Frame):
 
         self.reload_all()
 
-
     def read_data_from_files(self):
         self.FileManButs = readfile_ssh.LoadFile(filename=self.but_filename, path=self.path)
         self.buts_defs = self.FileManButs.data_from_file
@@ -657,12 +655,16 @@ class MainGUI(ttk.Frame):
         self.FileManSched=readfile_ssh.LoadFile(filename=self.sched_filename, path=self.path)
         self.sched_file= self.FileManSched.data_from_file
 
-        #self.findtasknum(3)
 
     def findtasknum(self,m):
+        sch_num = None
         task_num = list(np.array(self.sched_file)[:m+1,2]).count(self.sched_file[m][2])
-        #print(m, self.sched_file[m][2],task_num)
-        return task_num-1
+        if '[UP]' in self.sched_file[m][2].upper():
+            sch_num = 1
+        else:
+            sch_num = 0
+
+        return [task_num-1, sch_num]
 
     #save both file
     def save_data_to_file(self):
