@@ -395,7 +395,7 @@ class TimeTable_RowConfig(ttk.Frame):
                     v = [i, m, MainGUI.findtasknum(i)[0],MainGUI.findtasknum(i)[1]]
                     # v = [index, but#, tsk#, SchRun#]
             self.relations_vector.append(v)
-        print(self.relations_vector)
+        # print(self.relations_vector)
 
         update_run()
 
