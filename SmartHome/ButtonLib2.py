@@ -235,7 +235,7 @@ class ScheduledEvents(ttk.Frame):
             elif ButtonClass.task_state[self.sw][sch_stat[0][1]] == -1:
                 update_label("Cancel: " + str(sch_stat[2]), 'red')
 
-
+            # print(ButtonClass.nick, ButtonClass.task_state)
         check_state(self.run_schedule())
 
         self.run_id = self.after(500, self.switch_descision)
@@ -890,6 +890,7 @@ class ToggleButton(CoreButton):
         if self.but_stat[sw].get() == 0:  # Abourt Conter
             self.Counter.succ_end()
 
+
 class UpDownButton(CoreButton):
     """UpDown2 Class"""
 
@@ -945,8 +946,10 @@ class UpDownButton(CoreButton):
                 sleep(sleep_time)
 
         elif self.but_stat[sw_i[sw]].get() == 0:  # if pressed to turn off
-             self.execute_command(sw_i[sw], 0)#  turn off")
+             # FIX
+             # self.execute_command(sw_i[sw], 0)#  turn off")
              sleep(sleep_time)
+
 
 class MainsButton(CoreButton):
     """Main2 Class"""
@@ -1002,18 +1005,18 @@ if __name__ == "__main__":
 
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
-        hw_out=[6],hw_in=[13])#,sched_vector=[[[4], "02:24:30", "23:12:10"],
-        # [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
+        hw_out=[6],hw_in=[13],sched_vector=[[[6], "02:24:30", "23:12:10"],
+        [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
 
     f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \
         hw_out=[5, 7], hw_in=[9, 21], sched_vector2=[[[1], "22:24:30", \
-        "23:12:10"], [[4,5], "12:56:00", "23:50:10"]],sched_vector=[[[3], "1:24:30","23:12:10"]])
+        "23:12:10"], [[4,5], "12:56:00", "23:50:10"]],sched_vector=[[[6], "1:24:30","23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
     #
     g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.115', \
-        hw_out=[7, 5], hw_in=[13])#, sched_vector=[[[3, 4], \
-        # "02:24:30", "23:55:10"],[[4,5], "13:47:20", "23:50:10"]])
+        hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 4], \
+        "02:24:30", "23:55:10"],[[4,5], "13:47:20", "23:50:10"]])
     g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()

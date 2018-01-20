@@ -85,7 +85,10 @@ class AllButtons_GUI(ttk.Frame):
         dev_names = [] # Alias of device
         off_list = [] # items that are OFF in TimeTable GUI
         for i, current_task in enumerate(self.master.sched_file):
-            if current_task[1] == "0" or not all(current_task[0:6]):
+            # Note : the following if statement- checks if task is selected to run ( via t.table gui ), aka 1 is checked
+            # for run. now it is selected as to to bypass this if statemnet. i think at the momnet is is not a valid
+            # checc
+            if current_task[1] == "2" or not all(current_task[0:6]):
                 off_list.append(i)
             self.sched_vector.append(current_task[3:6])
             self.sched_vector[i][0] = self.master.xtrct_nums(current_task[3])
@@ -102,15 +105,16 @@ class AllButtons_GUI(ttk.Frame):
                 if dev in u and i not in off_list:
                     self.device_list_sched[x][1].append(i)
                     self.device_list_sched[x][2].append(self.sched_vector[i])
+                # print(u)
 
         # Update sched_vector into self.args
-        for args in self.args:
-            for t,sched in enumerate(self.device_list_sched):
-                if args['nickname'] == sched[0] or '[DOWN]' in sched[0].upper():
-                    args['sched_vector'] = self.device_list_sched[t][2]
+        for i, args in enumerate(self.args):
+            for t, sched in enumerate(self.device_list_sched):
+                if args['nickname'] == sched[0] or args['nickname'] in sched[0] and '[DOWN]' in sched[0].upper():
+                    self.args[i]['sched_vector'] = self.device_list_sched[t][2]
                 elif args['nickname'] in sched[0] and '[UP]' in sched[0].upper(): # Valid to Window UP sched
-                        args['sched_vector2'] = self.device_list_sched[t][2]
-
+                    self.args[i]['sched_vector2'] = self.device_list_sched[t][2]
+        # print(self.args)
     def build_gui(self):
 
         x = 0
@@ -124,6 +128,7 @@ class AllButtons_GUI(ttk.Frame):
                                      (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
+                    # print(self.args[l])
                     x += 1
 
             except ValueError:
@@ -140,8 +145,6 @@ class AllButtons_GUI(ttk.Frame):
     def update_schedule(self):
         self.prep_buttons()
         x = 2
-        # print(self.args[x]['sched_vector'])
-        # self.buts[x].update_schedule(self.args[x]["sched_vector"])
         self.buts[x].close_all()
         self.buts[x] = getattr(ButtonLib2, self.master.buts_defs[x][1]) \
             (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
@@ -249,7 +252,7 @@ class TimeTable_RowConfig(ttk.Frame):
 
     def build_gui(self, data_from_file, title='', connected_devices=[]):
 
-        Button_GUI=self.master.master.master.master.master.master.master.ButtonNote
+        Button_GUI = self.master.master.master.master.master.master.master.ButtonNote
 
         def headers(m,n):
 
@@ -271,7 +274,7 @@ class TimeTable_RowConfig(ttk.Frame):
         # Create Rows in Table
         devs = connected_devices
         for i, current_sched in enumerate(data_from_file):
-            px=2
+            px = 2
 
             #Task#
             self.var=[]
@@ -290,7 +293,7 @@ class TimeTable_RowConfig(ttk.Frame):
             #Device
             self.var.append(tk.StringVar())
             self.var[2].set(current_sched[2])
-            device_entry = ttk.Combobox(inner_frame, width=12, textvariable=self.var[2], values=devs,
+            device_entry = ttk.Combobox(inner_frame, width=15, textvariable=self.var[2], values=devs,
                                         state='readonly', justify=tk.CENTER)
             device_entry.grid(row=i+1, column=2, padx=px)
 
@@ -326,8 +329,8 @@ class TimeTable_RowConfig(ttk.Frame):
             skip_button.grid(row=i+1, column=7, padx=px, pady=5)
 
             # ButtonID
-            self.var.append(tk.StringVar())
-            self.var[8].set(current_sched[0])
+            # self.var.append(tk.StringVar())
+            # self.var[8].set(current_sched[0])
 
             # print(i, current_sched[0])
 
@@ -342,20 +345,20 @@ class TimeTable_RowConfig(ttk.Frame):
             val = -1 # this value represent cancel of task ( not renewing )
         MainGUI = self.master.master.master.master.master.master.master
         MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
-            task_state[0][self.relations_vector[i][2]] = val
+            task_state[self.relations_vector[i][3]][self.relations_vector[i][2]] = val
 
     def but_callback(self, x):
         MainGUI = self.master.master.master.master.master.master.master
         but = MainGUI.ButtonNote.buts[self.relations_vector[x][1]]
-        task = but.task_state[0][self.relations_vector[x][2]]
+        task = but.task_state[self.relations_vector[x][3]][self.relations_vector[x][2]]
 
         # If checkbox is "on" ( sched not cancelled)
-        if self.all_sched_vars[x][1] == 1:
+        if self.all_sched_vars[x][1].get() == 1:
             if task == 0:
-                but.task_state[0][self.relations_vector[x][2]] = 1
+                but.task_state[self.relations_vector[x][3]][self.relations_vector[x][2]] = 1
                 self.all_sched_vars[x][7].set('On')
             else:
-                but.task_state[0][self.relations_vector[x][2]] = 0
+                but.task_state[self.relations_vector[x][3]][self.relations_vector[x][2]] = 0
                 self.all_sched_vars[x][7].set('Skip')
 
     def update_time_table(self):
@@ -366,25 +369,31 @@ class TimeTable_RowConfig(ttk.Frame):
                 self.time_left_vector[a]['foreground'] = color
 
             for a, current_task in enumerate(self.all_sched_vars):
-                but = MainGUI.ButtonNote.buts[self.relations_vector[a][1]]
-                task = but.task_state[0][self.relations_vector[a][2]]
-                sch_index = self.relations_vector[a][3]
+                # print(a, MainGUI.ButtonNote.buts[1].nick, MainGUI.ButtonNote.buts[1].SchRun[0].get_state())
+                try:
+                    but = MainGUI.ButtonNote.buts[self.relations_vector[a][1]]
+                    task = but.task_state[self.relations_vector[a][3]][self.relations_vector[a][2]]
+                    sch_index = self.relations_vector[a][3]
+                    # print(but.nick, but.task_state)
 
-                # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently
-                if but.SchRun[sch_index].get_state()[0][0] == 1 and task == 1:
-                   text_to_entry('on: '+str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'green')
-                elif but.SchRun[sch_index].get_state()[0][0] == 1 and task == 0:
-                    text_to_entry('aborted: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'red')
-                elif task == -1: #but.SchRun[0].get_state()[0][0] == 1 and
-                    text_to_entry('cancelled: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'red')
-                elif but.SchRun[sch_index].get_state()[0][0] == -1 and task == 1:
-                    text_to_entry('wait: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'red')
-                elif but.SchRun[sch_index].get_state()[0][0] == -1 and task == 0:
-                    text_to_entry('skip: ' + str(but.SchRun[0].get_state()[1][self.relations_vector[a][2]]),'orange')
+                    # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently
+                    time_remain = str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]])
+                    if but.SchRun[sch_index].get_state()[0][0] == 1 and task == 1:
+                        text_to_entry('on: '+str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),'green')
+                    elif but.SchRun[sch_index].get_state()[0][0] == 1 and task == 0:
+                        text_to_entry('aborted: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),'red')
+                    elif task == -1: #but.SchRun[0].get_state()[0][0] == 1 and
+                        text_to_entry('cancelled: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),'red')
+                    elif but.SchRun[sch_index].get_state()[0][0] == -1 and task == 1:
+                        text_to_entry('wait: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),'red')
+                    elif but.SchRun[sch_index].get_state()[0][0] == -1 and task == 0:
+                        text_to_entry('skip: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),'orange')
+                except IndexError:
+                    text_to_entry("error", 'red' )
 
             self.run_id = self.after(1000, update_run)
 
-        #Shortcut to Main
+        # Shortcut to Main
         MainGUI = self.master.master.master.master.master.master.master
 
         # #list in weekly schedule
@@ -638,8 +647,8 @@ class MainGUI(ttk.Frame):
 
         #self.path = '/home/guy/PythonProjects/SmartHome/'
         # self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
-        # self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
-        self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
+        self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
+        # self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
 
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'
@@ -654,6 +663,7 @@ class MainGUI(ttk.Frame):
 
         self.FileManSched=readfile_ssh.LoadFile(filename=self.sched_filename, path=self.path)
         self.sched_file= self.FileManSched.data_from_file
+        # print(self.sched_file)
 
 
     def findtasknum(self,m):
