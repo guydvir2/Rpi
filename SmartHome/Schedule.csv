@@ -1,6 +1,6 @@
 
-0,1,WaterBoiler[Down],"2,1",06:48:00,06:48:20,"wait: 5 days, 23:57:20",On
-1,1,Lights,1,20:09:00,21:10:00,"wait: 6 days, 13:18:20",On
-2,1,RoomWindow[Down],5,14:05:00,23:55:55,"wait: 3 days, 7:14:20",On
-3,1,RoomWindow[Up],4,18:40:30,18:40:55,"wait: 2 days, 11:49:50",On
-4,1,Lights,5,20:09:00,21:10:00,"wait: 3 days, 13:18:20",On
+0,1,WaterBoiler[Down],"2,1",06:48:00,17:48:20,"wait: 5 days, 11:59:01",On
+1,1,Lights,1,20:09:00,21:10:00,"wait: 6 days, 1:20:00",On
+2,1,RoomWindow[Down],5,14:05:00,23:55:55,"wait: 2 days, 19:16:01",On
+3,1,RoomWindow[Up],4,18:40:30,18:40:55,"wait: 1 day, 23:51:31",On
+4,1,Lights,5,20:09:00,21:10:00,"wait: 3 days, 1:20:00",On

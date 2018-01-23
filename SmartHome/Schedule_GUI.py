@@ -53,21 +53,21 @@ class AllButtons_GUI(ttk.Frame):
         start_key = 2
         for i, but_defs in enumerate(self.master.buts_defs):
             c, t = {}, start_key
-            for m in self.button_keys[start_key:6]:
+            for m in self.button_keys[start_key:7]:
 
                 # fields that get more than one parameter
-                if t == self.button_keys.index('hw_out')+1 or t == self.button_keys.index('hw_in')+1:
+                if m == 'hw_out' or m == 'hw_in':
                     c[m] = self.master.xtrct_nums(but_defs[t])
-                elif t == self.button_keys.index('dimension')+1:
+                elif m == 'dimension':
                     if not but_defs[t] == '':
                         if not self.master.xtrct_nums(but_defs[t])[1] == []:
                              c['height'] = self.master.xtrct_nums(but_defs[t])[1]
                         else:
-                            c['height']=''
+                            c['height'] = ''
                         if not self.master.xtrct_nums(but_defs[t])[0] == []:
-                            c['width']= self.master.xtrct_nums(but_defs[t])[0]
+                            c['width'] = self.master.xtrct_nums(but_defs[t])[0]
                         else:
-                            c['width']=''
+                            c['width'] = ''
                     else:
                         pass
                 else:
@@ -77,7 +77,6 @@ class AllButtons_GUI(ttk.Frame):
 
             # a dict contains all argument needed to define a button
             self.args.append(c)
-        # print(self.args)
 
     def get_sched_defs(self):
 
@@ -96,7 +95,7 @@ class AllButtons_GUI(ttk.Frame):
 
         #Create a list- including buttons and ALL sched in sched_vector ( multilpe values)
         self.device_list_sched=[] # this list contain index of buttons in sched list
-        for x,dev in enumerate(list(set(dev_names))):
+        for x, dev in enumerate(list(set(dev_names))):
             self.device_list_sched.append([dev]) # name of device
             self.device_list_sched[x].append([]) # index
             self.device_list_sched[x].append([]) # sched_vector
@@ -105,7 +104,6 @@ class AllButtons_GUI(ttk.Frame):
                 if dev in u and i not in off_list:
                     self.device_list_sched[x][1].append(i)
                     self.device_list_sched[x][2].append(self.sched_vector[i])
-                # print(u)
 
         # Update sched_vector into self.args
         for i, args in enumerate(self.args):
@@ -114,7 +112,7 @@ class AllButtons_GUI(ttk.Frame):
                     self.args[i]['sched_vector'] = self.device_list_sched[t][2]
                 elif args['nickname'] in sched[0] and '[UP]' in sched[0].upper(): # Valid to Window UP sched
                     self.args[i]['sched_vector2'] = self.device_list_sched[t][2]
-        # print(self.args)
+
     def build_gui(self):
 
         x = 0
@@ -123,12 +121,12 @@ class AllButtons_GUI(ttk.Frame):
             try:
                 # load button if it in allowed ip list and not off in table
                 # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
+                # print(self.args[l])
                 if current_button[3] in self.reachable_ips:
                     self.buts.append(getattr(ButtonLib2, current_button[1])
                                      (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
-                    # print(self.args[l])
                     x += 1
 
             except ValueError:
@@ -143,6 +141,7 @@ class AllButtons_GUI(ttk.Frame):
         self.master.write2log("Shutting all buttons...Done!")
 
     def update_schedule(self):
+
         self.prep_buttons()
         x = 2
         self.buts[x].close_all()
@@ -150,20 +149,20 @@ class AllButtons_GUI(ttk.Frame):
             (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
         self.buts[x].grid(row=0, column=x)
 
-    def stop_start_but(self, buts=[]):
-        self.prep_buttons()
-
-        for but in buts:
-            self.buts[but].close_all()
-            if self.master.buts_defs[but][8] == 'On':
-                self.buts[but] = getattr(ButtonLib2, self.master.buts_defs[but][1]) \
-                    (self.mainframe, **self.args[int(self.master.buts_defs[but][0])])
-            else:
-                self.buts[but] = getattr(ButtonLib2, 'ErrBut') \
-                    (self.mainframe, name=self.master.buts_defs[but][2])
-                self.loaded_buts.append([but, "ErrorBut"])
-
-            self.buts[but].grid(row=0, column=but)
+    # def stop_start_but(self, buts=[]):
+    #     self.prep_buttons()
+    #
+    #     for but in buts:
+    #         self.buts[but].close_all()
+    #         if self.master.buts_defs[but][8] == 'On':
+    #             self.buts[but] = getattr(ButtonLib2, self.master.buts_defs[but][1]) \
+    #                 (self.mainframe, **self.args[int(self.master.buts_defs[but][0])])
+    #         else:
+    #             self.buts[but] = getattr(ButtonLib2, 'ErrBut') \
+    #                 (self.mainframe, name=self.master.buts_defs[but][2])
+    #             self.loaded_buts.append([but, "ErrorBut"])
+    #
+    #         self.buts[but].grid(row=0, column=but)
 
     # def close_spec_button(self, x=None):
     #     if x in range(len(self.master.buts_defs)):
@@ -341,14 +340,18 @@ class TimeTable_RowConfig(ttk.Frame):
     def on_off_cb(self, i, val):
 
         # Shortcut to Main
+        MainGUI = self.master.master.master.master.master.master.master
+
         if val == 0:
             val = -1 # this value represent cancel of task ( not renewing )
-        MainGUI = self.master.master.master.master.master.master.master
+
         MainGUI.ButtonNote.buts[self.relations_vector[i][1]].\
             task_state[self.relations_vector[i][3]][self.relations_vector[i][2]] = val
 
     def but_callback(self, x):
+
         MainGUI = self.master.master.master.master.master.master.master
+
         but = MainGUI.ButtonNote.buts[self.relations_vector[x][1]]
         task = but.task_state[self.relations_vector[x][3]][self.relations_vector[x][2]]
 
@@ -776,7 +779,6 @@ class MainGUI(ttk.Frame):
             command=self.ButtonNote.reload_all).grid(row=0,column=2)
 
         self.write2log("Buttons GUI loaded")
-
 
     def log_window (self):
         #Create log Tab

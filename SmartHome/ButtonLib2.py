@@ -833,18 +833,23 @@ class CoreButton(ttk.Frame):
         for i, but in enumerate(self.buts):
             but.config(state=state[self.on_off_var.get()])
             # TO RESTORE
-            self.execute_command(i, 0)  # Turn off sw=1
+            # FIX
+
+            # self.execute_command(i, 0)  # Turn off sw=1
+
         # set run_schedule on/ off
         self.enable_disable_sched_var.set(self.on_off_var.get())  # Uncheck sched checkbox
 
         if self.on_off_var.get() == 0:
             for i in range(len(self.SchRun)):
                 self.SchRun[i].close_device()
-            self.Indicators.close_device()
+            # FIX
+            # self.Indicators.close_device()
         else:
             for i in range(len(self.SchRun)):
                 self.SchRun[i].prep_to_run()
-            self.Indicators.update_indicators()
+            # FIX
+            # self.Indicators.update_indicators()
 
     def unSuccLoad(self):
         # this methd runs if any fail to reach ip/ pigpiod on host
@@ -1006,7 +1011,7 @@ if __name__ == "__main__":
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
         hw_out=[6],hw_in=[13],sched_vector=[[[6], "02:24:30", "23:12:10"],
-        [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]])
+        [[2], "19:42:00", "23:50:10"], [[5], "19:42:00", "23:50:10"]],on_off=0)
     e.grid(row=0, column=0, sticky=tk.S)
 
     f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \
