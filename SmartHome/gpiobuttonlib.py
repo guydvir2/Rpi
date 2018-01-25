@@ -1,3 +1,6 @@
+""" This Lib is used with ButtonLib2 as HW module designed by me"""
+
+
 class Indicators:
     """ This Calss displays output state of GPIO """
 
@@ -80,7 +83,6 @@ class HWRemoteInput:
         for sw in self.output_pins:
             sw.close()
         print("Device shut done")
-
 
 class HWRemoteOutput:
     # This Class creates Hardware state of ""gpio_pins"" of RPi at "ip"
