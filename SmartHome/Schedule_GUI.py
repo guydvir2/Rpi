@@ -4,6 +4,7 @@ from tkinter import ttk
 import readfile_ssh
 import datetime
 import numpy as np
+from sys import platform
 
 
 class AllButtons_GUI(ttk.Frame):
@@ -649,9 +650,12 @@ class MainGUI(ttk.Frame):
     def __init__(self, master):
         ttk.Frame.__init__(self, master)
 
+        os_type = platform
+        if os_type == 'darwin':
+            self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
+
         # self.path = '/home/guy/PythonProjects/SmartHome/'
         # self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
-        self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
         # self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
 
         self.but_filename = 'ButtonsDef.csv'
