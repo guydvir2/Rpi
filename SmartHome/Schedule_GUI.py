@@ -190,7 +190,6 @@ class AllButtons_GUI(ttk.Frame):
     #     self.master.write2log("Not trying to load:"+str([loaded[1] \
     #         for i,loaded in enumerate(self.but_not2load)]))
 
-
 class TimeTable_RowConfig(ttk.Frame):
     # Create GUI of Rows #Change THIS class to change Table's UI content
 
@@ -427,7 +426,6 @@ class TimeTable_RowConfig(ttk.Frame):
             if current_sched[1].get() == 0:
                 self.on_off_cb(i, current_sched[1].get())
 
-
 class Buttons_RowConfig(ttk.Frame):
     # Create GUI of Rows #Change THIS class to change Table's UI content
 
@@ -525,7 +523,6 @@ class Buttons_RowConfig(ttk.Frame):
             device_entry.bind('<<ComboboxSelected>>', lambda event, arg=i: self.switch_sched_off(event, arg))
 
             self.all_sched_vars.append(self.var)
-
 
 class Generic_UI_Table(ttk.Frame):
 
@@ -653,10 +650,15 @@ class MainGUI(ttk.Frame):
         os_type = platform
         if os_type == 'darwin':
             self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
+        elif os_type == 'windows':
+            self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
+        elif os_type == 'linux':
+            self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
+
 
         # self.path = '/home/guy/PythonProjects/SmartHome/'
-        # self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
-        # self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
+        #
+        # '
 
         self.but_filename = 'ButtonsDef.csv'
         self.sched_filename = 'Schedule.csv'

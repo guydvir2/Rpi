@@ -1,0 +1,4 @@
+
+#000,1,ToggleButton,Lights,192.168.2.113,"6,26","15,19"
+#001,1,UpDownButton,WaterBoiler,192.168.2.115,12,"15,19"
+#002,1,UpDownButton,RoomWindow,192.168.2.115,"13,12","17,21"
