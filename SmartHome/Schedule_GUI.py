@@ -732,7 +732,6 @@ class MainGUI(ttk.Frame):
 
         # import configured devices names into timetable
         dev_names = readfile_ssh.LoadFile(filename=self.but_filename, path=self.path).data_from_file
-        # print(dev_names)
         for dev in dev_names:  # device's Aliases to show in timetable
             if dev[1] == 'UpDownButton':
                 self.connected_devices.append(dev[2] + '[Up]')
