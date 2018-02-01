@@ -1,7 +1,9 @@
 import ButtonLib2
+import readfile_ssh
+import tablegui
 import tkinter as tk
 from tkinter import ttk
-import readfile_ssh
+
 import datetime
 import numpy as np
 from sys import platform
@@ -42,7 +44,7 @@ class AllButtons_GUI(ttk.Frame):
 
     def reload_data_files(self):
         self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.
-                                             extract_data_from_gui())
+                                             extract_data())
         self.master.read_data_from_files()
 
     def load_buttons_defs(self):
@@ -189,6 +191,7 @@ class AllButtons_GUI(ttk.Frame):
     #         for i,loaded in enumerate(self.but2load)]))
     #     self.master.write2log("Not trying to load:"+str([loaded[1] \
     #         for i,loaded in enumerate(self.but_not2load)]))
+
 
 class TimeTable_RowConfig(ttk.Frame):
     # Create GUI of Rows #Change THIS class to change Table's UI content
@@ -426,6 +429,7 @@ class TimeTable_RowConfig(ttk.Frame):
             if current_sched[1].get() == 0:
                 self.on_off_cb(i, current_sched[1].get())
 
+
 class Buttons_RowConfig(ttk.Frame):
     # Create GUI of Rows #Change THIS class to change Table's UI content
 
@@ -524,6 +528,7 @@ class Buttons_RowConfig(ttk.Frame):
 
             self.all_sched_vars.append(self.var)
 
+
 class Generic_UI_Table(ttk.Frame):
 
     def __init__(self, master, RowClass, titles=[], path='', filename='', defaults=[], header='', data=[], **kwargs):
@@ -575,7 +580,7 @@ class Generic_UI_Table(ttk.Frame):
             # 0]))])
 
     def save_data(self):
-        print("data from table:\n",self.extract_data_from_gui())
+        print("data from table:\n", self.extract_data_from_gui())
         if self.FileManager != None:
             self.FileManager.save_to_file(mat=self.extract_data_from_gui())
             self.load_data()
@@ -648,19 +653,17 @@ class MainGUI(ttk.Frame):
         ttk.Frame.__init__(self, master)
 
         os_type = platform
+        print(os_type)
         if os_type == 'darwin':
             self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
-        elif os_type == 'windows':
+        elif os_type == 'win32':
             self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
         elif os_type == 'linux':
             self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
 
-
         # self.path = '/home/guy/PythonProjects/SmartHome/'
-        #
-        # '
 
-        self.but_filename = 'ButtonsDef.csv'
+        self.but_filename = 'ButtonsDef2.csv'
         self.sched_filename = 'Schedule.csv'
         self.app_name = 'Pi Scheduler'
         master.title(self.app_name)
@@ -684,7 +687,6 @@ class MainGUI(ttk.Frame):
 
         return [task_num - 1, sch_num]
 
-    # save both file
     def save_data_to_file(self):
         self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
         self.FileManSched.save_to_file(mat=self.WeekSched_TimeTable.extract_data_from_gui())
@@ -718,9 +720,8 @@ class MainGUI(ttk.Frame):
         self.log_window()
         self.write2log("Boot")
         self.butt_config_gui(2, 0)
-
         self.buttons_gui(1, 0)
-        self.weekly_sched_gui(0, 0)
+        # self.weekly_sched_gui(0, 0)
 
     def weekly_sched_gui(self, r=0, c=0):
 
@@ -753,21 +754,30 @@ class MainGUI(ttk.Frame):
 
         self.write2log("Weekly schedule GUI started")
 
-    def butt_config_gui(self, r=0, c=0):
+    # def butt_config_gui(self, r=0, c=0):
+    #
+    #     header = 'Button Configuration'
+    #     titles = ['No.', 'On/Off', 'Type', 'Alias', 'IP out', 'I/O out', 'I/O in']
+    #     filename = self.but_filename
+    #     path = self.path
+    #     defaults = ["A" for i in range(len(titles))]
+    #
+    #     buttons_type = getattr(ButtonLib2, 'button_list')  # Get Button type from ButtonLib
+    #
+    #     # method does not load file ( it can), but it uses data already loaded
+    #     self.ButConfigTable = Generic_UI_Table(self.config_but_tab, \
+    #                                            Buttons_RowConfig, titles=titles, path=path, filename='', \
+    #                                            defaults=defaults, header=header, data=self.buts_defs, \
+    #                                            buttons_type=buttons_type)
+    #     self.ButConfigTable.grid(row=r, column=c)
+    #     self.write2log("Buttons config GUI loaded")
 
-        header = 'Button Configuration'
-        titles = ['No.', 'On/Off', 'Type', 'Alias', 'IP out', 'I/O out', 'I/O in']
-        filename = self.but_filename
-        path = self.path
-        defaults = ["A" for i in range(len(titles))]
+    def butt_config_gui(self, r=0, c=0):
+        # header = 'Device Configuration Table'
 
         buttons_type = getattr(ButtonLib2, 'button_list')  # Get Button type from ButtonLib
-
-        # method does not load file ( it can), but it uses data already loaded
-        self.ButConfigTable = Generic_UI_Table(self.config_but_tab, \
-                                               Buttons_RowConfig, titles=titles, path=path, filename='', \
-                                               defaults=defaults, header=header, data=self.buts_defs, \
-                                               buttons_type=buttons_type)
+        self.ButConfigTable = tablegui.DeviceConfigGUI(self.config_but_tab,
+                                                       data_file_name=self.path+self.but_filename, list=buttons_type)
         self.ButConfigTable.grid(row=r, column=c)
         self.write2log("Buttons config GUI loaded")
 
