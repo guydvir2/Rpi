@@ -23,11 +23,8 @@ class CoreTable(ttk.Frame):
         self.main_frame = ttk.Frame(self, style='bg.TFrame')
         self.main_frame.grid()
 
-        self.table_frame = ttk.Frame(self.main_frame)
-        self.table_frame.grid(row=0, column=0)
-
-        self.button_frame = ttk.Labelframe(self.main_frame)
-        self.button_frame.grid(row=1, column=0, pady=1, sticky=tk.S)
+        self.button_frame = ttk.Labelframe(self.main_frame, padding=2)
+        self.button_frame.grid(row=1, column=0)
 
         self.status_frame = ttk.Frame(self.main_frame)
         self.status_frame.grid(row=2, column=0, columnspan=2, pady=5)
@@ -41,12 +38,13 @@ class CoreTable(ttk.Frame):
         self.status_bar()
 
     def button_gui(self):
+               
         self.new_row = ttk.Button(self.button_frame, text='Add Row', width=8,
                                   command=self.add_row_cb, style='bg.TButton')
         self.new_row.grid(row=0, column=0)
 
         self.del_row = ttk.Button(self.button_frame, text='Delete Row', width=8,
-                                  command=self.fill_table, style='bg.TButton')
+                                  command=self.del_row, takefocus=False, style='bg.TButton')
         self.del_row.grid(row=0, column=1)
 
         self.save_table = ttk.Button(self.button_frame, text='Save', width=8,
@@ -63,14 +61,20 @@ class CoreTable(ttk.Frame):
         for i, row in enumerate(self.vars_vector):
             self.data_mat.append([])
             for n, cell in enumerate(row):
+
+                # if cell is empty - igonre entire line
                 if n > 1 and cell.get() == '':
                     del self.data_mat[-1]
                     break
                 else:
                     self.data_mat[-1].append(cell.get())
 
-    def fill_table(self):
-        self.data_mat = self.data_from_file
+    def fill_table(self, m=[]):
+        if m == []:
+            self.data_mat = self.data_from_file
+        else:
+            self.data_mat = m
+
         rows = len(self.data_mat) + self.add_row_flag
         self.table_structure(rows)
 
@@ -87,14 +91,22 @@ class CoreTable(ttk.Frame):
         for i, header in enumerate(self.headers):
             ttk.Label(self.table_frame, text=header, style='bg_title.TLabel').grid(row=0, column=i)
 
-    def restart_table(self):
-        self.table_frame = ttk.Frame(self.main_frame, style='bg.TFrame')
+    def restart_table(self, m=[]):
+        self.table_frame = ttk.Labelframe(self.main_frame, padding=2)
         self.table_frame.grid(row=0, column=0)
 
         self.vars_vector = []
 
         self.build_header()
-        self.fill_table()
+        self.fill_table(m=m)
+
+    def del_row(self):
+        print(self.data_mat[int(self.table_frame.focus_get().grid_info().get('row'))-1])
+        del self.data_mat[int(self.table_frame.focus_get().grid_info().get('row'))-1]
+        self.crash_table()
+        self.restart_table(m=self.data_mat)
+
+
 
     def save_table(self):
         self.extract_data()
@@ -164,10 +176,10 @@ class DeviceConfigGUI(CoreTable):
 
 
 root = tk.Tk()
-# a = CoreTable(root)
-# a.grid()
-# filename = '/Users/guy/Documents/gitHub/Rpi/SmartHome/ButtonsDef2.csv'
-filename = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/ButtonsDef2.csv'
+
+filename = '/Users/guy/Documents/gitHub/Rpi/SmartHome/ButtonsDef2.csv'
+# filename = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/ButtonsDef2.csv'
 b = DeviceConfigGUI(root, data_file_name=filename)
 b.grid()
+
 root.mainloop()

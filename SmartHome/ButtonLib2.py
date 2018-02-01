@@ -828,7 +828,6 @@ class UpDownButton(CoreButton):
              # self.execute_command(sw_i[sw], 0)#  turn off")
              sleep(sleep_time)
 
-
 class MainsButton(CoreButton):
     """Main2 Class"""
 
