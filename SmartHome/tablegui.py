@@ -5,8 +5,8 @@ import readfile_ssh
 
 
 class CoreTable(ttk.Frame):
-    def __init__(self, data_filename=''):
-        ttk.Frame.__init__(self, master=None)
+    def __init__(self, master, data_filename=''):
+        ttk.Frame.__init__(self, master)
 
         self.style = ttk.Style()
         self.style.theme_use('clam')
@@ -132,7 +132,7 @@ class DeviceConfigGUI(CoreTable):
         self.counter = 'SW'
         self.default_data = [[0, 0, 'ERR', 'Load', 'DATA', 'FILE', '!!!!']]
         self.dropbox_values = list
-        CoreTable.__init__(self, data_filename=data_file_name)
+        CoreTable.__init__(self, master, data_filename=data_file_name)
 
     def table_structure(self, rows):
         for i in range(1, rows + 1):
@@ -190,7 +190,7 @@ class TimeTableConfigGUI(CoreTable):
         self.counter = 'TSK'
         self.dropbox_values = list
         self.default_data = [[0, 1, 'Load err', [3, 4, 5, 6], "23:07:00", "01:08:00", 'err', 'On']]
-        CoreTable.__init__(self, data_filename=data_file_name)
+        CoreTable.__init__(self, master, data_filename=data_file_name)
         self.additional_buttons()
 
         # self.update_time_table()
@@ -314,17 +314,17 @@ class TimeTableConfigGUI(CoreTable):
 
         # update_run()
 
-#
-# if __name__ == "__main__":
-#     root = tk.Tk()
-#
-#     # filename = '/Users/guy/Documents/gitHub/Rpi/SmartHome/ButtonsDef2.csv'
-#     # filename = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/ButtonsDef2.csv'
-#     # b = DeviceConfigGUI(root, data_file_name=filename, list=['hi', 'there', 'little', 'princess'])
-#     # b.grid()
-#
-#     filename = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/Schedule.csv'
-#     b = TimeTableConfigGUI(root, data_file_name=filename, list=['hi', 'there', 'little', 'princess'])
-#     b.grid()
-#
-#     root.mainloop()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+
+    filename = '/Users/guy/Documents/gitHub/Rpi/SmartHome/ButtonsDef2.csv'
+    # filename = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/ButtonsDef2.csv'
+    b = DeviceConfigGUI(root, data_file_name=filename, list=['hi', 'there', 'little', 'princess'])
+    b.grid()
+    #
+    # filename = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/Schedule.csv'
+    # b = TimeTableConfigGUI(root, data_file_name=filename, list=['hi', 'there', 'little', 'princess'])
+    b.grid()
+
+    root.mainloop()
