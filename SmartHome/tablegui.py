@@ -12,13 +12,13 @@ class CoreTable(ttk.Frame):
         self.style.theme_use('clam')
         self.style.configure("warning.TButton", foreground='red')
         self.style.configure("bg_title.TLabel", foreground='grey')
+
         # bg_color = 'slate gray'
         # bg_color = 'gray31'
         # self.style.configure("bg.TFrame", background=bg_color)
         # self.style.configure("bg.TButton", background=bg_color)
         # self.style.configure("bg.TEntry", background=bg_color)
         # self.style.configure("bg.TLabel", background=bg_color)
-
         # self.style.configure("bg.TCheckbutton", background=bg_color)
 
         self.main_frame = ttk.Frame(self, style='bg.TFrame')
@@ -186,14 +186,16 @@ class DeviceConfigGUI(CoreTable):
 
 class TimeTableConfigGUI(CoreTable):
     def __init__(self, master, data_file_name='', list=[]):
+        self.master = master
         self.headers = ['Task #', 'On/Off', 'Device', 'Day', 'Start Time', 'Stop Time', 'Time Left', 'Skip Run']
         self.counter = 'TSK'
+        self.time_left_vector = []
         self.dropbox_values = list
         self.default_data = [[0, 1, 'Load err', [3, 4, 5, 6], "23:07:00", "01:08:00", 'err', 'On']]
         CoreTable.__init__(self, master, data_filename=data_file_name)
         self.additional_buttons()
 
-        # self.update_time_table()
+        self.update_time_table()
 
     def table_structure(self, rows):
         for i in range(1, rows + 1):
@@ -249,6 +251,7 @@ class TimeTableConfigGUI(CoreTable):
             a8.grid(row=i, column=c)
             c += 1
 
+            self.time_left_vector.append(a7)
             self.vars_vector.append(self.v)
 
     def additional_buttons(self):
@@ -257,14 +260,24 @@ class TimeTableConfigGUI(CoreTable):
         self.skip_button.grid(row=0, column=3, padx=5)
 
     def skip_button_cb(self):
+        MainGUI = self.master.master.master.master
         try:
-            print((self.table_frame.focus_get().grid_info().get('row')) - 1)
+            # m = self.extract_data()
+            line_num = int(self.table_frame.focus_get().grid_info().get('row')) - 1
+            tsk_properties = MainGUI.findtasknum(line_num)
+            # tsk_properties= [ tsk#, sw#,device_name]
+            for i, dev_name in enumerate(MainGUI.ButtonNote.buts):
+                if dev_name.nick == tsk_properties[2]:
+                    print(i, dev_name.task_state[tsk_properties[1],tsk_properties[0]])
+
+            # print(m[line_num])
+            # print(MainGUI.ButtonNote.buts[0].task_state[sw][tsk])
         except AttributeError:
             print("Line not selected")
 
     def update_time_table(self):
         # Shortcut to Main
-        MainGUI = self.master.master.master.master.master.master.master
+        MainGUI = self.master.master.master.master
 
         def update_run():
             def text_to_entry(text, color):
@@ -272,14 +285,12 @@ class TimeTableConfigGUI(CoreTable):
                 self.time_left_vector[a]['foreground'] = color
 
             for a, current_task in enumerate(self.vars_vector):
-                # print(a, MainGUI.ButtonNote.buts[1].nick, MainGUI.ButtonNote.buts[1].SchRun[0].get_state())
                 try:
                     but = MainGUI.ButtonNote.buts[self.relations_vector[a][1]]
                     task = but.task_state[self.relations_vector[a][3]][self.relations_vector[a][2]]
                     sch_index = self.relations_vector[a][3]
-                    # print(but.nick, but.task_state)
 
-                    # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently
+                    # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
                     time_remain = str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]])
                     if but.SchRun[sch_index].get_state()[0][0] == 1 and task == 1:
                         text_to_entry('on: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),
@@ -302,6 +313,8 @@ class TimeTableConfigGUI(CoreTable):
 
             self.run_id = self.after(1000, update_run)
 
+        self.relations_vector = []
+
         # list in weekly schedule
         for i, current_timetable_row in enumerate(self.vars_vector):
             v = []
@@ -310,9 +323,8 @@ class TimeTableConfigGUI(CoreTable):
                     v = [i, m, MainGUI.findtasknum(i)[0], MainGUI.findtasknum(i)[1]]
                     # v = [index, but#, tsk#, SchRun#]
             self.relations_vector.append(v)
-        print(self.relations_vector)
 
-        # update_run()
+        update_run()
 
 
 if __name__ == "__main__":

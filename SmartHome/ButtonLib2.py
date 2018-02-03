@@ -558,21 +558,21 @@ class CoreButton(ttk.Frame):
         def perm_cancel():
             self.disable_sched_task(state=-1, sw=0, task_num='all')
 
-        self.ck1 = tk.Checkbutton(self.switches_frame, text='On/Off', \
-                                  variable=self.on_off_var, indicatoron=1, command= \
-                                      self.disable_but, bg='light steel blue')
+        self.ck1 = tk.Checkbutton(self.switches_frame, text='On/Off',
+                                  variable=self.on_off_var, indicatoron=1,
+                                  command=self.disable_but, bg='light steel blue')
         self.ck1.grid(row=0, column=0, padx=2)
 
         # turn off all tasks ( task_stat=-1)
-        self.ck2 = tk.Checkbutton(self.switches_frame, text='Schedule', \
-                                  variable=self.enable_disable_sched_var, indicatoron=1, \
-                                  command=lambda: self.disable_sched_task \
-                                      (task_num='all', state=-1), bg='light steel blue')
+        self.ck2 = tk.Checkbutton(self.switches_frame, text='Schedule',
+                                  variable=self.enable_disable_sched_var, indicatoron=1,
+                                  command=lambda: self.disable_sched_task(task_num='all', state=-1),
+                                  bg='light steel blue')
         self.ck2.grid(row=0, column=1, padx=2)
 
         # to mark checkbot on/ off according active task
         # TO CHECK task_number = self.SchRun[0].get_state()[0][1]
-        self.enable_disable_sched_var.set(1)  # self.task_state[task_number])
+        self.enable_disable_sched_var.set(1)
 
     #        ttk.Button(self.switches_frame, text='Update Schedule', command=perm_cancel).\
     #         grid(row=8, column=0)
