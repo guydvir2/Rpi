@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="079dde7a-28e0-4e60-8aed-c282d07b1ae9" name="Default" comment="goog good">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/ButtonLib2.py" afterPath="$PROJECT_DIR$/ButtonLib2.py" />
-      <change beforePath="$PROJECT_DIR$/ButtonsDef2.csv" afterPath="$PROJECT_DIR$/ButtonsDef2.csv" />
-      <change beforePath="$PROJECT_DIR$/Schedule.csv" afterPath="$PROJECT_DIR$/Schedule.csv" />
-      <change beforePath="$PROJECT_DIR$/Schedule_GUI.py" afterPath="$PROJECT_DIR$/Schedule_GUI.py" />
-      <change beforePath="$PROJECT_DIR$/tablegui.py" afterPath="$PROJECT_DIR$/tablegui.py" />
-    </list>
+    <list default="true" id="079dde7a-28e0-4e60-8aed-c282d07b1ae9" name="Default" comment="goog good" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -125,7 +118,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="x" value="2" />
     <option name="y" value="23" />
     <option name="width" value="1440" />
@@ -296,7 +289,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2" y="23" width="1440" height="825" extended-state="1" />
+    <frame x="2" y="23" width="1440" height="825" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14722222" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
