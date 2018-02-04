@@ -147,7 +147,7 @@ class ButtonsGUI(ttk.Frame):
         self.prep_buttons()
         x = 2
         self.buts[x].close_all()
-        self.buts[x] = getattr(ButtonLib2, self.master.buts_defs[x][1]) \
+        self.buts[x] = getattr(ButtonLib2, self.master.buts_defs[x][1])\
             (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
         self.buts[x].grid(row=0, column=x)
 
@@ -222,25 +222,38 @@ class MainGUI(ttk.Frame):
         self.weekly_sched_gui(0, 0)
 
     def weekly_sched_gui(self, r=0, c=0):
-        def print_timetable():
-            x = 0
-            v = {}
-            total_V = []
-            m = self.WeekSched_TimeTable.extract_data()
-            for i, sched in enumerate(m):
-                if '[UP]' in sched[2].upper():
-                    v['nick'] = sched[2][:sched[2].index('[')]
-                    v['sched_vector2'] = sched[3:6]
-                elif '[DOWN]' in sched[2].upper():
-                    v['nick'] = sched[2][:sched[2].index('[')]
-                    v['sched_vector'] = sched[3:6]
-                else:
-                    v['nick'] = sched[2]
-                    v['sched_vector'] = sched[3:6]
+        def name_no_br(name):
+            ret_name, ext = None, None
 
-                total_V.append(v)
-                v = {}
-            print(total_V)
+            if '[' in name:
+                ret_name = name[:name.index('[')]
+                ext = name[name.index('['):]
+            else:
+                ret_name = name
+
+            return [ret_name, ext]
+
+
+
+        def print_timetable():
+            total_V = []
+            m = np.array(self.WeekSched_TimeTable.extract_data())
+
+            # for i, sched in enumerate(m):
+            #     v = [[], [], []]
+            #
+            #     if '[UP]' in sched[2].upper():
+            #         v[0] = sched[2][:sched[2].index('[')]
+            #         v[2] = [sched[3:6]]
+            #     elif '[DOWN]' in sched[2].upper():
+            #         v[0] = sched[2][:sched[2].index('[')]
+            #         v[1] = [sched[3:6]]
+            #     else:
+            #         v[0] = sched[2]
+            #         v[1] = [sched[3:6]]
+            #
+            #     total_V.append(v)
+            # print(total_V)
 
         devices_names = []
         # import configured devices names into timetable
@@ -257,7 +270,7 @@ class MainGUI(ttk.Frame):
         self.WeekSched_TimeTable.grid(row=r, column=c)
         self.write2log("Weekly schedule GUI started")
 
-        ttk.Button(self.sched_tab, text='reload schedule', command=print_timetable).grid()
+        ttk.Button(self.sched_tab, text='reload schedule', command=self.ButtonNote.update_schedule).grid()
 
     def butt_config_gui(self, r=0, c=0):
 

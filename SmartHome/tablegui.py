@@ -265,10 +265,12 @@ class TimeTableConfigGUI(CoreTable):
             # m = self.extract_data()
             line_num = int(self.table_frame.focus_get().grid_info().get('row')) - 1
             tsk_properties = MainGUI.findtasknum(line_num)
+            print(tsk_properties)
             # tsk_properties= [ tsk#, sw#,device_name]
             for i, dev_name in enumerate(MainGUI.ButtonNote.buts):
                 if dev_name.nick == tsk_properties[2]:
                     print(i, dev_name.task_state[tsk_properties[1],tsk_properties[0]])
+                    pass
 
             # print(m[line_num])
             # print(MainGUI.ButtonNote.buts[0].task_state[sw][tsk])

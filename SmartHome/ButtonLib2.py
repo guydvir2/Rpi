@@ -688,9 +688,9 @@ class CoreButton(ttk.Frame):
 
     def close_all(self):
         # this method runs prior to reloading of gui
-        self.SchRun.close_device()
-        self.Indicators.close_device()
-        self.HW_output.close_device()
+        # self.SchRun.close_device()
+        # self.Indicators.close_device()
+        # self.HW_output.close_device()
         try:
             if self.HW_input != []:
                 self.HW_input.close_device()
@@ -698,7 +698,7 @@ class CoreButton(ttk.Frame):
             print(self.nick, "No input to close")
         self.Counter.close_device()
         self.destroy()
-        self.com.message(self.nick, 'Closed')
+        # self.com.message(self.nick, 'Closed')
 
     def disable_but(self):
         # this method runs in On/Off checkbox is selected
