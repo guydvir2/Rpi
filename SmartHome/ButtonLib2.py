@@ -69,7 +69,7 @@ class ScheduledEvents(ttk.Frame):
         self.close_device()
         self.prep_to_run()
 
-        print(self.master.master.nick, "Schedule update, done ")
+        # print(self.master.master.nick, "Schedule update, done ")
 
     def check_integrity_time_table(self):
         time_err, days_err = 0, 0
@@ -682,9 +682,9 @@ class CoreButton(ttk.Frame):
         # for future use in outer GUI
         return self.get_state(), self.SchRun.get_state()
 
-    def update_schedule(self, new_sched=[]):
+    def update_schedule(self, sw=None, new_sched=[]):
         # updating sched vetors AFTER button is already running and active
-        self.SchRun.update_sched(new_sched)
+        self.SchRun[sw].update_sched(new_sched)
 
     def close_all(self):
         # this method runs prior to reloading of gui
@@ -884,20 +884,20 @@ button_list = ['UpDownButton', 'ToggleButton', 'MainsButton']
 if __name__ == "__main__":
     root = tk.Tk()
 
-    e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113', \
-                     hw_out=[6], hw_in=[13], sched_vector=[[[6], "02:24:30", "23:12:10"],
+    e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113',
+                     hw_out=[6], hw_in=[13], sched_vector=[[[7], "02:24:30", "23:12:10"],
                                                            [[2], "19:42:00", "23:50:10"],
                                                            [[5], "19:42:00", "23:50:10"]], on_off=0)
     e.grid(row=0, column=0, sticky=tk.S)
 
-    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', \
-                     hw_out=[5, 7], hw_in=[9, 21], sched_vector2=[[[1], "22:24:30", \
-                                                                   "23:12:10"], [[4, 5], "12:56:00", "23:50:10"]],
+    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113',
+                     hw_out=[5, 7], hw_in=[9, 21], sched_vector2=[[[1], "22:24:30",
+                                                                   "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]],
                      sched_vector=[[[6], "1:24:30", "23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
     #
-    g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.115', \
-                    hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 4], \
+    g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.115',
+                    hw_out=[7, 5], hw_in=[13], sched_vector=[[[3, 4],
                                                               "02:24:30", "23:55:10"],
                                                              [[4, 5], "13:47:20", "23:50:10"]])
     g.grid(row=0, column=2, sticky=tk.S)

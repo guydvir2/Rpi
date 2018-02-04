@@ -26,9 +26,6 @@ class ButtonsGUI(ttk.Frame):
         self.reload_all()
 
     def prep_buttons(self):
-        # self.reload_data_files()
-        # self.list_buts_to_load()
-        # self.checkFalse_err()
         self.reload_data_files()
         self.load_buttons_defs()
         self.get_sched_defs()
@@ -84,10 +81,9 @@ class ButtonsGUI(ttk.Frame):
             self.args.append(c)
 
     def get_sched_defs(self):
-
         # Import sched file to define button's sched
-        dev_names = []  # Alias of device
-        off_list = []  # items that are OFF in TimeTable GUI
+        dev_names, off_list = [], []  # Alias of device # items that are OFF in TimeTable GUI
+
         for i, current_task in enumerate(self.master.sched_file):
             # Note : the following if statement- checks if task is selected to run ( via t.table gui ), aka 1 is checked
             # for run. now it is selected as to to bypass this if statemnet. i think at the momnet is is not a valid
@@ -97,6 +93,7 @@ class ButtonsGUI(ttk.Frame):
             self.sched_vector.append(current_task[3:6])
             self.sched_vector[i][0] = self.master.xtrct_nums(current_task[3])
             dev_names.append(current_task[2])
+
         # Create a list- including buttons and ALL sched in sched_vector ( multilpe values)
         self.device_list_sched = []  # this list contain index of buttons in sched list
         for x, dev in enumerate(list(set(dev_names))):
@@ -116,6 +113,8 @@ class ButtonsGUI(ttk.Frame):
                     self.args[i]['sched_vector'] = self.device_list_sched[t][2]
                 elif args['nickname'] in sched[0] and '[UP]' in sched[0].upper():  # Valid to Window UP sched
                     self.args[i]['sched_vector2'] = self.device_list_sched[t][2]
+
+        # print(self.args)
 
     def build_gui(self):
 
@@ -144,12 +143,27 @@ class ButtonsGUI(ttk.Frame):
 
     def update_schedule(self):
 
-        self.prep_buttons()
-        x = 2
-        self.buts[x].close_all()
-        self.buts[x] = getattr(ButtonLib2, self.master.buts_defs[x][1])\
-            (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
-        self.buts[x].grid(row=0, column=x)
+        self.reload_data_files()
+        self.get_sched_defs()
+
+        for i, current_but in enumerate(self.buts):
+            for x, current_schedtask in enumerate(self.args):
+                if current_schedtask['nickname'] == current_but.nick:
+                    keys = ['sched_vector', 'sched_vector2']
+                    for sw, current_key in enumerate(keys):
+                        try:
+                            print(current_schedtask['nickname'], 'key: ', current_key, current_schedtask[current_key])
+                            current_but.update_schedule(sw=sw, new_sched=current_schedtask[current_key])
+
+                        except KeyError:
+                            print(current_schedtask['nickname'], ' has no ', current_key)
+
+        # self.prep_buttons()
+        # x = 2
+        # self.buts[x].close_all()
+        # self.buts[x] = getattr(ButtonLib2, self.master.buts_defs[x][1])\
+        #     (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
+        # self.buts[x].grid(row=0, column=x)
 
 
 class MainGUI(ttk.Frame):
@@ -222,38 +236,36 @@ class MainGUI(ttk.Frame):
         self.weekly_sched_gui(0, 0)
 
     def weekly_sched_gui(self, r=0, c=0):
-        def name_no_br(name):
-            ret_name, ext = None, None
-
-            if '[' in name:
-                ret_name = name[:name.index('[')]
-                ext = name[name.index('['):]
-            else:
-                ret_name = name
-
-            return [ret_name, ext]
-
-
-
-        def print_timetable():
-            total_V = []
-            m = np.array(self.WeekSched_TimeTable.extract_data())
-
-            # for i, sched in enumerate(m):
-            #     v = [[], [], []]
-            #
-            #     if '[UP]' in sched[2].upper():
-            #         v[0] = sched[2][:sched[2].index('[')]
-            #         v[2] = [sched[3:6]]
-            #     elif '[DOWN]' in sched[2].upper():
-            #         v[0] = sched[2][:sched[2].index('[')]
-            #         v[1] = [sched[3:6]]
-            #     else:
-            #         v[0] = sched[2]
-            #         v[1] = [sched[3:6]]
-            #
-            #     total_V.append(v)
-            # print(total_V)
+        # def name_no_br(name):
+        #     ret_name, ext = None, None
+        #
+        #     if '[' in name:
+        #         ret_name = name[:name.index('[')]
+        #         ext = name[name.index('['):]
+        #     else:
+        #         ret_name = name
+        #
+        #     return [ret_name, ext]
+        #
+        # def print_timetable():
+        #     total_V = []
+        #     m = np.array(self.WeekSched_TimeTable.extract_data())
+        #
+        #     # for i, sched in enumerate(m):
+        #     #     v = [[], [], []]
+        #     #
+        #     #     if '[UP]' in sched[2].upper():
+        #     #         v[0] = sched[2][:sched[2].index('[')]
+        #     #         v[2] = [sched[3:6]]
+        #     #     elif '[DOWN]' in sched[2].upper():
+        #     #         v[0] = sched[2][:sched[2].index('[')]
+        #     #         v[1] = [sched[3:6]]
+        #     #     else:
+        #     #         v[0] = sched[2]
+        #     #         v[1] = [sched[3:6]]
+        #     #
+        #     #     total_V.append(v)
+        #     # print(total_V)
 
         devices_names = []
         # import configured devices names into timetable
