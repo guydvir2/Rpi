@@ -2,13 +2,17 @@ import tkinter as tk
 from tkinter import ttk
 from time import sleep
 import datetime
-import gpiozero
-import pigpio
-from gpiozero import OutputDevice
-from gpiozero.pins.pigpio import PiGPIOFactory
 import time
 import gpiobuttonlib
 import os
+
+# PREHAPS TO DELETE
+#======================
+#import gpiozero
+import pigpio
+#from gpiozero import OutputDevice
+#from gpiozero.pins.pigpio import PiGPIOFactory
+
 
 
 class Com2Log:
@@ -541,14 +545,14 @@ class CoreButton(ttk.Frame):
     def pigpio_valid(self, address):
         # FIX
 #        return 1
-        if os.system('ping %s -c 1' % address) == 1:
+        if os.system('ping %s -c 1' % address) == 0:
             if pigpio.pi(address).connected:
-                result = 1
+                result = 1 # Connected
             else:
                 result = 0
                 self.is_alive = 0
 
-        return 1 #result
+        return result
 
     def build_gui(self):
         raise NotImplementedError('You have to override method build_gui()')
@@ -573,9 +577,6 @@ class CoreButton(ttk.Frame):
         # to mark checkbot on/ off according active task
         # TO CHECK task_number = self.SchRun[0].get_state()[0][1]
         self.enable_disable_sched_var.set(1)
-
-    #        ttk.Button(self.switches_frame, text='Update Schedule', command=perm_cancel).\
-    #         grid(row=8, column=0)
 
     def connection_gui(self):
         ttk.Label(self.connection_frame, text=self.ip_out + ' :', \
@@ -896,7 +897,7 @@ if __name__ == "__main__":
 #    e.grid(row=0, column=0, sticky=tk.S)
 #
 #    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113',
-#                     hw_out=[5, 7], hw_in=[9, 21], sched_vector2=[[[1], "22:24:30",
+#                     hw_out=[12,8], hw_in=[9, 21], sched_vector2=[[[1], "22:24:30",
 #                                                                   "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]],
 #                     sched_vector=[[[6], "1:24:30", "23:12:10"]])
 #    f.grid(row=0, column=1, sticky=tk.S)

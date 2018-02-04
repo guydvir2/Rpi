@@ -17,7 +17,7 @@ class ButtonsGUI(ttk.Frame):
         self.master = master
         self.mframe = mainframe
         ttk.Frame.__init__(self, master)
-        self.reachable_ips = ['192.168.2.115', '192.168.2.113']
+        self.reachable_ips = ['192.168.2.113']
         self.master.write2log("Valid IP's to load:" + str(self.reachable_ips))
         self.args = []  # Dictionary of loaded buttons definitions, KWargs for
         # GUIButtons Read But Defs from file
