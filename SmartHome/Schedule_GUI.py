@@ -172,7 +172,7 @@ class MainGUI(ttk.Frame):
         elif os_type == 'win32':
             self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
         elif os_type == 'linux':
-            self.path = '/home/guy/Documents/gitHub/Rpi/SmartHome/'
+            self.path = '/home/guy/Documents/github/Rpi/SmartHome/'
 
         # self.path = '/home/guy/PythonProjects/SmartHome/'
 

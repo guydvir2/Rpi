@@ -1,6 +1,32 @@
 """ This Lib is used with ButtonLib2 as HW module designed by me"""
+from gpiozero.pins.pigpio import PiGPIOFactory
+import gpiozero
+import pigpio
+from gpiozero import OutputDevice
+import datetime
+import os
 
 
+
+
+class Com2Log:
+    """ This class sends status logs to main GUI"""
+
+    def __init__(self, master, nick):
+        self.nick = nick
+        self.master = master
+
+    def message(self, text1):
+
+        time_now = str(datetime.datetime.now())[:-5]
+        text2 = '[%s] %s' % (time_now, text1)
+        try:
+            self.master.master.master.master.master.master.master.write2log(text2)
+        except AttributeError:
+            print(text2)
+            
+            
+            
 class Indicators:
     """ This Calss displays output state of GPIO """
 
