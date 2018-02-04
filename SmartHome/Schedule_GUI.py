@@ -40,8 +40,9 @@ class ButtonsGUI(ttk.Frame):
         self.build_gui()
 
     def reload_data_files(self):
-        self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.
-                                             extract_data())
+
+        # self.master.WeekSched_TimeTable.save_table()
+        # self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.extract_data())
         self.master.read_data_from_files()
 
     def load_buttons_defs(self):
@@ -142,7 +143,7 @@ class ButtonsGUI(ttk.Frame):
         self.master.write2log("Shutting all buttons...Done!")
 
     def update_schedule(self):
-
+        self.master.WeekSched_TimeTable.save2()
         self.reload_data_files()
         self.get_sched_defs()
 
@@ -157,14 +158,6 @@ class ButtonsGUI(ttk.Frame):
 
                         except KeyError:
                             print(current_schedtask['nickname'], ' has no ', current_key)
-
-        # self.prep_buttons()
-        # x = 2
-        # self.buts[x].close_all()
-        # self.buts[x] = getattr(ButtonLib2, self.master.buts_defs[x][1])\
-        #     (self.mainframe, **self.args[int(self.master.buts_defs[x][0])])
-        # self.buts[x].grid(row=0, column=x)
-
 
 class MainGUI(ttk.Frame):
     """ This MainGui Class"""
@@ -205,6 +198,7 @@ class MainGUI(ttk.Frame):
 
         self.FileManSched = readfile_ssh.LoadFile(filename=self.sched_filename, path=self.path)
         self.sched_file = self.FileManSched.data_from_file
+        print(self.sched_file)
 
     def save_data_to_file(self):
         self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
@@ -236,36 +230,6 @@ class MainGUI(ttk.Frame):
         self.weekly_sched_gui(0, 0)
 
     def weekly_sched_gui(self, r=0, c=0):
-        # def name_no_br(name):
-        #     ret_name, ext = None, None
-        #
-        #     if '[' in name:
-        #         ret_name = name[:name.index('[')]
-        #         ext = name[name.index('['):]
-        #     else:
-        #         ret_name = name
-        #
-        #     return [ret_name, ext]
-        #
-        # def print_timetable():
-        #     total_V = []
-        #     m = np.array(self.WeekSched_TimeTable.extract_data())
-        #
-        #     # for i, sched in enumerate(m):
-        #     #     v = [[], [], []]
-        #     #
-        #     #     if '[UP]' in sched[2].upper():
-        #     #         v[0] = sched[2][:sched[2].index('[')]
-        #     #         v[2] = [sched[3:6]]
-        #     #     elif '[DOWN]' in sched[2].upper():
-        #     #         v[0] = sched[2][:sched[2].index('[')]
-        #     #         v[1] = [sched[3:6]]
-        #     #     else:
-        #     #         v[0] = sched[2]
-        #     #         v[1] = [sched[3:6]]
-        #     #
-        #     #     total_V.append(v)
-        #     # print(total_V)
 
         devices_names = []
         # import configured devices names into timetable

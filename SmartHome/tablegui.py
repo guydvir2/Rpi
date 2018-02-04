@@ -121,6 +121,10 @@ class CoreTable(ttk.Frame):
         self.extract_data()
         readfile_ssh.LoadFile(filename=self.filename).save_to_file(mat=self.data_mat)
 
+    def save2(self):
+        self.extract_data()
+        readfile_ssh.LoadFile(filename=self.filename).save_to_file(mat=self.data_mat)
+
     def status_bar(self):
         ttk.Label(self.status_frame, text='filename: ' + str(self.filename),
                   style='bg_title.TLabel').grid()
@@ -269,7 +273,7 @@ class TimeTableConfigGUI(CoreTable):
             # tsk_properties= [ tsk#, sw#,device_name]
             for i, dev_name in enumerate(MainGUI.ButtonNote.buts):
                 if dev_name.nick == tsk_properties[2]:
-                    print(i, dev_name.task_state[tsk_properties[1],tsk_properties[0]])
+                    print(i, dev_name.task_state[tsk_properties[1], tsk_properties[0]])
                     pass
 
             # print(m[line_num])
@@ -278,7 +282,7 @@ class TimeTableConfigGUI(CoreTable):
             print("Line not selected")
 
     def update_time_table(self):
-        # Shortcut to Main
+        # Shortcut to Main GUI
         MainGUI = self.master.master.master.master
 
         def update_run():
@@ -288,36 +292,34 @@ class TimeTableConfigGUI(CoreTable):
 
             for a, current_task in enumerate(self.vars_vector):
                 try:
+                    # shortcuts
                     but = MainGUI.ButtonNote.buts[self.relations_vector[a][1]]
-                    task = but.task_state[self.relations_vector[a][3]][self.relations_vector[a][2]]
+                    actv_tsk = self.relations_vector[a][2]
+                    task_state = but.task_state[self.relations_vector[a][3]][actv_tsk]
                     sch_index = self.relations_vector[a][3]
+                    but_sched_active = but.SchRun[sch_index].get_state()[0][0]
+                    but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
+                    time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
 
                     # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
-                    time_remain = str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]])
-                    if but.SchRun[sch_index].get_state()[0][0] == 1 and task == 1:
-                        text_to_entry('on: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),
-                                      'green')
-                    elif but.SchRun[sch_index].get_state()[0][0] == 1 and task == 0:
-                        text_to_entry(
-                            'aborted: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]), 'red')
-                    elif task == -1:  # but.SchRun[0].get_state()[0][0] == 1 and
-                        text_to_entry(
-                            'cancelled: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),
-                            'red')
-                    elif but.SchRun[sch_index].get_state()[0][0] == -1 and task == 1:
-                        text_to_entry('wait: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),
-                                      'red')
-                    elif but.SchRun[sch_index].get_state()[0][0] == -1 and task == 0:
-                        text_to_entry('skip: ' + str(but.SchRun[sch_index].get_state()[1][self.relations_vector[a][2]]),
-                                      'orange')
+                    if but_sched_active == 1 and task_state == 1 and actv_tsk == but_sced_tsk_num:
+                        text_to_entry('on: ' + time_remain, 'green')
+                    elif but_sched_active == 1 and task_state == 0 and actv_tsk == but_sced_tsk_num:
+                        text_to_entry('aborted: ' + time_remain, 'red')
+                    elif task_state == -1 and actv_tsk == but_sced_tsk_num:
+                        text_to_entry('cancelled: ' + time_remain, 'red')
+                    elif but_sched_active == -1 and task_state == 1 or \
+                            but_sched_active == 1 and task_state == 1 and actv_tsk != but_sced_tsk_num:
+                        text_to_entry('wait: ' + time_remain, 'red')
+                    elif but_sched_active == -1 and task_state == 0:
+                        text_to_entry('skip: ' + time_remain, 'orange')
+
                 except IndexError:
                     text_to_entry("error", 'red')
 
             self.run_id = self.after(1000, update_run)
 
         self.relations_vector = []
-
-        # list in weekly schedule
         for i, current_timetable_row in enumerate(self.vars_vector):
             v = []
             for m, current_button in enumerate(MainGUI.ButtonNote.buts):

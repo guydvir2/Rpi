@@ -179,7 +179,7 @@ class ScheduledEvents(ttk.Frame):
                     if op in [0, 1]:
                         ans = [op, x]  # op state = on/off x= task number
         # Case of empty schedule
-        elif self.empty_schedis is True:
+        elif self.empty_sched is True:
             ans, min_time = [-2, -2], [-2]
 
         return [ans, min_time, min(min_time)]
