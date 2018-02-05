@@ -2,5 +2,5 @@
 SW#00,1,ToggleButton,Lights,192.168.2.113,6,15
 SW#01,1,UpDownButton,WaterBoiler,192.168.2.115,12,"15,19"
 SW#02,1,UpDownButton,RoomWindow,192.168.2.115,"13,12","17,21"
-SW#03,1,ToggleButton,Washer,192.168.2.114,11,14
+SW#03,0,ToggleButton,Washer,192.168.2.114,11,14
 SW#04,1,MainsButton,SafetySwitch,192.168.2.115,17,20

@@ -110,10 +110,12 @@ class ButtonsGUI(ttk.Frame):
     def build_gui(self):
         x = 0
         for l, current_button in enumerate(self.master.buts_defs):
+            print(current_button)
             try:
-                # load button if it in allowed ip list and not off in table
-                # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
-                if current_button[4] in self.reachable_ips:
+                # load button if it in allowed ip list, and checked
+                # [ 'ID','ENABLED','Type','nick','ip_out','hw_out','hw_in']
+                if current_button[4] in self.reachable_ips and \
+                        current_button[1] == '1':
                     self.buts.append(getattr(ButtonLib2, current_button[2])
                                      (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
@@ -172,7 +174,7 @@ class MainGUI(ttk.Frame):
             self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
         elif os_type == 'linux':
             self.path = '/home/guy/Documents/github/Rpi/SmartHome/'
-        self.write2log('OS detected:'+str(os_type))
+        self.write2log('OS detected:' + str(os_type))
 
     def reload_all(self):
         self.connected_devices, self.sched_vector = [], []

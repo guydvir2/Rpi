@@ -1,6 +1,6 @@
 
-TSK#00,1,WaterBoiler[Down],1,07:12:00,08:35:20,"wait: 6 days, 22:10:21",On
-TSK#01,1,Lights,7,09:09:00,23:10:00,"wait: 6 days, 0:07:21",On
-TSK#02,1,RoomWindow[Down],1,08:31:00,08:31:59,"wait: 6 days, 23:29:21",On
-TSK#03,1,RoomWindow[Up],5,18:40:30,18:40:55,"wait: 4 days, 9:38:51",On
-TSK#04,1,SafetySwitch,4,12:09:00,22:10:00,"wait: 3 days, 3:07:22",On
+TSK#00,1,WaterBoiler[Down],1,07:12:00,13:35:20,"wait: 6 days, 17:48:00",On
+TSK#01,1,Lights,7,09:09:00,23:10:00,"wait: 5 days, 19:45:00",On
+TSK#02,1,RoomWindow[Down],1,08:31:00,08:31:59,"wait: 6 days, 19:07:00",On
+TSK#03,1,RoomWindow[Up],5,18:40:30,18:40:55,"wait: 4 days, 5:16:30",On
+TSK#04,1,SafetySwitch,4,12:09:00,22:10:00,Switch not active,On

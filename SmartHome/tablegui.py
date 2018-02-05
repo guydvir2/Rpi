@@ -271,12 +271,12 @@ class TimeTableConfigGUI(CoreTable):
             # m = self.extract_data()
             line_num = int(self.table_frame.focus_get().grid_info().get('row')) - 1
             tsk_properties = MainGUI.findtasknum(line_num)
-            self.master.log_window('Skip Button pressed for task line')
+            # self.master.log_window('Device: %s Task: %s' % (tsk_properties[2], tsk_properties[1]))
             print(tsk_properties)
             # tsk_properties= [ tsk#, sw#,device_name]
             for i, dev_name in enumerate(MainGUI.ButtonNote.buts):
                 if dev_name.nick == tsk_properties[2]:
-                    print(i, dev_name.task_state[tsk_properties[1], tsk_properties[0]])
+                    # print(i, dev_name.task_state[tsk_properties[1]][tsk_properties[0]])
                     pass
 
         except AttributeError:
@@ -301,19 +301,21 @@ class TimeTableConfigGUI(CoreTable):
                     but_sched_active = but.SchRun[sch_index].get_state()[0][0]
                     but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
                     time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
-
-                    # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
-                    if but_sched_active == 1 and task_state == 1 and actv_tsk == but_sced_tsk_num:
-                        text_to_entry('on: ' + time_remain, 'green')
-                    elif but_sched_active == 1 and task_state == 0 and actv_tsk == but_sced_tsk_num:
-                        text_to_entry('aborted: ' + time_remain, 'red')
-                    elif task_state == -1 and actv_tsk == but_sced_tsk_num:
-                        text_to_entry('cancelled: ' + time_remain, 'red')
-                    elif but_sched_active == -1 and task_state == 1 or \
-                            but_sched_active == 1 and task_state == 1 and actv_tsk != but_sced_tsk_num:
-                        text_to_entry('wait: ' + time_remain, 'red')
-                    elif but_sched_active == -1 and task_state == 0:
-                        text_to_entry('skip: ' + time_remain, 'orange')
+                    if but.is_alive == 1:
+                        # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
+                        if but_sched_active == 1 and task_state == 1 and actv_tsk == but_sced_tsk_num:
+                            text_to_entry('on: ' + time_remain, 'green')
+                        elif but_sched_active == 1 and task_state == 0 and actv_tsk == but_sced_tsk_num:
+                            text_to_entry('aborted: ' + time_remain, 'red')
+                        elif task_state == -1 and actv_tsk == but_sced_tsk_num:
+                            text_to_entry('cancelled: ' + time_remain, 'red')
+                        elif but_sched_active == -1 and task_state == 1 or \
+                                but_sched_active == 1 and task_state == 1 and actv_tsk != but_sced_tsk_num:
+                            text_to_entry('wait: ' + time_remain, 'red')
+                        elif but_sched_active == -1 and task_state == 0:
+                            text_to_entry('skip: ' + time_remain, 'orange')
+                    else:
+                        text_to_entry('Switch not active', 'red')
 
                 except IndexError:
                     text_to_entry("error", 'red')
