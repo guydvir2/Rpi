@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-
 import readfile_ssh
+import numpy as np
 
 
 class CoreTable(ttk.Frame):
@@ -40,8 +40,10 @@ class CoreTable(ttk.Frame):
 
     def load_data_from_file(self):
         self.data_from_file = readfile_ssh.LoadFile(filename=self.filename).data_from_file
+        # Data file is empty
         if not any(self.data_from_file):
             self.data_from_file = self.default_data
+            print('warning: file was empty, default values loaded.')
 
     def button_gui(self):
         px = 5
@@ -118,12 +120,12 @@ class CoreTable(ttk.Frame):
         self.restart_table(m=self.data_mat)
 
     def save_table(self):
-        self.extract_data()
-        readfile_ssh.LoadFile(filename=self.filename).save_to_file(mat=self.data_mat)
+        readfile_ssh.LoadFile(filename=self.filename).save_to_file(mat=self.extract_data())
+        # print(np.array(self.data_mat))
 
     def save2(self):
-        self.extract_data()
-        readfile_ssh.LoadFile(filename=self.filename).save_to_file(mat=self.data_mat)
+        # print(np.array(self.extract_data()))
+        readfile_ssh.LoadFile(filename=self.filename).save_to_file(mat=self.extract_data())
 
     def status_bar(self):
         ttk.Label(self.status_frame, text='filename: ' + str(self.filename),
@@ -269,6 +271,7 @@ class TimeTableConfigGUI(CoreTable):
             # m = self.extract_data()
             line_num = int(self.table_frame.focus_get().grid_info().get('row')) - 1
             tsk_properties = MainGUI.findtasknum(line_num)
+            self.master.log_window('Skip Button pressed for task line')
             print(tsk_properties)
             # tsk_properties= [ tsk#, sw#,device_name]
             for i, dev_name in enumerate(MainGUI.ButtonNote.buts):
@@ -276,8 +279,6 @@ class TimeTableConfigGUI(CoreTable):
                     print(i, dev_name.task_state[tsk_properties[1], tsk_properties[0]])
                     pass
 
-            # print(m[line_num])
-            # print(MainGUI.ButtonNote.buts[0].task_state[sw][tsk])
         except AttributeError:
             print("Line not selected")
 

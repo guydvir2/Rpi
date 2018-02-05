@@ -135,7 +135,6 @@ class LoadFile:
         self.load_file()
 
     def create_def_row(self, titles=''):
-
         self.mat = []
         titles = self.titles
 
@@ -145,8 +144,6 @@ class LoadFile:
         print(self.mat)
 
         self.save_to_file(mat=self.mat)
-
-        # print("File created")
 
     def save_to_file(self, filename='', mat=[]):  # save sched table to CSV file
 
@@ -158,19 +155,15 @@ class LoadFile:
         outputwriter.writerows(mat)
         outputfile.close()
 
-        # self.load_file()
-
         print(filename, "saved")
 
     def load_file(self, file_in=''):
-
-        if file_in == '': file_in = self.filename
-
-        if os.path.isfile(file_in) == True:
+        if file_in == '':
+            file_in = self.filename
+        if os.path.isfile(file_in) is True:
             with open(file_in, 'r') as f:
                 reader = csv.reader(f)
                 self.data_from_file = list(reader)[1:]
-
         else:
             print('file', self.filename, ' not found. default was created')
             self.create_def_row()
