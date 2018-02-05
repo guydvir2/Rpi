@@ -17,7 +17,7 @@ class ButtonsGUI(ttk.Frame):
         self.master = master
         self.mframe = mainframe
         ttk.Frame.__init__(self, master)
-        self.reachable_ips = ['192.168.2.113']
+        self.reachable_ips = ['192.168.2.113','192.168.2.115']
         self.master.write2log("Valid IP's to load:" + str(self.reachable_ips))
         self.args = []  # Dictionary of loaded buttons definitions, KWargs for
         # GUIButtons Read But Defs from file
@@ -26,7 +26,7 @@ class ButtonsGUI(ttk.Frame):
         self.reload_all()
 
     def prep_buttons(self):
-        self.reload_data_files()
+        # self.reload_data_files()
         self.load_buttons_defs()
         self.get_sched_defs()
 
@@ -84,7 +84,7 @@ class ButtonsGUI(ttk.Frame):
     def get_sched_defs(self):
         # Import sched file to define button's sched
         dev_names, off_list = [], []  # Alias of device # items that are OFF in TimeTable GUI
-
+        print('sched file in butt\n\n',self.master.sched_file)
         for i, current_task in enumerate(self.master.sched_file):
             # Note : the following if statement- checks if task is selected to run ( via t.table gui ), aka 1 is checked
             # for run. now it is selected as to to bypass this if statemnet. i think at the momnet is is not a valid
@@ -115,7 +115,7 @@ class ButtonsGUI(ttk.Frame):
                 elif args['nickname'] in sched[0] and '[UP]' in sched[0].upper():  # Valid to Window UP sched
                     self.args[i]['sched_vector2'] = self.device_list_sched[t][2]
 
-        # print(self.args)
+        # print("this is args\n", self.args)
 
     def build_gui(self):
 
@@ -198,7 +198,7 @@ class MainGUI(ttk.Frame):
 
         self.FileManSched = readfile_ssh.LoadFile(filename=self.sched_filename, path=self.path)
         self.sched_file = self.FileManSched.data_from_file
-        print(self.sched_file)
+        # print("thisis sched_files\n",self.sched_file)
 
     def save_data_to_file(self):
         self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())

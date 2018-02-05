@@ -1,8 +1,8 @@
 """ This Lib is used with ButtonLib2 as HW module designed by me"""
-from gpiozero.pins.pigpio import PiGPIOFactory
-import gpiozero
+# from gpiozero.pins.pigpio import PiGPIOFactory
+# import gpiozero
 import pigpio
-from gpiozero import OutputDevice
+# from gpiozero import OutputDevice
 import datetime
 import os
 
