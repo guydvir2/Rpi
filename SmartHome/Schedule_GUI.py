@@ -13,30 +13,24 @@ class ButtonsGUI(ttk.Frame):
     """AllButtons GUI Class"""
 
     def __init__(self, master, mainframe):
-
         self.master = master
         self.mframe = mainframe
         ttk.Frame.__init__(self, master)
-        self.reachable_ips = ['192.168.2.113', '192.168.2.115','192.168.2.114']
+        self.reachable_ips = ['192.168.2.113', '192.168.2.115', '192.168.2.114']
         self.master.write2log("Valid IP's to load:" + str(self.reachable_ips))
-
 
         self.reload_all()
 
-    def prep_buttons(self):
-        self.load_buttons_defs()
-        self.get_sched_defs()
-
     def reload_all(self):
-        self.args = []  # Dictionary of loaded buttons definitions, KWargs for
-        self.buts = []
+        self.args, self.buts = [], []  # Dictionary of loaded buttons definitions, KWargs for
         self.loaded_buts, self.sched_vector, self.but2load = [], [], []
-        self.sched_vector = []
-        self.device_list_sched = []
+        self.sched_vector, self.device_list_sched = [], []
+
         self.mainframe = ttk.LabelFrame(self.mframe, text="Button")
         self.mainframe.grid(padx=5, pady=5)
 
-        self.prep_buttons()
+        self.load_buttons_defs()
+        self.get_sched_defs()
         self.build_gui()
 
     # def reload_data_files(self):
@@ -91,7 +85,7 @@ class ButtonsGUI(ttk.Frame):
             dev_names.append(current_task[2])
 
         # Create a list- including buttons and ALL sched in sched_vector ( multilpe values)
-         # this list contain index of buttons in sched list
+        # this list contain index of buttons in sched list
         for x, dev in enumerate(list(set(dev_names))):
             self.device_list_sched.append([dev])  # name of device
             self.device_list_sched[x].append([])  # index
