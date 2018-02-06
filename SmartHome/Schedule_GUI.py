@@ -17,10 +17,9 @@ class ButtonsGUI(ttk.Frame):
         self.master = master
         self.mframe = mainframe
         ttk.Frame.__init__(self, master)
-        self.reachable_ips = ['192.168.2.113', '192.168.2.115']
+        self.reachable_ips = ['192.168.2.113', '192.168.2.115','192.168.2.114']
         self.master.write2log("Valid IP's to load:" + str(self.reachable_ips))
-        self.args = []  # Dictionary of loaded buttons definitions, KWargs for
-        self.buts = []
+
 
         self.reload_all()
 
@@ -29,7 +28,11 @@ class ButtonsGUI(ttk.Frame):
         self.get_sched_defs()
 
     def reload_all(self):
+        self.args = []  # Dictionary of loaded buttons definitions, KWargs for
+        self.buts = []
         self.loaded_buts, self.sched_vector, self.but2load = [], [], []
+        self.sched_vector = []
+        self.device_list_sched = []
         self.mainframe = ttk.LabelFrame(self.mframe, text="Button")
         self.mainframe.grid(padx=5, pady=5)
 
@@ -78,7 +81,7 @@ class ButtonsGUI(ttk.Frame):
             self.args.append(c)
 
     def get_sched_defs(self):
-        self.sched_vector = []
+
         dev_names, off_list = [], []  # Alias of device # items that are OFF in TimeTable GUI
         for i, current_task in enumerate(self.master.sched_file):
             if current_task[1] == "0" or not all(current_task[0:6]):
@@ -88,7 +91,7 @@ class ButtonsGUI(ttk.Frame):
             dev_names.append(current_task[2])
 
         # Create a list- including buttons and ALL sched in sched_vector ( multilpe values)
-        self.device_list_sched = []  # this list contain index of buttons in sched list
+         # this list contain index of buttons in sched list
         for x, dev in enumerate(list(set(dev_names))):
             self.device_list_sched.append([dev])  # name of device
             self.device_list_sched[x].append([])  # index
@@ -110,7 +113,6 @@ class ButtonsGUI(ttk.Frame):
     def build_gui(self):
         x = 0
         for l, current_button in enumerate(self.master.buts_defs):
-            print(current_button)
             try:
                 # load button if it in allowed ip list, and checked
                 # [ 'ID','ENABLED','Type','nick','ip_out','hw_out','hw_in']
@@ -212,8 +214,8 @@ class MainGUI(ttk.Frame):
         notebook.grid()
 
         self.log_window()
-        self.butt_config_gui(2, 0)
         self.buttons_gui(1, 0)
+        self.butt_config_gui(2, 0)
         self.weekly_sched_gui(0, 0)
 
     def weekly_sched_gui(self, r=0, c=0):
@@ -234,7 +236,6 @@ class MainGUI(ttk.Frame):
         ttk.Button(self.sched_tab, text='reload schedule', command=self.ButtonNote.update_schedule).grid()
 
     def butt_config_gui(self, r=0, c=0):
-
         buttons_type = getattr(ButtonLib2, 'button_list')  # Get Button type from ButtonLib
         self.ButConfigTable = tablegui.DeviceConfigGUI(self.config_but_tab,
                                                        data_file_name=self.path + self.but_filename,
@@ -243,7 +244,6 @@ class MainGUI(ttk.Frame):
         self.write2log("Buttons config GUI loaded")
 
     def buttons_gui(self, r=0, c=0):
-
         self.ButtonNote = ButtonsGUI(self, self.buttons_tab)
         self.ButtonNote.grid(row=0, column=0)
 

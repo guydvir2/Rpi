@@ -29,10 +29,12 @@ class CoreTable(ttk.Frame):
 
         self.status_frame = ttk.Frame(self.main_frame)
         self.status_frame.grid(row=1, column=0)
-
-        self.data_mat, self.add_row_flag = [], 0
         self.filename = data_filename
 
+        self.build_procedure()
+
+    def build_procedure(self):
+        self.data_mat, self.add_row_flag = [], 0
         self.load_data_from_file()
         self.button_gui()
         self.restart_table()
@@ -121,10 +123,8 @@ class CoreTable(ttk.Frame):
 
     def save_table(self):
         readfile_ssh.LoadFile(filename=self.filename).save_to_file(mat=self.extract_data())
-        # print(np.array(self.data_mat))
 
     def save2(self):
-        # print(np.array(self.extract_data()))
         readfile_ssh.LoadFile(filename=self.filename).save_to_file(mat=self.extract_data())
 
     def status_bar(self):
@@ -139,6 +139,8 @@ class DeviceConfigGUI(CoreTable):
         self.default_data = [[0, 0, 'ERR', 'Load', 'DATA', 'FILE', '!!!!']]
         self.dropbox_values = list
         CoreTable.__init__(self, master, data_filename=data_file_name)
+
+        self.additional_buttons()
 
     def table_structure(self, rows):
         for i in range(1, rows + 1):
@@ -189,6 +191,23 @@ class DeviceConfigGUI(CoreTable):
 
             self.vars_vector.append(self.v)
 
+    def additional_buttons(self):
+        # print(self.master.master.master.master.__doc__)
+        self.reload_button = ttk.Button(self.button_frame, text='Reload', width=8, takefocus=False,
+                                        command=self.save_and_reload, style='bg.TButton')
+        self.reload_button.grid(row=0, column=3, padx=5)
+
+    def save_and_reload(self):
+        self.save2()
+        # Crash and build ButtonsGUI
+        self.master.master.master.master.ButtonNote.close_for_reload()
+        self.master.master.master.master.ButtonNote.reload_all()
+        # Crash and build DeviceConfigGUI
+        self.crash_table()
+        self.build_procedure()
+
+
+
 
 class TimeTableConfigGUI(CoreTable):
     def __init__(self, master, data_file_name='', list=[]):
@@ -199,8 +218,8 @@ class TimeTableConfigGUI(CoreTable):
         self.dropbox_values = list
         self.default_data = [[0, 1, 'Load err', [3, 4, 5, 6], "23:07:00", "01:08:00", 'err', 'On']]
         CoreTable.__init__(self, master, data_filename=data_file_name)
-        self.additional_buttons()
 
+        self.additional_buttons()
         self.update_time_table()
 
     def table_structure(self, rows):
