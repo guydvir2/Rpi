@@ -3,7 +3,6 @@ import readfile_ssh
 import tablegui
 import tkinter as tk
 from tkinter import ttk
-
 import datetime
 import numpy as np
 from sys import platform
@@ -17,36 +16,25 @@ class ButtonsGUI(ttk.Frame):
         self.master = master
         self.mframe = mainframe
         ttk.Frame.__init__(self, master)
-        self.reachable_ips = ['192.168.2.113','192.168.2.115']
+        self.reachable_ips = ['192.168.2.113', '192.168.2.115', '192.168.2.114']
         self.master.write2log("Valid IP's to load:" + str(self.reachable_ips))
-        self.args = []  # Dictionary of loaded buttons definitions, KWargs for
-        # GUIButtons Read But Defs from file
 
-        self.buts = []
         self.reload_all()
 
-    def prep_buttons(self):
-        # self.reload_data_files()
-        self.load_buttons_defs()
-        self.get_sched_defs()
+    def zero_vars(self):
+        self.args, self.buts, self.but2load = [], [], []
+        self.loaded_buts, self.sched_vector, self.device_list_sched = [], [], []
 
     def reload_all(self):
+        self.zero_vars()
         self.mainframe = ttk.LabelFrame(self.mframe, text="Button")
         self.mainframe.grid(padx=5, pady=5)
 
-        self.loaded_buts, self.sched_vector, self.but2load = [], [], []
-
-        self.prep_buttons()
+        self.load_buttons_defs()
+        self.get_sched_defs()
         self.build_gui()
 
-    def reload_data_files(self):
-
-        # self.master.WeekSched_TimeTable.save_table()
-        # self.master.FileManButs.save_to_file(mat=self.master.ButConfigTable.extract_data())
-        self.master.read_data_from_files()
-
     def load_buttons_defs(self):
-
         # keys "hw_in","hw_out","dimension" - get special treatment in next for
         # loop in extracting string values
         self.button_keys = ['id', 'on_off', 'type', 'nickname', 'ip_out', 'hw_out', 'hw_in',
@@ -82,13 +70,10 @@ class ButtonsGUI(ttk.Frame):
             self.args.append(c)
 
     def get_sched_defs(self):
-        # Import sched file to define button's sched
+        self.device_list_sched, self.sched_vector = [], []
+
         dev_names, off_list = [], []  # Alias of device # items that are OFF in TimeTable GUI
-        print('sched file in butt\n\n',self.master.sched_file)
         for i, current_task in enumerate(self.master.sched_file):
-            # Note : the following if statement- checks if task is selected to run ( via t.table gui ), aka 1 is checked
-            # for run. now it is selected as to to bypass this if statemnet. i think at the momnet is is not a valid
-            # checc
             if current_task[1] == "0" or not all(current_task[0:6]):
                 off_list.append(i)
             self.sched_vector.append(current_task[3:6])
@@ -96,7 +81,7 @@ class ButtonsGUI(ttk.Frame):
             dev_names.append(current_task[2])
 
         # Create a list- including buttons and ALL sched in sched_vector ( multilpe values)
-        self.device_list_sched = []  # this list contain index of buttons in sched list
+        # this list contain index of buttons in sched list
         for x, dev in enumerate(list(set(dev_names))):
             self.device_list_sched.append([dev])  # name of device
             self.device_list_sched[x].append([])  # index
@@ -115,16 +100,15 @@ class ButtonsGUI(ttk.Frame):
                 elif args['nickname'] in sched[0] and '[UP]' in sched[0].upper():  # Valid to Window UP sched
                     self.args[i]['sched_vector2'] = self.device_list_sched[t][2]
 
-        # print("this is args\n", self.args)
-
     def build_gui(self):
 
         x = 0
         for l, current_button in enumerate(self.master.buts_defs):
             try:
-                # load button if it in allowed ip list and not off in table
-                # [ 'No','Type','nick','ip_out','hw_out','hw_in','on/off']
-                if current_button[4] in self.reachable_ips:
+                # load button if it in allowed ip list, and checked
+                # [ 'ID','ENABLED','Type','nick','ip_out','hw_out','hw_in']
+                if current_button[4] in self.reachable_ips and \
+                        current_button[1] == '1':
                     self.buts.append(getattr(ButtonLib2, current_button[2])
                                      (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
@@ -144,7 +128,7 @@ class ButtonsGUI(ttk.Frame):
 
     def update_schedule(self):
         self.master.WeekSched_TimeTable.save2()
-        self.reload_data_files()
+        self.master.read_data_from_files()
         self.get_sched_defs()
 
         for i, current_but in enumerate(self.buts):
@@ -153,19 +137,31 @@ class ButtonsGUI(ttk.Frame):
                     keys = ['sched_vector', 'sched_vector2']
                     for sw, current_key in enumerate(keys):
                         try:
-                            print(current_schedtask['nickname'], 'key: ', current_key, current_schedtask[current_key])
+                            # print(current_schedtask['nickname'], 'key: ', current_key, current_schedtask[current_key])
                             current_but.update_schedule(sw=sw, new_sched=current_schedtask[current_key])
 
                         except KeyError:
-                            print(current_schedtask['nickname'], ' has no ', current_key)
+                            pass
+                            # print(current_schedtask['nickname'], ' has no ', current_key)
+
+
 
 class MainGUI(ttk.Frame):
     """ This MainGui Class"""
 
     def __init__(self, master):
         ttk.Frame.__init__(self, master)
+        self.log_stack = []
+        self.write2log('init time')
+        self.but_filename = 'ButtonsDef2.csv'
+        self.sched_filename = 'Schedule.csv'
+        self.app_name = 'Pi Scheduler'
+        master.title(self.app_name)
 
-        # Get OS type - and select path
+        self.detectOS()
+        self.reload_all()
+
+    def detectOS(self):
         os_type = platform
         if os_type == 'darwin':
             self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
@@ -173,15 +169,7 @@ class MainGUI(ttk.Frame):
             self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
         elif os_type == 'linux':
             self.path = '/home/guy/Documents/github/Rpi/SmartHome/'
-
-        # self.path = '/home/guy/PythonProjects/SmartHome/'
-
-        self.but_filename = 'ButtonsDef2.csv'
-        self.sched_filename = 'Schedule.csv'
-        self.app_name = 'Pi Scheduler'
-        master.title(self.app_name)
-
-        self.reload_all()
+        self.write2log('OS detected:' + str(os_type))
 
     def reload_all(self):
         self.main_frame = ttk.Frame(self)
@@ -278,11 +266,21 @@ class MainGUI(ttk.Frame):
         log_button.grid(row=1, column=0, sticky=tk.E, pady=10)
 
     def write2log(self, text_in):
-        self.text_tab.config(state=tk.NORMAL)
-        time2log = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-        start = tk.END
-        self.text_tab.insert(start, "[" + str(time2log) + "] " + text_in + "\n")
-        self.text_tab.config(state=tk.DISABLED)
+        try:
+            self.text_tab.config(state=tk.NORMAL)
+            time2log = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+            start = tk.END
+            if self.log_stack != []:
+                for msg in self.log_stack:
+                    self.text_tab.insert(start, msg)
+                    start = tk.END
+                self.log_stack = []
+            self.text_tab.insert(start, "[" + str(time2log) + "] " + text_in + "\n")
+            self.text_tab.config(state=tk.DISABLED)
+        except AttributeError:
+            # Stack log prior to boot of log
+            time2log = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+            self.log_stack.append('[' + str(time2log) + '] ' + text_in + '\n')
 
     def xtrct_nums(self, lista):
         # make a list from str or list comb iwth strings

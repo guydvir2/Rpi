@@ -302,6 +302,7 @@ class TimeTableConfigGUI(CoreTable):
                     time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
 
                     # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
+                    #
                     if but_sched_active == 1 and task_state == 1 and actv_tsk == but_sced_tsk_num:
                         text_to_entry('on: ' + time_remain, 'green')
                     elif but_sched_active == 1 and task_state == 0 and actv_tsk == but_sced_tsk_num:
@@ -313,6 +314,7 @@ class TimeTableConfigGUI(CoreTable):
                         text_to_entry('wait: ' + time_remain, 'red')
                     elif but_sched_active == -1 and task_state == 0:
                         text_to_entry('skip: ' + time_remain, 'orange')
+
 
                 except IndexError:
                     text_to_entry("error", 'red')
