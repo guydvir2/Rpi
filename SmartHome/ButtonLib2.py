@@ -31,7 +31,6 @@ class Com2Log:
         except AttributeError:
             print(text2)
 
-
 class ScheduledEvents(ttk.Frame):
 
     def __init__(self, master, tasks=[], sw=[0], **kwargs):
@@ -192,6 +191,8 @@ class ScheduledEvents(ttk.Frame):
         # Check what Sched vector are supplied:
         def check_state(sch_stat):
             ButtonClass = self.master.master.master  # CoreButton Class
+            current_task_state = ButtonClass.task_state[self.sw][sch_stat[0][1]]
+            sched_state = sch_stat[0][0]
 
             def update_label(txt, color='black'):
                 self.remain_time_ent['foreground'] = color
@@ -200,44 +201,39 @@ class ScheduledEvents(ttk.Frame):
             # sw  to pass to x_switch method
             # if task is on ---------** and task_state is On ----------_**
             # FIX
-            if not sch_stat[0][0] == -1 :#and ButtonClass.task_state[self.sw][sch_stat[0][1]] == 1:
+            if not sched_state == -1 :#and current_task_state == 1:
                 ## if sched state ---** is not equal to HW state : do make switch
                 # FIX
-                if (sch_stat[0][0]) != 1:#ButtonClass.get_state()[self.sw]:
-                    # ButtonClass.ext_press(self.sw, sch_stat[0][0], "Schedule Switch")
+                if sched_state != 1:#ButtonClass.get_state()[self.sw]:
+                    # ButtonClass.ext_press(self.sw, sched_state, "Schedule Switch")
                     pass
 
             # Reset task status after sched end ( in case it was cancelled )
-            elif sch_stat[0][0] == 0 and ButtonClass.task_state[self.sw] \
-                    [sch_stat[0][1]] == 0:
-                ButtonClass.task_state[self.sw][sch_stat[0][1]] = 1
+            elif sched_state == 0 and current_task_state == 0:
+                current_task_state = 1
                 update_label("task %s restored" % str(sch_stat[0][1]), 'green')
-                print("task:", sch_stat[0][1], "Schedule restored")
+                # print("task:", sch_stat[0][1], "Schedule restored")
 
             # Coloring text :
 
             # if in "On" state : show time left to "On" in color green
-            if sch_stat[0][0] == 1 and ButtonClass.task_state[self.sw] \
-                    [sch_stat[0][1]] == 1:
+            if sched_state == 1 and current_task_state == 1:
                 update_label('On: ' + str(sch_stat[2]), 'green')
 
             # if in "off state": time to next on, in all tasks
-            elif sch_stat[0][0] == -1 and ButtonClass.task_state[self.sw] \
-                    [sch_stat[1].index(sch_stat[2])] == 1:
+            elif sched_state == -1 and ButtonClass.task_state[self.sw][sch_stat[1].index(sch_stat[2])] == 1:
                 update_label('wait: ' + str(sch_stat[2]), 'red')
 
-            # Stop running sch when it is aready ON
-            elif sch_stat[0][0] == 1 and ButtonClass.task_state[self.sw] \
-                    [sch_stat[0][1]] == 0:
+            # Stop running sch when it is already ON
+            elif sched_state == 1 and current_task_state == 0:
                 update_label("aborted: " + str(sch_stat[2]), 'red')
 
             # Disable future task
-            elif sch_stat[0][0] == -1 and ButtonClass.task_state[self.sw] \
-                    [sch_stat[1].index(sch_stat[2])] == 0:
+            elif sched_state == -1 and ButtonClass.task_state[self.sw][sch_stat[1].index(sch_stat[2])] == 0:
                 update_label("Skip: " + str(sch_stat[2]), 'orange')
 
             # Stop running sch when it is aready ON
-            elif ButtonClass.task_state[self.sw][sch_stat[0][1]] == -1:
+            elif current_task_state == -1:
                 update_label("Cancel: " + str(sch_stat[2]), 'red')
 
             # print(ButtonClass.nick, ButtonClass.task_state)

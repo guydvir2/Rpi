@@ -219,8 +219,7 @@ class TimeTableConfigGUI(CoreTable):
 
             # Device
             self.v.append(tk.StringVar())
-            a3 = ttk.Combobox(self.table_frame, textvariable=self.v[c], width=20,
-                              values=list(self.dropbox_values),
+            a3 = ttk.Combobox(self.table_frame, textvariable=self.v[c], width=20,values=list(self.dropbox_values),
                               state='readonly', justify=tk.CENTER)
             a3.grid(row=i, column=c)
             c += 1
@@ -300,6 +299,7 @@ class TimeTableConfigGUI(CoreTable):
                     but_sched_active = but.SchRun[sch_index].get_state()[0][0]
                     but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
                     time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
+                    # print(but.nick, actv_tsk, task_state, sch_index, but_sched_active, but_sced_tsk_num)
 
                     # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
                     #
@@ -314,6 +314,9 @@ class TimeTableConfigGUI(CoreTable):
                         text_to_entry('wait: ' + time_remain, 'red')
                     elif but_sched_active == -1 and task_state == 0:
                         text_to_entry('skip: ' + time_remain, 'orange')
+                    elif task_state == -1:
+                        text_to_entry('retyrty: ' + time_remain, 'orange')
+
 
 
                 except IndexError:
