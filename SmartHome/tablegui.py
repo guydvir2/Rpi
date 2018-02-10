@@ -291,6 +291,7 @@ class TimeTableConfigGUI(CoreTable):
                 self.time_left_vector[a]['foreground'] = color
 
             for a, current_task in enumerate(self.vars_vector):
+
                 try:
                     # shortcuts
                     but = MainGUI.ButtonNote.buts[self.relations_vector[a][1]]
@@ -301,8 +302,10 @@ class TimeTableConfigGUI(CoreTable):
                     but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
                     time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
 
+                    # if but.nick == 'Lights':
+                    #     print(task_state)
+
                     # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
-                    #
                     if but_sched_active == 1 and task_state == 1 and actv_tsk == but_sced_tsk_num:
                         text_to_entry('on: ' + time_remain, 'green')
                     elif but_sched_active == 1 and task_state == 0 and actv_tsk == but_sced_tsk_num:
@@ -314,13 +317,25 @@ class TimeTableConfigGUI(CoreTable):
                         text_to_entry('wait: ' + time_remain, 'red')
                     elif but_sched_active == -1 and task_state == 0:
                         text_to_entry('skip: ' + time_remain, 'orange')
+                    elif current_task[1].get() == 0:
+                        text_to_entry('GUY: ' + time_remain, 'orange')
 
 
                 except IndexError:
-                    text_to_entry("error", 'red')
+                    if current_task[1].get() == 0:
+                        text_to_entry("disabled", 'red')
+                        # self.master.ButtonNote
+                        # self.master.master.master.master.ButtonNote.update_schedule()
+                    else:
+                        text_to_entry("shit", 'red')
 
             self.run_id = self.after(1000, update_run)
 
+        self.create_relations_vector()
+        update_run()
+
+    def create_relations_vector(self):
+        MainGUI = self.master.master.master.master
         self.relations_vector = []
         for i, current_timetable_row in enumerate(self.vars_vector):
             v = []
@@ -329,8 +344,7 @@ class TimeTableConfigGUI(CoreTable):
                     v = [i, m, MainGUI.findtasknum(i)[0], MainGUI.findtasknum(i)[1]]
                     # v = [index, but#, tsk#, SchRun#]
             self.relations_vector.append(v)
-
-        update_run()
+        # print(self.relations_vector)
 
 
 if __name__ == "__main__":

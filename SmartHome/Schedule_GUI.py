@@ -37,8 +37,7 @@ class ButtonsGUI(ttk.Frame):
     def load_buttons_defs(self):
         # keys "hw_in","hw_out","dimension" - get special treatment in next for
         # loop in extracting string values
-        self.button_keys = ['id', 'on_off', 'type', 'nickname', 'ip_out', 'hw_out', 'hw_in',
-                            'ip_in', 'dimension']
+        self.button_keys = ['id', 'on_off', 'type', 'nickname', 'ip_out', 'hw_out', 'hw_in', 'ip_in', 'dimension']
 
         start_key = 1
         for i, but_defs in enumerate(self.master.buts_defs):
@@ -76,8 +75,10 @@ class ButtonsGUI(ttk.Frame):
         for i, current_task in enumerate(self.master.sched_file):
             if current_task[1] == "0" or not all(current_task[0:6]):
                 off_list.append(i)
-            self.sched_vector.append(current_task[3:6])
-            self.sched_vector[i][0] = self.master.xtrct_nums(current_task[3])
+                self.sched_vector.append([])
+            else:
+                self.sched_vector.append(current_task[3:6])
+                self.sched_vector[i][0] = self.master.xtrct_nums(current_task[3])
             dev_names.append(current_task[2])
 
         # Create a list- including buttons and ALL sched in sched_vector ( multilpe values)
@@ -107,8 +108,7 @@ class ButtonsGUI(ttk.Frame):
             try:
                 # load button if it in allowed ip list, and checked
                 # [ 'ID','ENABLED','Type','nick','ip_out','hw_out','hw_in']
-                if current_button[4] in self.reachable_ips and \
-                        current_button[1] == '1':
+                if current_button[4] in self.reachable_ips and current_button[1] == '1':
                     self.buts.append(getattr(ButtonLib2, current_button[2])
                                      (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
@@ -119,10 +119,11 @@ class ButtonsGUI(ttk.Frame):
                 self.master.write2log("Error loading Button" + str(l))
         self.master.write2log("Buttons loaded successfully: " + str([x[1] for x in self.loaded_buts]))
 
-    def close_for_reload(self):
-        for but in self.buts:
-            but.close_all()
-        self.mainframe.destroy()
+    def close_for_reload(self, nick=''):
+        if nick != '':
+            for but in self.buts:
+                but.close_all()
+            self.mainframe.destroy()
 
         self.master.write2log("Shutting all buttons...Done!")
 
@@ -130,11 +131,11 @@ class ButtonsGUI(ttk.Frame):
         self.master.WeekSched_TimeTable.save2()
         self.master.read_data_from_files()
         self.get_sched_defs()
-
+        self.master.WeekSched_TimeTable.create_relations_vector()
+        keys = ['sched_vector', 'sched_vector2']
         for i, current_but in enumerate(self.buts):
             for x, current_schedtask in enumerate(self.args):
                 if current_schedtask['nickname'] == current_but.nick:
-                    keys = ['sched_vector', 'sched_vector2']
                     for sw, current_key in enumerate(keys):
                         try:
                             # print(current_schedtask['nickname'], 'key: ', current_key, current_schedtask[current_key])
@@ -143,6 +144,12 @@ class ButtonsGUI(ttk.Frame):
                         except KeyError:
                             pass
                             # print(current_schedtask['nickname'], ' has no ', current_key)
+
+    def close_but(self):
+        for but in self.buts:
+            if but.nick == 'Lights':
+                but.close_all()
+
 
 
 
@@ -235,6 +242,7 @@ class MainGUI(ttk.Frame):
         self.write2log("Weekly schedule GUI started")
 
         ttk.Button(self.sched_tab, text='reload schedule', command=self.ButtonNote.update_schedule).grid()
+        ttk.Button(self.config_but_tab, text='reload schedule', command=self.ButtonNote.close_but).grid()
 
     def butt_config_gui(self, r=0, c=0):
 
@@ -243,6 +251,7 @@ class MainGUI(ttk.Frame):
                                                        data_file_name=self.path + self.but_filename,
                                                        list=buttons_type)
         self.ButConfigTable.grid(row=r, column=c)
+
         self.write2log("Buttons config GUI loaded")
 
     def buttons_gui(self, r=0, c=0):
