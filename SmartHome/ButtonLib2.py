@@ -70,12 +70,9 @@ class ScheduledEvents(ttk.Frame):
             self.empty_sched = True
 
     def update_sched(self, tasks=[]):
-
         self.tasks = tasks
         self.close_device()
         self.prep_to_run()
-
-        # print(self.master.master.nick, "Schedule update, done ")
 
     def check_integrity_time_table(self):
         time_err, days_err = 0, 0
@@ -252,8 +249,8 @@ class ScheduledEvents(ttk.Frame):
         if self.run_id != None:
             self.after_cancel(self.run_id)
 
-        self.ent_var.set("Not Active")
-        self.remain_time_ent['foreground'] = 'red'
+        self.ent_var.set("No Schedule")
+        self.remain_time_ent['foreground'] = 'blue'
 
 
 class TimeOutCounter(ttk.Frame):
@@ -468,16 +465,13 @@ class CoreButton(ttk.Frame):
 
         if ip_in == '':
             ip_in = ip_out  # in case remote input is not defined
-        self.HW_input = None
-        # self.task_state, self.switch_type = [[1] * len(sched_vector), [1] * len(sched_vector2)], ''
-        self.switch_type = ''
-        self.nick, self.ip_out = nickname, ip_out
 
+        self.nick, self.ip_out, self.switch_type = nickname, ip_out, ''
         self.on_off_var = tk.IntVar()  # Enables/Disables All button's GUI
         self.on_off_var.set(on_off)
         self.enable_disable_sched_var = tk.IntVar()  # Enables/ Disables Sched ( task_state)
         self.but_stat, self.buts = [tk.IntVar() for i in range(num_buts)], []
-        self.is_alive = None
+        self.is_alive, self.HW_input  = None, None
 
         # create log
         self.com = Com2Log(self, self.nick)
@@ -497,6 +491,9 @@ class CoreButton(ttk.Frame):
         self.extras_gui()
         self.connection_gui()
 
+        self.verify_on_off_state()
+
+    def verify_on_off_state(self):
         if self.on_off_var.get() == 0:
             self.is_alive = 0
             self.disable_but()
@@ -505,7 +502,7 @@ class CoreButton(ttk.Frame):
 
     def test(self):
         # self.schedule_update(sw=1, updated_schedule=[[[6], "12:00:00", "21:00:00"]])
-        self.shutdown_SchRun()
+        self.shutdown_SchRun(sw=0)
 
     def schedule_update(self, sw=None, updated_schedule=[]):
         if self.SchRun[sw].empty_sched is False:
@@ -565,7 +562,8 @@ class CoreButton(ttk.Frame):
             for current_sw in self.SchRun:
                 current_sw.close_device()
                 print("HI")
-
+        else:
+            self.SchRun[sw].close_device()
 
     def build_gui(self):
         raise NotImplementedError('You have to override method build_gui()')
