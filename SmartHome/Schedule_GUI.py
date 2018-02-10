@@ -64,7 +64,6 @@ class ButtonsGUI(ttk.Frame):
                     c[m] = but_defs[t]
                 t += 1
 
-            # a dict contains all argument needed to define a button
             del c['type']
             self.args.append(c)
 
