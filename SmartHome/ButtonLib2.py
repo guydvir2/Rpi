@@ -243,6 +243,7 @@ class ScheduledEvents(ttk.Frame):
         if self.run_id != None:
             self.after_cancel(self.run_id)
             print(self.master.master.master.nick, "'s schedule aborted")
+            self.run_id = None
 
         self.ent_var.set("Schedule stopped")
         self.remain_time_ent['foreground'] = 'blue'
@@ -497,13 +498,14 @@ class CoreButton(ttk.Frame):
 
     def test(self):
         self.schedule_update(sw=0, updated_schedule=[[[6], "12:00:00", "21:00:00"]])
-        # self.shutdown_SchRun(sw=0)
+        # self.shutdown_SchRun()
 
     def schedule_update(self, sw=None, updated_schedule=[]):
+        self.shutdown_SchRun()
+
         status = ''
         if updated_schedule == []:
             status = "shutting_down schedule"
-            self.shutdown_SchRun(sw=sw)
         elif self.SchRun[sw].empty_sched is False and updated_schedule != []:
             status = 'updating existing sch'
             self.SchRun[sw].update_sched(updated_schedule)
@@ -517,7 +519,7 @@ class CoreButton(ttk.Frame):
 
     def init_hardware(self):
         if self.pigpio_valid(self.ip_out) == 1:
-            # print("Reach")
+            print("%s at %s is piogpio-valid" % (self.nick, str(self.ip_out)))
             # FIX
             # #
             # self.HW_output = gpiobuttonlib.HWRemoteOutput(self, ip_out, hw_out)
@@ -525,7 +527,7 @@ class CoreButton(ttk.Frame):
             # if not hw_in == []: self.HW_input = gpiobuttonlib.HWRemoteInput(self, ip_in, hw_in)
             pass
         elif self.pigpio_valid(self.ip_out) == 0:
-            print("Fail to reach")
+            print("Fail to reach %s at %s" % (self.nick, str(self.ip_out)))
             self.unSuccLoad()
 
     def pigpio_valid(self, address):
@@ -564,8 +566,7 @@ class CoreButton(ttk.Frame):
         if sw is None:
             for current_sw in self.SchRun:
                 current_sw.close_device()
-                print(self.nick)
-
+                print(self.nick, "commence SchRun shutdown")
         else:
             self.SchRun[sw].close_device()
             print(self.nick, "Closed SchRun ", sw)
@@ -904,9 +905,9 @@ if __name__ == "__main__":
     #                                                           [[5], "19:42:00", "23:50:10"]], on_off=0)
     #    e.grid(row=0, column=0, sticky=tk.S)
     #
-    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21])  # ,
-    # sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]],
-    # sched_vector=[[[6], "1:24:30", "23:12:10"]])
+    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21],
+                     sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]],
+                     sched_vector=[[[6], "1:24:30", "23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
     #
     g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.113',
