@@ -242,8 +242,9 @@ class ScheduledEvents(ttk.Frame):
     def close_device(self):
         if self.run_id != None:
             self.after_cancel(self.run_id)
+            print(self.master.master.master.nick, "'s schedule aborted")
 
-        self.ent_var.set("No Schedule")
+        self.ent_var.set("Schedule stopped")
         self.remain_time_ent['foreground'] = 'blue'
 
 
@@ -495,8 +496,8 @@ class CoreButton(ttk.Frame):
             self.is_alive = 1
 
     def test(self):
-        # self.schedule_update(sw=1, updated_schedule=[[[6], "12:00:00", "21:00:00"]])
-        self.shutdown_SchRun(sw=0)
+        self.schedule_update(sw=0, updated_schedule=[[[6], "12:00:00", "21:00:00"]])
+        # self.shutdown_SchRun(sw=0)
 
     def schedule_update(self, sw=None, updated_schedule=[]):
         status = ''
@@ -567,7 +568,7 @@ class CoreButton(ttk.Frame):
 
         else:
             self.SchRun[sw].close_device()
-        # print(self.nick, "Closed SchRun ", sw)
+            print(self.nick, "Closed SchRun ", sw)
 
     def build_gui(self):
         raise NotImplementedError('You have to override method build_gui()')

@@ -1,6 +1,6 @@
 
-TSK#00,0,WaterBoiler[Down],6,08:48:00,17:48:20,"wait: 5 days, 15:26:54",On
-TSK#01,1,Lights,6,06:09:00,16:10:00,"wait: 5 days, 12:47:54",On
-TSK#02,1,Lights,7,14:05:00,17:55:59,on: 0:34:53,On
-TSK#03,1,WaterBoiler[Down],7,18:40:30,18:40:55,wait: 1:19:24,On
-TSK#04,1,RoomWindow[Down],6,20:09:00,21:10:00,"wait: 6 days, 2:47:54",On
+TSK#00,0,WaterBoiler[Down],6,08:48:00,17:48:20,"wait: 6 days, 21:43:06",On
+TSK#01,1,Lights,6,06:09:00,16:10:00,"wait: 5 days, 9:11:36",On
+TSK#02,1,Lights,7,14:05:00,22:55:59,"wait: 6 days, 17:07:36",On
+TSK#03,1,WaterBoiler[Down],7,18:40:30,18:40:55,index err: ,On
+TSK#04,1,RoomWindow[Down],6,20:09:00,21:10:00,"wait: 5 days, 23:11:36",On
