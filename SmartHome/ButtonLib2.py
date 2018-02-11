@@ -6,6 +6,7 @@ import time
 import gpiobuttonlib
 import os
 
+
 # import pigpio
 
 
@@ -464,7 +465,7 @@ class CoreButton(ttk.Frame):
         self.on_off_var.set(on_off)
         self.enable_disable_sched_var = tk.IntVar()  # Enables/ Disables Sched ( task_state)
         self.but_stat, self.buts = [tk.IntVar() for i in range(num_buts)], []
-        self.is_alive, self.HW_input  = None, None
+        self.is_alive, self.HW_input = None, None
 
         # create log
         self.com = Com2Log(self, self.nick)
@@ -498,13 +499,20 @@ class CoreButton(ttk.Frame):
         self.shutdown_SchRun(sw=0)
 
     def schedule_update(self, sw=None, updated_schedule=[]):
-        if self.SchRun[sw].empty_sched is False:
+        status = ''
+        if updated_schedule == []:
+            status = "shutting_down schedule"
+            self.shutdown_SchRun(sw=sw)
+        elif self.SchRun[sw].empty_sched is False and updated_schedule != []:
+            status = 'updating existing sch'
             self.SchRun[sw].update_sched(updated_schedule)
-        elif self.SchRun[sw].empty_sched is True:
+        elif self.SchRun[sw].empty_sched is True and updated_schedule != []:
+            status = 'restarting sch'
             if sw == 0:
                 self.init_SchRun(sched_vector=updated_schedule)
             elif sw == 1:
                 self.init_SchRun(sched_vector2=updated_schedule)
+        print(self.nick, 'is %s on switch %d, new schedule is %s' % (status, sw, str(updated_schedule)))
 
     def init_hardware(self):
         if self.pigpio_valid(self.ip_out) == 1:
@@ -555,9 +563,11 @@ class CoreButton(ttk.Frame):
         if sw is None:
             for current_sw in self.SchRun:
                 current_sw.close_device()
-                print("HI")
+                print(self.nick)
+
         else:
             self.SchRun[sw].close_device()
+        # print(self.nick, "Closed SchRun ", sw)
 
     def build_gui(self):
         raise NotImplementedError('You have to override method build_gui()')

@@ -133,21 +133,19 @@ class ButtonsGUI(ttk.Frame):
         self.master.WeekSched_TimeTable.create_relations_vector()
         keys = ['sched_vector', 'sched_vector2']
         for i, current_but in enumerate(self.buts):
+            current_but.shutdown_SchRun()
             for x, current_schedtask in enumerate(self.args):
                 if current_schedtask['nickname'] == current_but.nick:
                     for sw, current_key in enumerate(keys):
                         try:
-                            # print(current_schedtask['nickname'], 'key: ', current_key, current_schedtask[current_key])
-                            current_but.update_schedule(sw=sw, new_sched=current_schedtask[current_key])
-
+                            current_but.schedule_update(sw=sw, updated_schedule=current_schedtask[current_key])
                         except KeyError:
                             pass
-                            # print(current_schedtask['nickname'], ' has no ', current_key)
 
     def close_but(self):
         for but in self.buts:
-            if but.nick == 'Lights':
-                but.close_all()
+            # if but.nick == 'Lights':
+            but.close_all()
 
 
 

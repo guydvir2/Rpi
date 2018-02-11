@@ -300,10 +300,6 @@ class TimeTableConfigGUI(CoreTable):
                     but_sched_active = but.SchRun[sch_index].get_state()[0][0]
                     but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
                     time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
-                    # print(but.nick, actv_tsk, task_state, sch_index, but_sched_active, but_sced_tsk_num)
-
-                    # if but.nick == 'Lights':
-                    #     print(task_state)
 
                     # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
                     if but_sched_active == 1 and task_state == 1 and actv_tsk == but_sced_tsk_num:
@@ -317,20 +313,19 @@ class TimeTableConfigGUI(CoreTable):
                         text_to_entry('wait: ' + time_remain, 'red')
                     elif but_sched_active == -1 and task_state == 0:
                         text_to_entry('skip: ' + time_remain, 'orange')
-                    elif current_task[1].get() == 0:
-                        text_to_entry('GUY: ' + time_remain, 'orange')
+                    # elif current_task[1].get() == 0:
+                    #     text_to_entry('GUY: ' + time_remain, 'orange')
 #                    elif task_state == -1:
 #                        text_to_entry('retyrty: ' + time_remain, 'orange')
 
-
-
                 except IndexError:
-                    if current_task[1].get() == 0:
-                        text_to_entry("disabled", 'red')
-                        # self.master.ButtonNote
-                        # self.master.master.master.master.ButtonNote.update_schedule()
-                    else:
-                        text_to_entry("shit", 'red')
+                    text_to_entry('index err: ', 'orange')
+                    # if current_task[1].get() == 0:
+                    #     text_to_entry("disabled", 'red')
+                    #     # self.master.ButtonNote
+                    #     # self.master.master.master.master.ButtonNote.update_schedule()
+                    # else:
+                    #     text_to_entry("shit", 'red')
 
             self.run_id = self.after(1000, update_run)
 
