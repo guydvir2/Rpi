@@ -170,7 +170,7 @@ class MainGUI(ttk.Frame):
     def detectOS(self):
         os_type = platform
         if os_type == 'darwin':
-            self.path = '/Users/guy/Documents/gitHub/Rpi/SmartHome/'
+            self.path = '/Users/guyd/Documents/github/Rpi/SmartHome/'
         elif os_type == 'win32':
             self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
         elif os_type == 'linux':

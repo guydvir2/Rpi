@@ -6,14 +6,7 @@ import time
 import gpiobuttonlib
 import os
 
-
 # import pigpio
-
-# PREHAPS TO DELETE
-# ======================
-# import gpiozero
-# from gpiozero import OutputDevice
-# from gpiozero.pins.pigpio import PiGPIOFactory
 
 
 class Com2Log:
@@ -43,7 +36,7 @@ class ScheduledEvents(ttk.Frame):
         self.kwargs = kwargs
         self.sw, self.run_id = sw, None
         self.ent_var = tk.StringVar()
-        self.ent_var.set("No Schedule")  # Varabile displays remaining time to SCHED
+        self.ent_var.set("No Schedule at boot")  # Varabile displays remaining time to SCHED
 
         self.style = ttk.Style()
         self.style.configure("Blue2.TLabel", background=self.master.master.master.bg)
@@ -515,12 +508,13 @@ class CoreButton(ttk.Frame):
 
     def init_hardware(self):
         if self.pigpio_valid(self.ip_out) == 1:
-            print("Reach")
+            # print("Reach")
             # FIX
             # #
             # self.HW_output = gpiobuttonlib.HWRemoteOutput(self, ip_out, hw_out)
             # self.Indicators = gpiobuttonlib.Indicators(self.HW_output, self.buttons_frame, pdx=8)
             # if not hw_in == []: self.HW_input = gpiobuttonlib.HWRemoteInput(self, ip_in, hw_in)
+            pass
         elif self.pigpio_valid(self.ip_out) == 0:
             print("Fail to reach")
             self.unSuccLoad()

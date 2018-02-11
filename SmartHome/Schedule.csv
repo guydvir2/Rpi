@@ -1,14 +1,6 @@
 
-<<<<<<< HEAD
 TSK#00,1,WaterBoiler[Down],6,08:48:00,17:48:20,shit,On
-TSK#01,1,Lights,6,06:09:00,16:10:00,on: 6:32:47,On
-TSK#02,1,RoomWindow[Down],7,14:05:00,19:55:59,"wait: 1 day, 4:27:47",On
-TSK#03,1,RoomWindow[Up],5,18:40:30,18:40:55,"wait: 6 days, 9:03:17",On
-TSK#04,1,SafetySwitch,6,20:09:00,21:10:00,wait: 10:31:47,On
-=======
-TSK#00,0,WaterBoiler[Down],5,06:48:00,21:48:20,on: 6:48:42,On
-TSK#01,0,Lights,4,08:09:00,16:10:00,"wait: 5 days, 17:09:22",On
-TSK#02,1,RoomWindow[Down],7,14:05:00,19:55:59,"wait: 1 day, 23:05:22",On
-TSK#03,1,RoomWindow[Up],5,18:40:30,18:40:55,wait: 3:40:52,On
-TSK#04,1,SafetySwitch,6,20:09:00,21:10:00,"wait: 1 day, 5:09:22",On
->>>>>>> 60fc5434c72c8474dd74cbaf12741d7d8d7a760f
+TSK#01,1,Lights,6,06:09:00,16:10:00,"wait: 6 days, 5:01:13",On
+TSK#02,1,RoomWindow[Down],7,14:05:00,19:55:59,wait: 12:57:14,On
+TSK#03,1,RoomWindow[Up],5,18:40:30,18:40:55,"wait: 5 days, 17:32:44",On
+TSK#04,1,SafetySwitch,6,20:09:00,21:10:00,"wait: 6 days, 19:01:14",On
