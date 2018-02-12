@@ -30,7 +30,7 @@ class Com2Log:
 class ScheduledEvents(ttk.Frame):
     """ Sched Class"""
 
-    def __init__(self, master, tasks=[], sw=[0], **kwargs):
+    def __init__(self, master, tasks=[], sw=0, **kwargs):
 
         ttk.Frame.__init__(self, master)
         self.tasks = tasks
@@ -62,10 +62,11 @@ class ScheduledEvents(ttk.Frame):
 
         else:
             self.empty_sched = True
+        print(self.master.master.master.nick, "is starting with tasks:", self.tasks)
 
     def update_sched(self, tasks=[]):
         self.tasks = tasks
-        self.close_device()
+        # self.close_device()
         self.prep_to_run()
 
     def check_integrity_time_table(self):
@@ -244,6 +245,7 @@ class ScheduledEvents(ttk.Frame):
             self.after_cancel(self.run_id)
             print(self.master.master.master.nick, "'s schedule aborted")
             self.run_id = None
+            self.tasks=[]
 
         self.ent_var.set("Schedule stopped")
         self.remain_time_ent['foreground'] = 'blue'
@@ -410,6 +412,7 @@ class CoreButton(ttk.Frame):
                  ip_out='', sched_vector=[], sched_vector2=[], num_buts=1, on_off=1):
 
         ttk.Frame.__init__(self, master)
+        self.SchRun = [[], []]
 
         # Styles
         self.style = ttk.Style()
@@ -496,27 +499,6 @@ class CoreButton(ttk.Frame):
         else:
             self.is_alive = 1
 
-    def test(self):
-        self.schedule_update(sw=0, updated_schedule=[[[6], "12:00:00", "21:00:00"]])
-        # self.shutdown_SchRun()
-
-    def schedule_update(self, sw=None, updated_schedule=[]):
-        self.shutdown_SchRun()
-
-        status = ''
-        if updated_schedule == []:
-            status = "shutting_down schedule"
-        elif self.SchRun[sw].empty_sched is False and updated_schedule != []:
-            status = 'updating existing sch'
-            self.SchRun[sw].update_sched(updated_schedule)
-        elif self.SchRun[sw].empty_sched is True and updated_schedule != []:
-            status = 'restarting sch'
-            if sw == 0:
-                self.init_SchRun(sched_vector=updated_schedule)
-            elif sw == 1:
-                self.init_SchRun(sched_vector2=updated_schedule)
-        print(self.nick, 'is %s on switch %d, new schedule is %s' % (status, sw, str(updated_schedule)))
-
     def init_hardware(self):
         if self.pigpio_valid(self.ip_out) == 1:
             print("%s at %s is piogpio-valid" % (self.nick, str(self.ip_out)))
@@ -544,29 +526,69 @@ class CoreButton(ttk.Frame):
     #         return result
 
     def init_SchRun(self, sched_vector=[], sched_vector2=[]):
-        self.SchRun = []
         self.task_state = [[1] * len(sched_vector), [1] * len(sched_vector2)]
 
         if not sched_vector == []:
-            self.SchRun.append(ScheduledEvents(self.timers_frame, tasks=sched_vector, sw=0))
+            self.SchRun[0] = ScheduledEvents(self.timers_frame, tasks=sched_vector, sw=0)
             self.SchRun[0].grid(row=1, column=0, pady=3, columnspan=2)
         else:
-            self.SchRun.append(ScheduledEvents(self.timers_frame))
+            self.SchRun[0] = ScheduledEvents(self.timers_frame)
             self.SchRun[0].grid(row=1, column=0, pady=3, columnspan=2)
 
         # this section refer to UPDOWN button only
         if not sched_vector2 == [] and self.__class__.__name__ == 'UpDownButton':
-            self.SchRun.append(ScheduledEvents(self.timers_frame, tasks=sched_vector2, sw=1))
+            self.SchRun[1] = ScheduledEvents(self.timers_frame, tasks=sched_vector2, sw=1)
             self.SchRun[1].grid(row=0, column=0, pady=3, columnspan=2)
         elif sched_vector2 == [] and self.__class__.__name__ == 'UpDownButton':
-            self.SchRun.append(ScheduledEvents(self.timers_frame))
+            self.SchRun[1] = ScheduledEvents(self.timers_frame)
             self.SchRun[1].grid(row=0, column=0, pady=3, columnspan=2)
 
+    def test(self):
+        # self.schedule_update(sw=0, updated_schedule=[[[1], "1:00:00", "21:00:00"]])
+        self.schedule_update(updated_schedule=[[[1, 2],"02:24:30", "23:55:10"]])
+        # print("Before: Button: %s, Schedule %s" % (self.nick, str(self.SchRun[1].tasks)))
+        # self.shutdown_SchRun()
+        # print("After: Button: %s, Schedule %s" % (self.nick, str(self.SchRun[1].tasks)))
+
+
+    def schedule_update(self, sw=0, updated_schedule=[]):
+        # print("Before: Button: %s, Schedule %s"%(self.nick, str(self.SchRun[sw].tasks)))
+        self.shutdown_SchRun()
+            # self.SchRun[sw].update_sched(updated_schedule[1])
+            #
+            # print("After: Button: %s, Schedule %s"%(self.nick, str(self.SchRun[sw].tasks)))
+        for sw, current_sch in enumerate(self.SchRun):
+            print(sw, current_sch)
+            if current_sch == []:
+                print("sw ",sw,"is not loaded")
+            else:
+                current_sch.update_sched(updated_schedule)
+
+        # for i, schd in enumerate(updated_schedule):
+        #     if schd == []:
+        #         print("NOT SET")
+        #         status = "set to empty schedule"
+        #         self.SchRun[i].update_sched(schd)
+        #     elif self.SchRun[i].empty_sched is False and schd != []:
+        #         status = 'updating existing sch'
+        #         self.SchRun[i].update_sched(schd)
+        #     elif self.SchRun[i].empty_sched is True and schd != []:
+        #         status = 'restarting sch'
+        #         if i == 0:
+        #             self.init_SchRun(sched_vector=schd)
+        #         elif i == 1:
+        #             self.init_SchRun(sched_vector2=schd)
+        #     # print(self.nick, 'is %s on switch %d, new schedule is %s' % (status, sw, str(schd)))
+        #     # print(self.SchRun[sw].tasks)
+
     def shutdown_SchRun(self, sw=None):
+        # Terminate all Button's SchRuns
         if sw is None:
-            for current_sw in self.SchRun:
-                current_sw.close_device()
-                print(self.nick, "commence SchRun shutdown")
+            for i, current_sw in enumerate(self.SchRun):
+                # print(i, current_sw.tasks)
+                if current_sw != []:
+                    # print(self.nick, "ask for shutdown on switch-", i)
+                    current_sw.close_device()
         else:
             self.SchRun[sw].close_device()
             print(self.nick, "Closed SchRun ", sw)
@@ -909,11 +931,10 @@ if __name__ == "__main__":
                      sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]],
                      sched_vector=[[[6], "1:24:30", "23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
-    #
+
     g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.113',
-                    hw_out=[5, 7], hw_in=[17, 11], sched_vector=[[[7, 4],
-                                                                  "02:24:30", "23:55:10"],
-                                                                 [[4, 5], "13:47:20", "23:50:10"]])
+                    hw_out=[5, 7], hw_in=[17, 11])#,
+                    # sched_vector=[[[7, 4],"02:24:30", "23:55:10"],[[4, 5], "13:47:20", "23:50:10"]])
     g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()
