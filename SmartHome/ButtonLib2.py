@@ -545,24 +545,26 @@ class CoreButton(ttk.Frame):
 
     def test(self):
         # self.schedule_update(sw=0, updated_schedule=[[[1], "1:00:00", "21:00:00"]])
-        self.schedule_update(updated_schedule=[[[1, 2],"02:24:30", "23:55:10"]])
+        self.schedule_update(updated_schedule=[[[[1],"12:24:30", "21:55:10"]],[[[1, 3],"02:24:30", "23:55:10"],[[1],"12:24:30", "21:55:10"]]])
         # print("Before: Button: %s, Schedule %s" % (self.nick, str(self.SchRun[1].tasks)))
         # self.shutdown_SchRun()
         # print("After: Button: %s, Schedule %s" % (self.nick, str(self.SchRun[1].tasks)))
 
 
-    def schedule_update(self, sw=0, updated_schedule=[]):
-        # print("Before: Button: %s, Schedule %s"%(self.nick, str(self.SchRun[sw].tasks)))
+    def schedule_update(self, updated_schedule=[]):
         self.shutdown_SchRun()
-            # self.SchRun[sw].update_sched(updated_schedule[1])
-            #
-            # print("After: Button: %s, Schedule %s"%(self.nick, str(self.SchRun[sw].tasks)))
         for sw, current_sch in enumerate(self.SchRun):
-            print(sw, current_sch)
-            if current_sch == []:
-                print("sw ",sw,"is not loaded")
-            else:
-                current_sch.update_sched(updated_schedule)
+            try:
+                if updated_schedule[sw] !=[] and current_sch == []:
+                    self.init_SchRun(sched_vector=current_sch)
+                    # print(self.nick, "switch no.",sw,"is empty")
+                else:
+                    print("updating tasks-")
+                    current_sch.update_sched(updated_schedule)
+                    print("tasks:",sw, current_sch.tasks)
+            except IndexError:
+                print(sw,'error')
+
 
         # for i, schd in enumerate(updated_schedule):
         #     if schd == []:
@@ -921,20 +923,19 @@ button_list = ['UpDownButton', 'ToggleButton', 'MainsButton']
 if __name__ == "__main__":
     root = tk.Tk()
 
-    #    e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113',
-    #                     hw_out=[6], hw_in=[13], sched_vector=[[[7], "02:24:30", "23:12:10"],
-    #                                                           [[2], "19:42:00", "23:50:10"],
-    #                                                           [[5], "19:42:00", "23:50:10"]], on_off=0)
-    #    e.grid(row=0, column=0, sticky=tk.S)
-    #
+    # e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113',
+    #                 hw_out=[6], hw_in=[13], sched_vector=[[[7], "02:24:30", "23:12:10"],
+    #                                                       [[2], "19:42:00", "23:50:10"],
+    #                                                       [[5], "19:42:00", "23:50:10"]])
+    # e.grid(row=0, column=0, sticky=tk.S)
+
     f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21],
-                     sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]],
-                     sched_vector=[[[6], "1:24:30", "23:12:10"]])
+                     sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]])#,
+                     # sched_vector=[[[6], "1:24:30", "23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
 
-    g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.113',
-                    hw_out=[5, 7], hw_in=[17, 11])#,
-                    # sched_vector=[[[7, 4],"02:24:30", "23:55:10"],[[4, 5], "13:47:20", "23:50:10"]])
-    g.grid(row=0, column=2, sticky=tk.S)
+    # g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.113',
+    #                 hw_out=[5, 7], hw_in=[17, 11])#, sched_vector=[[[7, 4],"02:24:30", "23:55:10"],[[4, 5], "13:47:20", "23:50:10"]])
+    # g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()
