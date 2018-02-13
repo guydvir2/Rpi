@@ -207,7 +207,6 @@ class ScheduledEvents(ttk.Frame):
                 print("task:", sch_stat[0][1], "Schedule restored")
 
             # Coloring text :
-
             # if in "On" state : show time left to "On" in color green
             if sch_stat[0][0] == 1 and ButtonClass.task_state[self.sw] \
                     [sch_stat[0][1]] == 1:
@@ -540,26 +539,27 @@ class CoreButton(ttk.Frame):
         elif sched_vector2 == [] and self.__class__.__name__ == 'UpDownButton':
             self.SchRun[1] = ScheduledEvents(self.timers_frame)
             self.SchRun[1].grid(row=0, column=0, pady=3, columnspan=2)
-
-    def test(self):
-        self.schedule_update(updated_schedule=[[[[1], "12:24:30", "21:55:10"], [[1, 3], "02:24:30", "23:55:10"]],[[[1], "1:00:00", "21:00:00"]]])
-        # self.schedule_update(updated_schedule=[[], []])
-        # self.schedule_update(updated_schedule=[[[[1], "12:24:30", "21:55:10"]], [[[1, 3], "02:24:30", "23:55:10"], [[1], "12:24:30", "21:55:10"]]])
+    #
+    # def test(self):
+    #     self.schedule_update(updated_schedule=[[[[1], "12:24:30", "21:55:10"], [[1, 3], "02:24:30", "23:55:10"]],
+    #                                            [[[1], "1:00:00", "21:00:00"]]])
+    #     # self.schedule_update(updated_schedule=[[], []])
+    #     # self.schedule_update(updated_schedule=[[[[1], "12:24:30", "21:55:10"]], [[[1, 3], "02:24:30", "23:55:10"], [[1], "12:24:30", "21:55:10"]]])
 
     def schedule_update(self, updated_schedule=[]):
         self.shutdown_SchRun()
         for sw, current_sch in enumerate(self.SchRun):
-            status = ''
+            status = 'updated'
             try:
                 if current_sch != []:
                     self.task_state = [[1] * len(updated_schedule[0]), [1] * len(updated_schedule[1])]
-                    status = 'lev2'
                     current_sch.update_sched(updated_schedule[sw])
                 elif current_sch == [] and updated_schedule[sw] != []:
                     status = 'not have another Sch'
             except IndexError:
+                pass
                 status = 'err'
-            print(self.nick, sw, status)
+                print(self.nick, sw, status)
 
     def shutdown_SchRun(self, sw=None):
         # Terminate all Button's SchRuns
@@ -589,7 +589,7 @@ class CoreButton(ttk.Frame):
                                   bg=self.bg)
         self.ck2.grid(row=0, column=1, padx=2)
 
-        ttk.Button(self.switches_frame, text='Activate Schedule', command=self.test).grid()
+        # ttk.Button(self.switches_frame, text='Activate Schedule', command=self.test).grid()
 
         # to mark checkbot on/ off according active task
         # TO CHECK task_number = self.SchRun[0].get_state()[0][1]
@@ -740,9 +740,7 @@ class CoreButton(ttk.Frame):
 
     def unSuccLoad(self):
         # this methd runs if any fail to reach ip/ pigpiod on host
-
         state = [tk.DISABLED, tk.NORMAL]
-
         for i, but in enumerate(self.buts):
             but.config(state=state[0])
 
@@ -905,12 +903,14 @@ if __name__ == "__main__":
                                                            [[5], "19:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
 
-    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21],sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]])
+    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21],
+                     sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]])
     # sched_vector=[[[6], "1:24:30", "23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
 
     g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.113',
-                    hw_out=[5, 7], hw_in=[17, 11])#, sched_vector=[[[7, 4],"02:24:30", "23:55:10"],[[4, 5], "13:47:20", "23:50:10"]])
+                    hw_out=[5, 7], hw_in=[17,
+                                          11])  # , sched_vector=[[[7, 4],"02:24:30", "23:55:10"],[[4, 5], "13:47:20", "23:50:10"]])
     g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()
