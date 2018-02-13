@@ -113,6 +113,7 @@ class ButtonsGUI(ttk.Frame):
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1
+                    # print(self.args[l])
 
             except ValueError:
                 self.master.write2log("Error loading Button" + str(l))
@@ -335,18 +336,21 @@ class MainGUI(ttk.Frame):
 
     def findtasknum(self, m):
         sch_num = None
-        task_num = list(np.array(self.sched_file)[:m + 1, 2]).count(self.sched_file[m][2])
-        if '[UP]' in self.sched_file[m][2].upper():
-            sch_num = 1
-        else:
-            sch_num = 0
-        if '[' in self.sched_file[m][2]:
-            i = self.sched_file[m][2].index('[')
-            name = self.sched_file[m][2][:i]
-        else:
-            name = self.sched_file[m][2]
+        if self.sched_file[m][1] !='0':
+            task_num = list(np.array(self.sched_file)[:m + 1, 2]).count(self.sched_file[m][2])
+            if '[UP]' in self.sched_file[m][2].upper():
+                sch_num = 1
+            else:
+                sch_num = 0
+            if '[' in self.sched_file[m][2]:
+                i = self.sched_file[m][2].index('[')
+                name = self.sched_file[m][2][:i]
+            else:
+                name = self.sched_file[m][2]
 
-        return [task_num - 1, sch_num, name]
+            return [task_num - 1, sch_num, name]
+        else:
+            return [-1,-1,-1]
 
 
 root = tk.Tk()

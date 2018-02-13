@@ -290,42 +290,49 @@ class TimeTableConfigGUI(CoreTable):
                 self.time_left_vector[a]['foreground'] = color
 
             for a, current_task in enumerate(self.vars_vector):
+                if self.relations_vector[a][2] != -1:
 
-                try:
-                    # shortcuts
-                    but = MainGUI.ButtonNote.buts[self.relations_vector[a][1]]
-                    actv_tsk = self.relations_vector[a][2]
-                    task_state = but.task_state[self.relations_vector[a][3]][actv_tsk]
-                    sch_index = self.relations_vector[a][3]
-                    but_sched_active = but.SchRun[sch_index].get_state()[0][0]
-                    but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
-                    time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
+                    try:
+                        # shortcuts
+                        but_index = self.relations_vector[a][1]
+                        actv_tsk = self.relations_vector[a][2]
+                        sch_index = self.relations_vector[a][3]
+                        but = MainGUI.ButtonNote.buts[but_index]
+                        task_state = but.task_state[sch_index][actv_tsk]
 
-                    # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
-                    if but_sched_active == 1 and task_state == 1 and actv_tsk == but_sced_tsk_num:
-                        text_to_entry('on: ' + time_remain, 'green')
-                    elif but_sched_active == 1 and task_state == 0 and actv_tsk == but_sced_tsk_num:
-                        text_to_entry('aborted: ' + time_remain, 'red')
-                    elif task_state == -1 and actv_tsk == but_sced_tsk_num:
-                        text_to_entry('cancelled: ' + time_remain, 'red')
-                    elif but_sched_active == -1 and task_state == 1 or \
-                            but_sched_active == 1 and task_state == 1 and actv_tsk != but_sced_tsk_num:
-                        text_to_entry('wait: ' + time_remain, 'red')
-                    elif but_sched_active == -1 and task_state == 0:
-                        text_to_entry('skip: ' + time_remain, 'orange')
-                    # elif current_task[1].get() == 0:
-                    #     text_to_entry('GUY: ' + time_remain, 'orange')
-#                    elif task_state == -1:
-#                        text_to_entry('retyrty: ' + time_remain, 'orange')
+                        print(a,current_task[2].get(),but.task_state)
 
-                except IndexError:
-                    text_to_entry('index err: ', 'orange')
-                    # if current_task[1].get() == 0:
-                    #     text_to_entry("disabled", 'red')
-                    #     # self.master.ButtonNote
-                    #     # self.master.master.master.master.ButtonNote.update_schedule()
-                    # else:
-                    #     text_to_entry("shit", 'red')
+                        # but_sched_active = but.SchRun[sch_index].get_state()[0][0]
+                        # but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
+                        # time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
+
+
+                        # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
+                        # if but_sched_active == 1 and task_state == 1 and actv_tsk == but_sced_tsk_num:
+                        #     text_to_entry('on: ' + time_remain, 'green')
+                        # elif but_sched_active == 1 and task_state == 0 and actv_tsk == but_sced_tsk_num:
+                        #     text_to_entry('aborted: ' + time_remain, 'red')
+                        # elif task_state == -1 and actv_tsk == but_sced_tsk_num:
+                        #     text_to_entry('cancelled: ' + time_remain, 'red')
+                        # elif but_sched_active == -1 and task_state == 1 or \
+                        #         but_sched_active == 1 and task_state == 1 and actv_tsk != but_sced_tsk_num:
+                        #     text_to_entry('wait: ' + time_remain, 'red')
+                        # elif but_sched_active == -1 and task_state == 0:
+                        #     text_to_entry('skip: ' + time_remain, 'orange')
+                        # elif current_task[1].get() == 0:
+                        #     text_to_entry('GUY: ' + time_remain, 'orange')
+    #                    elif task_state == -1:
+    #                        text_to_entry('retyrty: ' + time_remain, 'orange')
+
+                    except IndexError:
+                        print(a,"err")
+                        text_to_entry('index err: ', 'orange')
+                        # if current_task[1].get() == 0:
+                        #     text_to_entry("disabled", 'red')
+                        #     # self.master.ButtonNote
+                        #     # self.master.master.master.master.ButtonNote.update_schedule()
+                        # else:
+                        #     text_to_entry("shit", 'red')
 
             self.run_id = self.after(1000, update_run)
 
@@ -342,7 +349,7 @@ class TimeTableConfigGUI(CoreTable):
                     v = [i, m, MainGUI.findtasknum(i)[0], MainGUI.findtasknum(i)[1]]
                     # v = [index, but#, tsk#, SchRun#]
             self.relations_vector.append(v)
-        # print(self.relations_vector)
+        print(self.relations_vector)
 
 
 if __name__ == "__main__":
