@@ -145,12 +145,6 @@ class ButtonsGUI(ttk.Frame):
                             new_sched.append([])
                     current_but.schedule_update(new_sched)
 
-            #         for sw, current_key in enumerate(keys):
-            #             try:
-            #                 current_but.schedule_update(sw=sw, updated_schedule=current_schedtask[current_key])
-            #             except KeyError:
-            #                 pass
-
     def close_but(self):
         for but in self.buts:
             # if but.nick == 'Lights':
@@ -336,28 +330,23 @@ class MainGUI(ttk.Frame):
         on_index = ar[:m + 1, 1]
         name_index = ar[:m + 1, 2]
         seek_value = ar[m, 2]
-        print(np.where(name_index,'Lights'))
-        # print(list(name_index).count(seek_value))
+        list1 = on_index[name_index == seek_value]
 
-        # for i in range(m+1):
-        #     print(name_index.count(seek_value))
+        if '[UP]' in seek_value.upper():
+            sch_num = 1
+        else:
+            sch_num = 0
+        if '[' in seek_value:
+            i = seek_value.index('[')
+            name = seek_value[:i]
+        else:
+            name = seek_value
+        task_num = list(list1).count('1')
 
-
-        if self.sched_file[m][1] != '0':
-            task_num = list(np.array(self.sched_file)[:m + 1, 2]).count(self.sched_file[m][2])
-            if '[UP]' in self.sched_file[m][2].upper():
-                sch_num = 1
-            else:
-                sch_num = 0
-            if '[' in self.sched_file[m][2]:
-                i = self.sched_file[m][2].index('[')
-                name = self.sched_file[m][2][:i]
-            else:
-                name = self.sched_file[m][2]
-
+        if list1[-1] != '0':
             return [task_num - 1, sch_num, name]
         else:
-            return [-1, -1, -1]
+            return [- 1, sch_num, name]
 
 
 root = tk.Tk()

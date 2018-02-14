@@ -539,17 +539,10 @@ class CoreButton(ttk.Frame):
         elif sched_vector2 == [] and self.__class__.__name__ == 'UpDownButton':
             self.SchRun[1] = ScheduledEvents(self.timers_frame)
             self.SchRun[1].grid(row=0, column=0, pady=3, columnspan=2)
-    #
-    # def test(self):
-    #     self.schedule_update(updated_schedule=[[[[1], "12:24:30", "21:55:10"], [[1, 3], "02:24:30", "23:55:10"]],
-    #                                            [[[1], "1:00:00", "21:00:00"]]])
-    #     # self.schedule_update(updated_schedule=[[], []])
-    #     # self.schedule_update(updated_schedule=[[[[1], "12:24:30", "21:55:10"]], [[[1, 3], "02:24:30", "23:55:10"], [[1], "12:24:30", "21:55:10"]]])
 
     def schedule_update(self, updated_schedule=[]):
         self.shutdown_SchRun()
         for sw, current_sch in enumerate(self.SchRun):
-            status = 'updated'
             try:
                 if current_sch != []:
                     self.task_state = [[1] * len(updated_schedule[0]), [1] * len(updated_schedule[1])]
@@ -559,7 +552,7 @@ class CoreButton(ttk.Frame):
             except IndexError:
                 pass
                 status = 'err'
-                print(self.nick, sw, status)
+                # print(self.nick, sw, status)
 
     def shutdown_SchRun(self, sw=None):
         # Terminate all Button's SchRuns
