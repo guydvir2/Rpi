@@ -137,15 +137,13 @@ class ButtonsGUI(ttk.Frame):
             # current_but.shutdown_SchRun()
             for x, current_schedtask in enumerate(self.args):
                 if current_schedtask['nickname'] == current_but.nick:
-                    new_sched=[]
+                    new_sched = []
                     for key in keys:
                         if key in list(current_schedtask.keys()):
                             new_sched.append(current_schedtask[key])
                         else:
                             new_sched.append([])
                     current_but.schedule_update(new_sched)
-
-
 
             #         for sw, current_key in enumerate(keys):
             #             try:
@@ -157,8 +155,6 @@ class ButtonsGUI(ttk.Frame):
         for but in self.buts:
             # if but.nick == 'Lights':
             but.close_all()
-
-
 
 
 class MainGUI(ttk.Frame):
@@ -336,7 +332,18 @@ class MainGUI(ttk.Frame):
 
     def findtasknum(self, m):
         sch_num = None
-        if self.sched_file[m][1] !='0':
+        ar = np.array(self.sched_file)
+        on_index = ar[:m + 1, 1]
+        name_index = ar[:m + 1, 2]
+        seek_value = ar[m, 2]
+        print(np.where(name_index,'Lights'))
+        # print(list(name_index).count(seek_value))
+
+        # for i in range(m+1):
+        #     print(name_index.count(seek_value))
+
+
+        if self.sched_file[m][1] != '0':
             task_num = list(np.array(self.sched_file)[:m + 1, 2]).count(self.sched_file[m][2])
             if '[UP]' in self.sched_file[m][2].upper():
                 sch_num = 1
@@ -350,7 +357,7 @@ class MainGUI(ttk.Frame):
 
             return [task_num - 1, sch_num, name]
         else:
-            return [-1,-1,-1]
+            return [-1, -1, -1]
 
 
 root = tk.Tk()

@@ -300,7 +300,7 @@ class TimeTableConfigGUI(CoreTable):
                         but = MainGUI.ButtonNote.buts[but_index]
                         task_state = but.task_state[sch_index][actv_tsk]
 
-                        print(a,current_task[2].get(),but.task_state)
+                        # print(a,current_task[2].get(),but.task_state)
 
                         # but_sched_active = but.SchRun[sch_index].get_state()[0][0]
                         # but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
