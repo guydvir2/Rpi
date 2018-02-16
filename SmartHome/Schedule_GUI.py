@@ -134,7 +134,6 @@ class ButtonsGUI(ttk.Frame):
         self.master.WeekSched_TimeTable.create_relations_vector()
         keys = ['sched_vector', 'sched_vector2']
         for i, current_but in enumerate(self.buts):
-            # current_but.shutdown_SchRun()
             for x, current_schedtask in enumerate(self.args):
                 if current_schedtask['nickname'] == current_but.nick:
                     new_sched = []

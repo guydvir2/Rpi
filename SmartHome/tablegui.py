@@ -90,10 +90,13 @@ class CoreTable(ttk.Frame):
 
         for i, row in enumerate(self.data_mat):
             for x, cell in enumerate(row):
-                if x == 0:
-                    self.vars_vector[i][x].set(self.counter + '#%02d' % i)
-                else:
-                    self.vars_vector[i][x].set(cell)
+                try:
+                    if x == 0:
+                        self.vars_vector[i][x].set(self.counter + '#%02d' % i)
+                    else:
+                        self.vars_vector[i][x].set(cell)
+                except IndexError:
+                    print('error in updating table')
 
         self.add_row_flag = 0
 
@@ -191,7 +194,7 @@ class DeviceConfigGUI(CoreTable):
 class TimeTableConfigGUI(CoreTable):
     def __init__(self, master, data_file_name='', list=[]):
         self.master = master
-        self.headers = ['Task #', 'On/Off', 'Device', 'Day', 'Start Time', 'Stop Time', 'Time Left', 'Skip Run']
+        self.headers = ['Task #', 'On/Off', 'Device', 'Day', 'Start Time', 'Stop Time', 'Time Left']#, 'Skip Run']
         self.counter = 'TSK'
         self.time_left_vector = []
         self.dropbox_values = list
@@ -247,12 +250,12 @@ class TimeTableConfigGUI(CoreTable):
             a7 = ttk.Entry(self.table_frame, textvariable=self.v[c], width=20, justify=tk.CENTER, style='bg.TEntry')
             a7.grid(row=i, column=c)
             c += 1
-
-            # Skip
-            self.v.append(tk.StringVar())
-            a8 = ttk.Entry(self.table_frame, textvariable=self.v[c], width=7, justify=tk.CENTER, style='bg.TEntry')
-            a8.grid(row=i, column=c)
-            c += 1
+            #
+            # # Skip
+            # self.v.append(tk.StringVar())
+            # a8 = ttk.Entry(self.table_frame, textvariable=self.v[c], width=7, justify=tk.CENTER, style='bg.TEntry')
+            # a8.grid(row=i, column=c)
+            # c += 1
 
             self.time_left_vector.append(a7)
             self.vars_vector.append(self.v)
@@ -265,15 +268,18 @@ class TimeTableConfigGUI(CoreTable):
     def skip_button_cb(self):
         MainGUI = self.master.master.master.master
         try:
-            # m = self.extract_data()
             line_num = int(self.table_frame.focus_get().grid_info().get('row')) - 1
-            tsk_properties = MainGUI.findtasknum(line_num)
-            # print(tsk_properties)
-            # tsk_properties= [ tsk#, sw#,device_name]
-            for i, dev_name in enumerate(MainGUI.ButtonNote.buts):
-                if dev_name.nick == tsk_properties[2]:
-                    print(i, dev_name.task_state[tsk_properties[1], tsk_properties[0]])
-
+            if MainGUI.sched_file[line_num][1] == '1':
+                tsk_properties = MainGUI.findtasknum(line_num)
+                # tsk_properties= [ tsk#, sw#,device_name]
+                for i, dev_name in enumerate(MainGUI.ButtonNote.buts):
+                    if dev_name.nick == tsk_properties[2]:
+                        if dev_name.task_state[tsk_properties[1]][tsk_properties[0]] == 0:
+                            dev_name.task_state[tsk_properties[1]][tsk_properties[0]] = 1
+                        elif dev_name.task_state[tsk_properties[1]][tsk_properties[0]] == 1:
+                            dev_name.task_state[tsk_properties[1]][tsk_properties[0]] = 0
+            else:
+                print("Disabled task")
         except AttributeError:
             print("Line not selected")
 

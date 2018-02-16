@@ -48,23 +48,18 @@ class ScheduledEvents(ttk.Frame):
         self.prep_to_run()
 
     def prep_to_run(self):
-
         if self.tasks != []:
             self.result_vector, self.future_on = [0] * len(self.tasks), [0] * len(self.tasks)
             self.empty_sched = False
             if self.check_integrity_time_table() == 0:
-                # self.run_schedule()
                 self.switch_descision()
-                print(self.master.master.master.nick, self.sw, "is starting with tasks:", self.tasks)
             else:
                 print("Errors in TimeTable")
         else:
             self.empty_sched = True
-            print(self.master.master.master.nick, self.sw, "is starting without tasks", self.tasks)
 
     def update_sched(self, tasks=[]):
         self.tasks = tasks
-        # self.close_device()
         self.prep_to_run()
 
     def check_integrity_time_table(self):
@@ -89,7 +84,6 @@ class ScheduledEvents(ttk.Frame):
             return 1  # Errors on TimeTable
 
     def run_schedule(self):
-
         def time_diff(t1):
             t2 = datetime.datetime.now().time()
             today1 = datetime.date.today()
