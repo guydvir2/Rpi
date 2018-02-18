@@ -113,7 +113,6 @@ class ButtonsGUI(ttk.Frame):
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1
-                    # print(self.args[l])
 
             except ValueError:
                 self.master.write2log("Error loading Button" + str(l))
@@ -127,26 +126,9 @@ class ButtonsGUI(ttk.Frame):
 
         self.master.write2log("Shutting all buttons...Done!")
 
-    def update_schedule(self):
-        self.master.WeekSched_TimeTable.save2()
-        self.master.read_data_from_files()
-        self.get_sched_defs()
-        self.master.WeekSched_TimeTable.create_relations_vector()
-        keys = ['sched_vector', 'sched_vector2']
-        for i, current_but in enumerate(self.buts):
-            for x, current_schedtask in enumerate(self.args):
-                if current_schedtask['nickname'] == current_but.nick:
-                    new_sched = []
-                    for key in keys:
-                        if key in list(current_schedtask.keys()):
-                            new_sched.append(current_schedtask[key])
-                        else:
-                            new_sched.append([])
-                    current_but.schedule_update(new_sched)
 
     def close_but(self):
         for but in self.buts:
-            # if but.nick == 'Lights':
             but.close_all()
 
 
@@ -192,14 +174,14 @@ class MainGUI(ttk.Frame):
         self.sched_file = self.FileManSched.data_from_file
         # print("thisis sched_files\n",self.sched_file)
 
-    def save_data_to_file(self):
-        self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
-        self.FileManSched.save_to_file(mat=self.WeekSched_TimeTable.extract_data_from_gui())
-
-    def close_for_reload(self):
-        self.ButtonNote.close_for_reload()
-        self.main_frame.destroy()
-        self.reload_all()
+    # def save_data_to_file(self):
+    #     self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
+    #     self.FileManSched.save_to_file(mat=self.WeekSched_TimeTable.extract_data_from_gui())
+    #
+    # def close_for_reload(self):
+    #     self.ButtonNote.close_for_reload()
+    #     self.main_frame.destroy()
+    #     self.reload_all()
 
     def build_gui(self):
         notebook = ttk.Notebook(self.main_frame)
@@ -238,8 +220,25 @@ class MainGUI(ttk.Frame):
         self.WeekSched_TimeTable.grid(row=r, column=c)
         self.write2log("Weekly schedule GUI started")
 
-        ttk.Button(self.sched_tab, text='reload schedule', command=self.ButtonNote.update_schedule).grid()
+        ttk.Button(self.sched_tab, text='reload schedule', command=self.update_schedule).grid()
         ttk.Button(self.config_but_tab, text='reload schedule', command=self.ButtonNote.close_but).grid()
+
+    def update_schedule(self):
+        self.WeekSched_TimeTable.save2()
+        self.read_data_from_files()
+        self.ButtonNote.get_sched_defs()
+        self.WeekSched_TimeTable.create_relations_vector()
+        keys = ['sched_vector', 'sched_vector2']
+        for i, current_but in enumerate(self.ButtonNote.buts):
+            for x, current_schedtask in enumerate(self.ButtonNote.args):
+                if current_schedtask['nickname'] == current_but.nick:
+                    new_sched = []
+                    for key in keys:
+                        if key in list(current_schedtask.keys()):
+                            new_sched.append(current_schedtask[key])
+                        else:
+                            new_sched.append([])
+                    current_but.schedule_update(new_sched)
 
     def butt_config_gui(self, r=0, c=0):
 

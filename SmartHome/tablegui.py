@@ -122,6 +122,7 @@ class CoreTable(ttk.Frame):
 
     def save_table(self):
         self.extract_data()
+        print(self.data_mat)
         readfile_ssh.LoadFile(filename=self.filename).save_to_file(mat=self.data_mat)
 
     def save2(self):
@@ -194,9 +195,8 @@ class DeviceConfigGUI(CoreTable):
 class TimeTableConfigGUI(CoreTable):
     def __init__(self, master, data_file_name='', list=[]):
         self.master = master
-        self.headers = ['Task #', 'On/Off', 'Device', 'Day', 'Start Time', 'Stop Time', 'Time Left']#, 'Skip Run']
+        self.headers = ['Task #', 'On/Off', 'Device', 'Day', 'Start Time', 'Stop Time', 'Time Left']
         self.counter = 'TSK'
-        self.time_left_vector = []
         self.dropbox_values = list
         self.default_data = [[0, 1, 'Load err', [3, 4, 5, 6], "23:07:00", "01:08:00", 'err', 'On']]
         CoreTable.__init__(self, master, data_filename=data_file_name)
@@ -205,6 +205,8 @@ class TimeTableConfigGUI(CoreTable):
         self.update_time_table()
 
     def table_structure(self, rows):
+        self.time_left_vector = []
+
         for i in range(1, rows + 1):
             self.v, c = [], 0
 
@@ -250,12 +252,6 @@ class TimeTableConfigGUI(CoreTable):
             a7 = ttk.Entry(self.table_frame, textvariable=self.v[c], width=20, justify=tk.CENTER, style='bg.TEntry')
             a7.grid(row=i, column=c)
             c += 1
-            #
-            # # Skip
-            # self.v.append(tk.StringVar())
-            # a8 = ttk.Entry(self.table_frame, textvariable=self.v[c], width=7, justify=tk.CENTER, style='bg.TEntry')
-            # a8.grid(row=i, column=c)
-            # c += 1
 
             self.time_left_vector.append(a7)
             self.vars_vector.append(self.v)
@@ -289,10 +285,10 @@ class TimeTableConfigGUI(CoreTable):
 
         def update_run():
             def text_to_entry(text, color):
-                current_task[6].set(text)
+                self.vars_vector[a][6].set(text)
                 self.time_left_vector[a]['foreground'] = color
 
-            for a, current_task in enumerate(self.vars_vector):
+            for a, current_task in enumerate(MainGUI.sched_file):
                 try:
                     # shortcuts
                     but_index = self.relations_vector[a][1]
@@ -303,7 +299,7 @@ class TimeTableConfigGUI(CoreTable):
                     if any(but.task_state):
                         task_state = but.task_state[sch_index][actv_tsk]
                     else:
-                        text_to_entry('Inactive', 'orange')
+                        text_to_entry('Inactive task', 'orange')
                         continue
 
                     but_sched_active = but.SchRun[sch_index].get_state()[0][0]
@@ -311,7 +307,7 @@ class TimeTableConfigGUI(CoreTable):
                     time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
                     # case of checked out schedule (with multiple entries)
                     if actv_tsk == -1:
-                        text_to_entry('Inactive', 'orange')
+                        text_to_entry('Inactive task', 'orange')
                         continue
                     # task state can be [ 1 - on, 0 - off/skip, -1 cancel task permanently]
                     if but_sched_active == 1 and task_state == 1 and actv_tsk == but_sced_tsk_num:
@@ -327,8 +323,8 @@ class TimeTableConfigGUI(CoreTable):
                         text_to_entry('skip: ' + time_remain, 'orange')
 
                 except IndexError:
-                    print(a, "err")
-                    text_to_entry('index err: ', 'orange')
+                    # In case of error - device not loaded
+                    text_to_entry('Device not loaded ', 'orange')
 
             self.run_id = self.after(1000, update_run)
 
@@ -338,11 +334,11 @@ class TimeTableConfigGUI(CoreTable):
     def create_relations_vector(self):
         MainGUI = self.master.master.master.master
         self.relations_vector = []
-        for i, current_timetable_row in enumerate(self.vars_vector):
+        for i, current_timetable_row in enumerate(MainGUI.sched_file):
             tasknum = MainGUI.findtasknum(i)
             v = []
             for m, current_button in enumerate(MainGUI.ButtonNote.buts):
-                if current_button.nick in current_timetable_row[2].get():
+                if current_button.nick in current_timetable_row[2]:
                     v = [i, m, tasknum[0], tasknum[1]]
                     # v = [index, but#, tsk#, SchRun#]
             self.relations_vector.append(v)
