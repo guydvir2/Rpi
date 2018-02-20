@@ -7,8 +7,6 @@ import datetime
 import os
 
 
-
-
 class Com2Log:
     """ This class sends status logs to main GUI"""
 
@@ -24,9 +22,8 @@ class Com2Log:
             self.master.master.master.master.master.master.master.write2log(text2)
         except AttributeError:
             print(text2)
-            
-            
-            
+
+
 class Indicators:
     """ This Calss displays output state of GPIO """
 
@@ -71,6 +68,7 @@ class Indicators:
             self.frame.after_cancel(self.run_id)
             self.x = 0
 
+
 class HWRemoteInput:
     # This class create a link between input_pins(HW buttons) to output pins
     def __init__(self, master=None, ip='', input_pins=[]):
@@ -109,6 +107,7 @@ class HWRemoteInput:
         for sw in self.output_pins:
             sw.close()
         print("Device shut done")
+
 
 class HWRemoteOutput:
     # This Class creates Hardware state of ""gpio_pins"" of RPi at "ip"

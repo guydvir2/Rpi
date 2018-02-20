@@ -1,6 +1,14 @@
 
+<<<<<<< HEAD
 TSK#00,1,WaterBoiler[Down],1,07:12:00,13:35:20,"wait: 6 days, 17:48:00",On
 TSK#01,1,Lights,7,09:09:00,23:10:00,"wait: 5 days, 19:45:00",On
 TSK#02,1,RoomWindow[Down],1,08:31:00,08:31:59,"wait: 6 days, 19:07:00",On
 TSK#03,1,RoomWindow[Up],5,18:40:30,18:40:55,"wait: 4 days, 5:16:30",On
 TSK#04,1,SafetySwitch,4,12:09:00,22:10:00,Switch not active,On
+=======
+TSK#00,1,WaterBoiler[Down],5,08:48:00,16:48:20,"wait: 3 days, 10:09:44"
+TSK#01,1,Lights,3,06:09:00,22:10:00,"wait: 1 day, 7:30:44"
+TSK#02,1,RoomWindow[Up],4,14:05:00,22:55:59,Inactive task
+TSK#03,1,Washer,3,18:40:30,22:40:55,"wait: 1 day, 20:02:14"
+TSK#04,0,RoomWindow[Down],3,22:09:00,22:10:00,Inactive task
+>>>>>>> fixfromhere
