@@ -77,6 +77,8 @@ class CoreTable(ttk.Frame):
                 else:
                     self.data_mat[-1].append(cell.get())
 
+        print(self.data_mat)
+
         return self.data_mat
 
     def fill_table(self, m=[]):
@@ -84,8 +86,9 @@ class CoreTable(ttk.Frame):
             self.data_mat = self.data_from_file
         else:
             self.data_mat = m
-
-        rows = len(self.data_mat) + self.add_row_flag
+        if self.add_row_flag == 1:
+            self.data_mat.append(self.default_data[0])
+        rows = len(self.data_mat)
         self.table_structure(rows)
 
         for i, row in enumerate(self.data_mat):
@@ -198,7 +201,7 @@ class TimeTableConfigGUI(CoreTable):
         self.headers = ['Task #', 'On/Off', 'Device', 'Day', 'Start Time', 'Stop Time', 'Time Left']
         self.counter = 'TSK'
         self.dropbox_values = list
-        self.default_data = [[0, 1, 'Load err', [3, 4, 5, 6], "23:07:00", "01:08:00", 'err', 'On']]
+        self.default_data = [[0, 0, 'empty', [3, 4, 5, 6], "12:00:00", "13:08:00", 'empty',]]
         CoreTable.__init__(self, master, data_filename=data_file_name)
         self.additional_buttons()
 
