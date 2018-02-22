@@ -301,9 +301,11 @@ class TimeTableConfigGUI(CoreTable):
                     # case of checkedout schedule at GUI
                     if any(but.task_state):
                         task_state = but.task_state[sch_index][actv_tsk]
+                        print(a,task_state)
                     else:
                         text_to_entry('Inactive task', 'orange')
-                        continue
+                        print("ffgfg")
+                        break
 
                     but_sched_active = but.SchRun[sch_index].get_state()[0][0]
                     but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
