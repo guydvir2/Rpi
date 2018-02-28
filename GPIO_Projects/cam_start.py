@@ -2,16 +2,18 @@ import picamera
 import time
 
 camera = picamera.PiCamera()
-camera.resolution = (1920, 1080)
+#camera.resolution = (1920, 1080)
+#
+camera.resolution = (1024, 768)
 
 # camera.capture('/home/guy/image.jpg')
 #camera.brightness = 70 # 0 - 100
 camera.start_preview()
-for i in range(100):
-    camera.brightness = i
-    time.sleep(0.2)
+#for i in range(100):
+    #camera.brightness = i
+    #time.sleep(0.2)
     
-#time.sleep(20)
+time.sleep(15)
 camera.stop_preview()
 
 camera.sharpness = 0
