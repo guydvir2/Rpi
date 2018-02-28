@@ -298,16 +298,17 @@ class TimeTableConfigGUI(CoreTable):
                     actv_tsk = self.relations_vector[a][2]
                     sch_index = self.relations_vector[a][3]
                     but = MainGUI.ButtonNote.buts[but_index]
+                    # print(a, but.nick, but.task_state, actv_tsk)
                     # case of checkedout schedule at GUI
-                    if any(but.task_state):
+                    if actv_tsk != -1 : #any(but.task_state):
                         task_state = but.task_state[sch_index][actv_tsk]
                     else:
                         text_to_entry('Inactive task', 'orange')
-                        continue
 
                     but_sched_active = but.SchRun[sch_index].get_state()[0][0]
                     but_sced_tsk_num = but.SchRun[sch_index].get_state()[0][1]
                     time_remain = str(but.SchRun[sch_index].get_state()[1][actv_tsk])
+
                     # case of checked out schedule (with multiple entries)
                     if actv_tsk == -1:
                         text_to_entry('Inactive task', 'orange')

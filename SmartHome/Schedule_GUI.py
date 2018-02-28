@@ -113,9 +113,10 @@ class ButtonsGUI(ttk.Frame):
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1
-
             except ValueError:
                 self.master.write2log("Error loading Button" + str(l))
+        # print(self.args)
+
         self.master.write2log("Buttons loaded successfully: " + str([x[1] for x in self.loaded_buts]))
 
     def close_for_reload(self, nick=''):
