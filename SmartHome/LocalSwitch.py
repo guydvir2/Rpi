@@ -35,7 +35,7 @@ class LocSwitch:
 
     def notify(self):
         self.press_counter += 1
-        print('Switch', self.name, 'pressed', self.press_counter, 'times', self.t.name)
+        print('Switch [%s] pressed [%d] times on [%s]' %(self.name, self.press_counter, self.t.name))
 
     @property
     def get_status(self):
