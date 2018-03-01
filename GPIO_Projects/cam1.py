@@ -1,5 +1,6 @@
 import picamera
 import time
+import LocalSwitch
 
 cam=picamera.PiCamera()
 cam.start_preview()

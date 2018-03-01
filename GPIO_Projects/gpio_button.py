@@ -10,7 +10,7 @@ import gpiozero
 
 class A:
     def __init__(self):
-        factory112 = PiGPIOFactory(host='192.168.2.112')
+        factory112 = PiGPIOFactory(host='192.168.2.113')
         factory113 = PiGPIOFactory(host='192.168.2.113')
 
         self.Relay= OutputDevice(13, pin_factory=factory113,initial_value=False)
