@@ -201,7 +201,7 @@ class TimeTableConfigGUI(CoreTable):
         self.headers = ['Task #', 'On/Off', 'Device', 'Day', 'Start Time', 'Stop Time', 'Time Left']
         self.counter = 'TSK'
         self.dropbox_values = list
-        self.default_data = [[0, 0, 'empty', [3, 4, 5, 6], "12:00:00", "13:08:00", 'empty',]]
+        self.default_data = [[0, 0, 'empty', [3, 4, 5, 6], "12:00:00", "13:08:00", 'empty', ]]
         CoreTable.__init__(self, master, data_filename=data_file_name)
         self.additional_buttons()
 
@@ -300,7 +300,7 @@ class TimeTableConfigGUI(CoreTable):
                     but = MainGUI.ButtonNote.buts[but_index]
                     # print(a, but.nick, but.task_state, actv_tsk)
                     # case of checkedout schedule at GUI
-                    if actv_tsk != -1 : #any(but.task_state):
+                    if actv_tsk != -1:  # any(but.task_state):
                         task_state = but.task_state[sch_index][actv_tsk]
                     else:
                         text_to_entry('Inactive task', 'orange')
