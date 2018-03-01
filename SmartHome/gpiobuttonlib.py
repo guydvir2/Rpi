@@ -35,7 +35,6 @@ class Indicators:
         self.run_id = None
 
     def update_indicators(self):
-
         if self.x == 120 or self.x == 1:
             self.ping_it()
             self.x = 1
@@ -43,7 +42,6 @@ class Indicators:
             self.master.master.conn_lbl['style'] = 'B.TLabel'
 
         self.x += 1
-
         for i, but in enumerate(self.master.master.buts):
             if self.master.get_state()[i] == False:
                 fg, text2 = 'red', ' (Off)'
@@ -58,7 +56,7 @@ class Indicators:
     def ping_it(self):
         conn_stat = ['Connected', 'Lost']
         style = ['Green.TLabel', 'Red.TLabel']
-        ping_result = os.system('ping %s -c 1 >NULL' % self.master.master.ip_out)
+        ping_result = os.system('ping -c 1 %s > /dev/null 2>&1 ' % self.master.master.ip_out)
         self.master.master.conn_status_var.set(conn_stat[ping_result])
         self.master.master.conn_lbl['style'] = style[ping_result]
 
@@ -154,7 +152,7 @@ class HWRemoteOutput:
         
         
 if __name__ == "__main__":
-    a= HWRemoteOutput(ip='192.168.2.113', output_pins=[11])
+    a= HWRemoteOutput(ip='192.168.2.114', output_pins=[21])
     a.set_state(0,1)
     print(a.get_state())
     a.close_device()
