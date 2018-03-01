@@ -22,9 +22,10 @@ class LocSwitch:
                 
     def init_gpio(self):
         try:
-            self.button=gpiozero.Button(self.button_pin)
+            self.button=gpiozero.Button(self.button_pin )
             self.relay=gpiozero.OutputDevice(self.relay_pin)
-            self.relay.source = self.button.values
+            #self.relay.source = self.button.values
+            #self.button.when_pressed = self.relay.toggle()
             self.button.when_pressed = self.notify
             print('gpio init successfully')
         except:
@@ -35,6 +36,7 @@ class LocSwitch:
 
     def notify(self):
         self.press_counter += 1
+        self.relay.toggle()
         print('Switch [%s] pressed [%d] times on [%s]' %(self.name, self.press_counter, self.t.name))
 
     @property
@@ -44,4 +46,5 @@ class LocSwitch:
 
              
 if __name__== "__main__":
-    a=LocSwitch(20,4)
+    a=LocSwitch(21,5)
+
