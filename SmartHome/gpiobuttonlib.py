@@ -1,8 +1,8 @@
 """ This Lib is used with ButtonLib2 as HW module designed by me"""
-# from gpiozero.pins.pigpio import PiGPIOFactory
-# import gpiozero
-# import pigpio
-# from gpiozero import OutputDevice
+from gpiozero.pins.pigpio import PiGPIOFactory
+import gpiozero
+import pigpio
+from gpiozero import OutputDevice
 import datetime
 import os
 
@@ -73,21 +73,24 @@ class HWRemoteInput:
     # This class create a link between input_pins(HW buttons) to output pins
     def __init__(self, master=None, ip='', input_pins=[]):
         self.master = master
-        factory = PiGPIOFactory(host=ip)
+        self.factory = PiGPIOFactory(host=ip)
+        self.input_pins = []
 
         if self.master is None:
             nick = 'RemoteInput Device'
         else:
             nick = self.master.nick
 
-        self.input_pins = ["Pin_" + str(input_pins[i]) for i in range(len(input_pins))]
-        for sw in range(len(self.input_pins)):
-            self.input_pins[sw] = gpiozero.Button(input_pins[sw], pin_factory=factory)
+        self.com = Com2Log(self.master, nick)
+        self.hardware_config(input_pins=input_pins, ip=ip)
+
+    def hardware_config(self, input_pins,ip):
+        for sw, pin in enumerate(input_pins):
+            self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
             self.input_pins[sw].when_pressed = lambda arg=[sw, 1]: self.pressed(arg)
             # Line below is used when button switched off - setting the command to off
             self.input_pins[sw].when_released = lambda arg=[sw, 0]: self.pressed(arg)
 
-        self.com = Com2Log(self.master, nick)
         self.com.message("[Remote-Intput][IP:%s][GPIO pins:%s]" % (ip, input_pins))
 
     # Detect press and make switch
@@ -106,25 +109,28 @@ class HWRemoteInput:
     def close_device(self):
         for sw in self.output_pins:
             sw.close()
-        print("Device shut done")
+        self.com.message("[Device shut done]")
 
 
 class HWRemoteOutput:
     # This Class creates Hardware state of ""gpio_pins"" of RPi at "ip"
     def __init__(self, master=None, ip='', output_pins=[]):
         self.master = master
+        self.factory = PiGPIOFactory(host=ip)
+        self.output_pins = []
 
         if self.master is None:
             nick = 'RemoteOutput Device'
         else:
             nick = self.master.nick
 
-        factory = PiGPIOFactory(host=ip)
-        self.output_pins = ["Pin_" + str(output_pins[i]) for i in range(len(output_pins))]
-        for sw in range(len(self.output_pins)):
-            self.output_pins[sw] = OutputDevice(output_pins[sw], pin_factory=factory, initial_value=False)
-
         self.com = Com2Log(self.master, nick)
+        self.hardware_config(output_pins=output_pins,ip=ip)
+
+    def hardware_config(self, output_pins,ip):
+        for sw, pin in enumerate(output_pins):
+            self.output_pins.append(OutputDevice(pin, pin_factory=self.factory, initial_value=False))
+
         self.com.message("[Remote-Output][IP:%s][GPIO pins:%s]" % (ip, output_pins))
 
     # Make the switch
@@ -134,16 +140,23 @@ class HWRemoteOutput:
         elif state == 0:
             self.output_pins[sw].off()
 
-    # Inquiry
     def get_state(self):
         stat = []
-        for sw in range(len(self.output_pins)):
-            stat.append(self.output_pins[sw].value)
+        for pin in self.output_pins:
+            stat.append(pin.value)
         return stat
 
-    # Close device
     def close_device(self):
         for sw in self.output_pins:
             sw.close()
         self.output_pins[0].close()
-        self.com.message("Device shut done")
+        self.com.message("[Device shut done]")
+        
+        
+if __name__ == "__main__":
+    a= HWRemoteOutput(ip='192.168.2.113', output_pins=[11])
+    a.set_state(0,1)
+    print(a.get_state())
+    a.close_device()
+
+    b = HWRemoteInput(ip='192.168.2.113', input_pins=[12])
