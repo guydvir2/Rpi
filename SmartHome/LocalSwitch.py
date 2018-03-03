@@ -24,7 +24,7 @@ class LocSwitch:
                         and self.button_pin != self.relay_pin:
                 self.t = threading.Thread(name='thread_gpio_'+str(self.relay_pin), target=self.init_gpio)
                 self.t.start()
-                self.log_record('[%s] init in [%s] mode on [%s] '%(self.name,self.mode,self.t.name))
+                self.log_record('init in [%s] mode on [%s] '%(self.mode,self.t.name))
             else:
                 self.log_record('pin definition error')
         else:
@@ -49,7 +49,7 @@ class LocSwitch:
         if add == '':
             add = 'button'
         self.press_counter +=1
-        msg=('[%s] pressed [%s] [%d] times' %(self.name, add, self.press_counter))
+        msg=('pressed [%s] [%d] times' %(add, self.press_counter))
         self.log_record(msg)
 
     def release_switch(self):
@@ -63,8 +63,8 @@ class LocSwitch:
         self.relay.toggle()
         self.current_state = self.relay.value
         self.press_counter += 1
-        msg=('[%s] [%s --> %s] pressed [%s] [%d] times' %(self.name,
-                self.last_state, self.current_state, add, self.press_counter))
+        msg=('[%s --> %s] pressed [%s] [%d] times' %(self.last_state, 
+            self.current_state, add, self.press_counter))
         self.log_record(msg)
 
     @property
@@ -86,7 +86,7 @@ class LocSwitch:
     def log_record(self,text1=''):
         msg=''
         time = str(datetime.datetime.now())[:-5]
-        msg = '[%s]: %s'%(time,text1)
+        msg = '[%s]: [%s] %s'%(time,self.name, text1)
         self.logbook.append(msg)
         print(self.logbook[-1])
 
