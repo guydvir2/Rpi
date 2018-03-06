@@ -9,7 +9,7 @@ class LocSwitch:
         self.button, self.relay= None, None
         self.button_pin = button_pin
         self.relay_pin = relay_pin
-        self.valid_gpios = [4,17,27,22,5,6,13,19,26,20,21,16,12,25,23,24,18]
+        self.valid_gpios = [4,17,27,22,5,6,13,19,26,20,21,16,12,25,23,24,18,7]
         self.press_counter = 0
         self.name, self.mode = name, mode
         self.last_state, self.current_state=None, None
