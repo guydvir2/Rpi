@@ -41,9 +41,11 @@ class LocSwitch:
                 self.button.when_pressed = self.press_switch
                 self.button.when_released = self.release_switch
             self.log_record('gpio init successfully')
+            pause()
+
         except:
-            self.log_record("init gpio fail")
-        pause()
+            self.log_record("init gpio fail, Code quit")
+            quit()
 
     def press_switch(self,add=''):
         if add == '':
@@ -90,6 +92,69 @@ class LocSwitch:
         self.logbook.append(msg)
         print(self.logbook[-1])
 
-    
+    def watch_dog(self):
+        def run_watchdog():
+            last_state = 0
+            while True:
+                if self.relay.value != last_state:
+                    self.log_record("[watch_dog] [GPIO %s] [%s]"%(self.relay_pin, self.switch_state[0]))
+                last_state = self.relay.value
+                sleep(1)
+        self.t2 = threading.Thread(name='thread_watchdog', target=run_watchdog)
+        self.t2.start()
+        
+
+class GpioStatus:
+    def __init__(self,gpio_list=[]):
+        self.valid_gpios = [4,17,27,22,5,6,13,19,26,20,21,16,12,25,23,24,18,7]
+        self.devices= []
+        
+        if gpio_list == []:
+            print("GPIO not specified, monitoring all GPIOs")
+            self.self.gpio_list  = self.valid_gpios
+        else:
+            print("Monitoring GPIOS:", str(gpio_list))
+            self.gpio_list = gpio_list
+            
+        self.current_state = dict.fromkeys(self.gpio_list,None)
+        self.last_state = dict.fromkeys(self.gpio_list,None)
+
+        for i in self.gpio_list:
+            self.devices.append(gpiozero.OutputDevice(i))
+
+        if self.check_validity() != 1:
+            print("GPIO list contains invalid entry")
+        else:
+            while True:
+                self.check_state()
+                sleep(5)
+
+    def check_state(self):
+        #for i in self.current_state:
+            #self.current_state[i] = gpiozero.OutputDevice(i).value
+        for i,current_gpio in enumerate(self.gpio_list):
+            self.current_state[current_gpio] = self.devices[i].value
+            
+        if self.current_state != self.last_state:
+            self.last_state = self.current_state
+            print(self.current_state)
+            
+    def check_validity(self):
+        for gpio in self.gpio_list:
+            if gpio in self.valid_gpios:
+                res =1
+                continue
+            else:
+                res = 0
+                break
+        return res
+                
+        
 if __name__== "__main__":
     a=LocSwitch(21,4, mode='toggle',name="GUYDVIR")
+    sleep(2)
+    a.watch_dog()
+    a.switch_state =1
+    sleep(2)
+    a.switch_state =0
+    c=LocSwitch(20,4, mode='press',name="GUYDVIR2")

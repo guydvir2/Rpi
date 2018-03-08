@@ -165,6 +165,7 @@ class ScheduledEvents(ttk.Frame):
         if self.empty_sched is False:
             ans, min_time = [-1, -1], []
             for x, res_vec in enumerate(self.result_vector):
+                #print(self.future_on[x])
                 min_time.append(min(self.future_on[x]))
                 for op in res_vec:
                     if op in [0, 1]:
