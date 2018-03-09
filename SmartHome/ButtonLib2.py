@@ -193,7 +193,8 @@ class ScheduledEvents(ttk.Frame):
                 ## if sched state ---** is not equal to HW state : do make switch
                 # FIX
                 #if (sch_stat[0][0]) != 1:  # ButtonClass.get_state()[self.sw]:
-                if (sch_stat[0][0]) !=  ButtonClass.get_state()[self.sw]:
+                print(self.sw)
+                if sch_stat[0][0] !=  ButtonClass.get_state():#[self.sw]:
                     ButtonClass.ext_press(self.sw, sch_stat[0][0], "Schedule Switch")
                     pass
 

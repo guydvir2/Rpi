@@ -5,13 +5,13 @@ class MyLCD():
     def __init__(self):
         self.display=lcddriver.lcd()
         self.clear_lcd()
-        self.boot_test()
+        #self.boot_test()
 
     def boot_test(self):
-        r=16
-        for i in range(int(r)):
-            text1, text2='-'*i, '-'*i
-            self.left_str(text1=str(text1) ,text2=str(text2), to=0.1)
+        TO=0.5
+        self.left_str(text1='left_up' ,text2='left_down',to=TO)
+        self.right_str(text1='right_up',text2='right_down' ,to=TO)
+        self.center_str(text1='center_up',text2='center_down',to=TO)
 
     def clear_lcd(self):
         self.display.lcd_clear()
@@ -23,6 +23,13 @@ class MyLCD():
 
     def left_str(self, text1='', text2='', to=0):
         self.display_on_lcd(text1=text1, text2=text2, to=to)
+        
+    def right_str(self, text1='', text2='', to=0):
+        text_out1=' '*(16-len(text1))+text1
+        text_out2=" "*(16-len(text2))+text2
+        self.display_on_lcd(text1=text_out1, text2=text_out2, to=to)
+
+    
 
     def display_on_lcd(self, text1='', text2='', to=0):
         self.display.lcd_display_string(text1, 1)

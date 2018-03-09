@@ -1,7 +1,7 @@
 
 TSK#00,1,WaterBoiler[Down],5,08:48:00,16:48:20,Device not loaded 
-TSK#01,1,Lights,4,06:09:00,23:50:00,"wait: 5 days, 6:41:09"
-TSK#02,1,RoomWindow[Up],2,14:05:00,22:55:59,"wait: 4 days, 14:37:09"
-TSK#03,1,Washer,3,18:40:30,22:40:55,"wait: 5 days, 19:12:39"
-TSK#04,1,RoomWindow[Down],4,12:09:00,22:10:00,"wait: 6 days, 12:41:09"
+TSK#01,1,Lights,4,06:09:00,23:50:00,Device not loaded 
+TSK#02,1,RoomWindow[Up],4,07:05:00,23:55:59,"wait: 5 days, 23:37:16"
+TSK#03,1,Washer,3,18:40:30,22:40:55,Device not loaded 
+TSK#04,1,RoomWindow[Down],5,7:09:00,22:10:00,wait: 4:41:16
 TSK#05,1,SafetySwitch,4,12:00:00,21:08:00,Device not loaded 
