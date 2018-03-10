@@ -33,12 +33,11 @@ class ShowStatusLCD:
                     self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
                     time.sleep(1)
                     self.show_time()
-                    t1=datetime.timedelta.now()-t_stamp
+                    t1=datetime.datetime.now()-t_stamp
             
             while t2<15:
                 self.show_time()
-                t2=datetime.timedelta.now()-t_stamp
-
+                t2=datetime.datetime.now()-t_stamp
 
     def show_time(self):
         timeNow = str(datetime.datetime.now())[:-5].split(' ')
