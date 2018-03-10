@@ -115,8 +115,6 @@ class ButtonsGUI(ttk.Frame):
                     x += 1
             except ValueError:
                 self.master.write2log("Error loading Button" + str(l))
-        # print(self.args)
-
         self.master.write2log("Buttons loaded successfully: " + str([x[1] for x in self.loaded_buts]))
 
     def close_for_reload(self, nick=''):
@@ -161,19 +159,17 @@ class MainGUI(ttk.Frame):
     def reload_all(self):
         self.main_frame = ttk.Frame(self)
         self.main_frame.grid()
-
         self.connected_devices, self.sched_vector = [], []
-
         self.read_data_from_files()
         self.build_gui()
 
     def read_data_from_files(self):
+        # Read data from file to code
         self.FileManButs = readfile_ssh.LoadFile(filename=self.but_filename, path=self.path)
         self.buts_defs = self.FileManButs.data_from_file
 
         self.FileManSched = readfile_ssh.LoadFile(filename=self.sched_filename, path=self.path)
         self.sched_file = self.FileManSched.data_from_file
-        # print("thisis sched_files\n",self.sched_file)
 
     # def save_data_to_file(self):
     #     self.FileManButs.save_to_file(mat=self.ButConfigTable.extract_data_from_gui())
@@ -229,6 +225,7 @@ class MainGUI(ttk.Frame):
         self.read_data_from_files()
         self.ButtonNote.get_sched_defs()
         self.WeekSched_TimeTable.create_relations_vector()
+        
         keys = ['sched_vector', 'sched_vector2']
         for i, current_but in enumerate(self.ButtonNote.buts):
             for x, current_schedtask in enumerate(self.ButtonNote.args):

@@ -1,9 +1,11 @@
 import LocalSwitch
 import time
 import gpiozero
-import use_lcd
 import threading
 from signal import pause
+import use_lcd
+import datetime
+
 
 class ShowStatusLCD:
     def __init__(self,switches):
@@ -11,27 +13,37 @@ class ShowStatusLCD:
         try:
             # Case of HW err
             self.lcd_display=use_lcd.MyLCD()
+            self.t = threading.Thread(name='thread_disp_lcd', target=self.display_status_loop)
+            self.t.start()
         except OSError:
             print("LCD hardware error")
-
-
-        self.t = threading.Thread(name='thread_disp_lcd', target=self.display_status_loop)
-        self.t.start()
-
 
     def display_status_loop(self):
         status=[[] for i in range(len(self.switches))]
         while True:
-            for i,current_switch in enumerate(self.switches):
-                
-                if current_switch.switch_state[0] is False:
-                    status[i] = '%s :%s'%(current_switch.name, 'off')
-                elif current_switch.switch_state[0] is True:
-                    status[i] = '%s :%s'%(current_switch.name, 'on ')
+            t_stamp=datetime.datetime.now()
+            t1, t2 = 0, 0
+            while t1<10:
+                for i,current_switch in enumerate(self.switches):
+                    if current_switch.switch_state[0] is False:
+                        status[i] = '%s :%s'%(current_switch.name, 'off')
+                    elif current_switch.switch_state[0] is True:
+                        status[i] = '%s :%s'%(current_switch.name, 'on ')
 
-                self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
-                time.sleep(1)
-                #self.lcd_display.clear_lcd()
+                    self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
+                    time.sleep(1)
+                    self.show_time()
+                    t1=datetime.timedelta.now()-t_stamp
+            
+            while t2<15:
+                self.show_time()
+                t2=datetime.timedelta.now()-t_stamp
+
+
+    def show_time(self):
+        timeNow = str(datetime.datetime.now())[:-5].split(' ')
+        self.lcd_display.center_str(text1=timeNow[0], text2=timeNow[1])
+        
 
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press')
 sw1=LocalSwitch.LocSwitch(5,21, name='Relay#1', mode='toggle')

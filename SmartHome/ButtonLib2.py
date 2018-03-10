@@ -239,7 +239,7 @@ class ScheduledEvents(ttk.Frame):
     def close_device(self):
         if self.run_id != None:
             self.after_cancel(self.run_id)
-            print(self.master.master.master.nick, self.sw, "- schedule abort")
+            #self.master.master.master.com.message('[ %s ][ %s ]' % (self.master.master.master.nick, "schedule abort"))
             self.run_id = None
             self.tasks = []
 
@@ -498,14 +498,13 @@ class CoreButton(ttk.Frame):
 
     def init_hardware(self):
         if self.pigpio_valid(self.ip_out) == 1:
-            # print("%s at %s is piogpio-valid" % (self.nick, str(self.ip_out)))
             # FIX
             self.HW_output = gpiobuttonlib.HWRemoteOutput(self, ip=self.ip_out, output_pins=self.hw_out)
             self.Indicators = gpiobuttonlib.Indicators(self.HW_output, self.buttons_frame, pdx=8)
             if not self.hw_in == []: self.HW_input = gpiobuttonlib.HWRemoteInput(self, ip=self.ip_in, input_pins=self.hw_in)
             pass
         elif self.pigpio_valid(self.ip_out) == 0:
-            print("Fail to reach %s at %s" % (self.nick, str(self.ip_out)))
+            self.com.message("[ %s ] [ Fail to reach ] at [ %s ]" % (self.nick, str(self.ip_out)))
             self.unSuccLoad()
 
     def pigpio_valid(self, address):
@@ -539,6 +538,7 @@ class CoreButton(ttk.Frame):
 
     def schedule_update(self, updated_schedule=[]):
         self.shutdown_SchRun()
+        self.turn_off_switch()
         for sw, current_sch in enumerate(self.SchRun):
             try:
                 if current_sch != []:
@@ -550,6 +550,16 @@ class CoreButton(ttk.Frame):
                 pass
                 status = 'err'
                 # print(self.nick, sw, status)
+        self.com.message('[ %s ][ %s ]' % (self.nick, 'schedule updated'))
+
+    def turn_off_switch(self,sw=''):
+        if sw == '':
+            for i in range (len(self.buts)):
+                print(i)
+                self.execute_command(i, 0)
+        else:
+            self.execute_command(i, 0)  # Turn off sw=1
+
 
     def shutdown_SchRun(self, sw=None):
         # Terminate all Button's SchRuns
@@ -559,7 +569,7 @@ class CoreButton(ttk.Frame):
                     current_sw.close_device()
         else:
             self.SchRun[sw].close_device()
-            print(self.nick, "Closed SchRun ", sw)
+            #print(self.nick, "Closed SchRun ", sw)
 
     def build_gui(self):
         raise NotImplementedError('You have to override method build_gui()')
@@ -609,12 +619,7 @@ class CoreButton(ttk.Frame):
 
         if not self.switch_type == "Schedule Switch":
             self.decide_disable_sched()
-            #for i, ButSch in enumerate(self.SchRun):
-                #if ButSch.get_state()[0][0] == 1:
-                    #if self.task_state[i][ButSch.get_state()[0][1]] == 1:
-                        #if self.HW_output.get_state()[i] is True:  #
-                            ## ADD self.but_stat[i].get() == 0 and \: if need only from on to off
-                            #self.disable_sched_task(sw=i)
+            
         self.switch_logic(sw)
 
     def decide_disable_sched(self):
@@ -627,11 +632,6 @@ class CoreButton(ttk.Frame):
                                     self.disable_sched_task(sw=i)
                             else:
                                 self.disable_sched_task(sw=i)
-        
-                        #elif self.switch_type == 'MainsSwitch':
-                            #if self.task_state[i][ButSch.get_state()[0][1]] == 1:
-                                #if self.but_stat[1].get() == 0:
-                                    #self.disable_sched_task(sw=i)
 
     def disable_sched_task(self, state=None, sw=0, task_num=None):
 
@@ -694,19 +694,15 @@ class CoreButton(ttk.Frame):
         # for future use in outer GUI
         return self.get_state(), self.SchRun.get_state()
 
-    def close_all(self):
-        # this method runs prior to reloading of gui
-        # self.SchRun.close_device()
-        # self.Indicators.close_device()
-        # self.HW_output.close_device()
-        try:
-            if self.HW_input != []:
-                self.HW_input.close_device()
-        except AttributeError:
-            print(self.nick, "No input to close")
-        self.Counter.close_device()
-        self.destroy()
-        # self.com.message(self.nick, 'Closed')
+    #def close_all(self):
+        #try:
+            #if self.HW_input != []:
+                #self.HW_input.close_device()
+        #except AttributeError:
+            #print(self.nick, "No input to close")
+        #self.Counter.close_device()
+        #self.destroy()
+        ## self.com.message(self.nick, 'Closed')
 
     def disable_but(self):
         # On/Off checkbox is selected
@@ -739,10 +735,6 @@ class CoreButton(ttk.Frame):
 
         self.on_off_var.set(0)
         self.enable_disable_sched_var.set(0)  # Uncheck sched checkbox
-        # self.ck1.config(state=state[0])
-        # self.ck2.config(state=state[0])
-        # for sch in self.SchRun[0]:
-        #     sch.close_device()
 
 
 class ToggleButton(CoreButton):
