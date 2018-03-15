@@ -7,7 +7,7 @@ def sendmail(recipient, subject, body):
     FROM = "GuyDvir@Linux"
     TO = recipient if type(recipient) is list else [recipient]
     SUBJECT = subject
-    TEXT = body +"\nSent by PythonGmail"
+    TEXT = body + "\nSent by PythonGmail"
 
     # Prepare actual message
     message = """From: %s\nTo: %s\nSubject: %s\n\n%s
@@ -19,6 +19,10 @@ def sendmail(recipient, subject, body):
         server.login(gmail_user, gmail_pwd)
         server.sendmail(FROM, TO, message)
         server.close()
-        # print('successfully sent the mail')
+        print('successfully sent the mail')
     except:
         print("failed to send mail")
+
+
+if __name__ == "__main__":
+    sendmail('guydvir2@gmail.com', 'booo', 'haha')
