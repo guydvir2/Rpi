@@ -23,7 +23,8 @@ class ShowStatusLCD:
         while True:
             t_stamp=datetime.datetime.now()
             t1, t2 = 0, 0
-            while int(t1)<10:
+            
+            while t1<10:
                 for i,current_switch in enumerate(self.switches):
                     if current_switch.switch_state[0] is False:
                         status[i] = '%s :%s'%(current_switch.name, 'off')
@@ -32,12 +33,12 @@ class ShowStatusLCD:
 
                     self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
                     time.sleep(1)
-                    self.show_time()
-                    t1=datetime.datetime.now()-t_stamp
-            
-            while int(t2)<15:
+                    t1=(datetime.datetime.now()-t_stamp).total_seconds()
+         
+            self.lcd_display.clear_lcd()
+            while t2<15:
                 self.show_time()
-                t2=datetime.datetime.now()-t_stamp
+                t2=(datetime.datetime.now()-t_stamp).total_seconds()
 
     def show_time(self):
         timeNow = str(datetime.datetime.now())[:-5].split(' ')
