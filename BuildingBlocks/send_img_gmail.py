@@ -25,4 +25,4 @@ def SendMail(ImgFileName):
     s.sendmail(From, To, msg.as_string())
     s.quit()
 
-A=SendMail('d:/1.jpg')
+A=SendMail('/home/guy/autosave.jpg')

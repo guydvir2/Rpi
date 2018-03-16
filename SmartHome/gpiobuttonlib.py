@@ -31,7 +31,7 @@ class Indicators:
         self.master = master
         self.frame = frame
         self.x = 0
-        #self.update_indicators()
+        self.update_indicators()
         self.run_id = None
 
     def update_indicators(self):

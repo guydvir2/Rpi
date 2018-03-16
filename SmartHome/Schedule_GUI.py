@@ -12,7 +12,6 @@ class ButtonsGUI(ttk.Frame):
     """AllButtons GUI Class"""
 
     def __init__(self, master, mainframe):
-
         self.master = master
         self.mframe = mainframe
         ttk.Frame.__init__(self, master)
@@ -113,6 +112,7 @@ class ButtonsGUI(ttk.Frame):
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1
+                    #print([x, self.args[l]['nickname']],self.args[l])
             except ValueError:
                 self.master.write2log("Error loading Button" + str(l))
         self.master.write2log("Buttons loaded successfully: " + str([x[1] for x in self.loaded_buts]))
@@ -239,20 +239,16 @@ class MainGUI(ttk.Frame):
                     current_but.schedule_update(new_sched)
 
     def butt_config_gui(self, r=0, c=0):
-
         buttons_type = getattr(ButtonLib2, 'button_list')  # Get Button type from ButtonLib
         self.ButConfigTable = tablegui.DeviceConfigGUI(self.config_but_tab,
                                                        data_file_name=self.path + self.but_filename,
                                                        list=buttons_type)
         self.ButConfigTable.grid(row=r, column=c)
-
         self.write2log("Buttons config GUI loaded")
 
     def buttons_gui(self, r=0, c=0):
-
         self.ButtonNote = ButtonsGUI(self, self.buttons_tab)
         self.ButtonNote.grid(row=0, column=0)
-
         self.write2log("Buttons GUI loaded")
 
     def log_window(self):

@@ -165,7 +165,6 @@ class ScheduledEvents(ttk.Frame):
         if self.empty_sched is False:
             ans, min_time = [-1, -1], []
             for x, res_vec in enumerate(self.result_vector):
-                #print(self.future_on[x])
                 min_time.append(min(self.future_on[x]))
                 for op in res_vec:
                     if op in [0, 1]:
@@ -193,7 +192,6 @@ class ScheduledEvents(ttk.Frame):
                 ## if sched state ---** is not equal to HW state : do make switch
                 # FIX
                 #if (sch_stat[0][0]) != 1:  # ButtonClass.get_state()[self.sw]:
-                print(self.sw)
                 if sch_stat[0][0] !=  ButtonClass.get_state():#[self.sw]:
                     ButtonClass.ext_press(self.sw, sch_stat[0][0], "Schedule Switch")
                     pass
@@ -230,16 +228,12 @@ class ScheduledEvents(ttk.Frame):
             elif ButtonClass.task_state[self.sw][sch_stat[0][1]] == -1:
                 update_label("Cancel: " + str(sch_stat[2]), 'red')
 
-            # print(ButtonClass.nick, ButtonClass.task_state)
-
         check_state(self.run_schedule())
-
         self.run_id = self.after(500, self.switch_descision)
 
     def close_device(self):
         if self.run_id != None:
             self.after_cancel(self.run_id)
-            #self.master.master.master.com.message('[ %s ][ %s ]' % (self.master.master.master.nick, "schedule abort"))
             self.run_id = None
             self.tasks = []
 
@@ -261,7 +255,6 @@ class TimeOutCounter(ttk.Frame):
         self.on = False
         self.sw = sw
         self.run_id = None
-        # print(self.master.master.__doc__)
 
         if remote == 1:  # Use without GUI, as counter only
             self.remote = 1
@@ -549,13 +542,11 @@ class CoreButton(ttk.Frame):
             except IndexError:
                 pass
                 status = 'err'
-                # print(self.nick, sw, status)
         self.com.message('[ %s ][ %s ]' % (self.nick, 'schedule updated'))
 
     def turn_off_switch(self,sw=''):
         if sw == '':
             for i in range (len(self.buts)):
-                print(i)
                 self.execute_command(i, 0)
         else:
             self.execute_command(i, 0)  # Turn off sw=1
@@ -569,7 +560,6 @@ class CoreButton(ttk.Frame):
                     current_sw.close_device()
         else:
             self.SchRun[sw].close_device()
-            #print(self.nick, "Closed SchRun ", sw)
 
     def build_gui(self):
         raise NotImplementedError('You have to override method build_gui()')
