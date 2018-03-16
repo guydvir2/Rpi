@@ -1,15 +1,13 @@
 """ This Lib is used with ButtonLib2 as HW module designed by me"""
 from gpiozero.pins.pigpio import PiGPIOFactory
 import gpiozero
-import pigpio
 from gpiozero import OutputDevice
-import datetime
 import os
 
 class Indicators:
     """ This Calss displays output state of GPIO """
 
-    def __init__(self, master, frame, pdy=0, pdx=3, cols=[]):
+    def __init__(self, master, frame):#, pdy=0, pdx=3, cols=[]):
         self.master = master
         self.frame = frame
         self.x = 0
@@ -25,9 +23,9 @@ class Indicators:
 
         self.x += 1
         for i, but in enumerate(self.master.master.buts):
-            if self.master.get_state()[i] == False:
+            if self.master.get_state()[i] is False:
                 fg, text2 = 'red', ' (Off)'
-            elif self.master.get_state()[i] == True:
+            elif self.master.get_state()[i] is True:
                 fg, text2 = 'green', ' (On)'
 
             but.config(fg=fg)
@@ -43,7 +41,7 @@ class Indicators:
         self.master.master.conn_lbl['style'] = style[ping_result]
 
     def close_device(self):
-        if self.run_id != None:
+        if self.run_id is not None:
             self.master.master.conn_status_var.set('Stop')
             self.frame.after_cancel(self.run_id)
             self.x = 0

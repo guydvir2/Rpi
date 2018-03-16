@@ -124,7 +124,6 @@ class ButtonsGUI(ttk.Frame):
 
         self.master.write2log("Shutting all buttons...Done!")
 
-
     def close_but(self):
         for but in self.buts:
             but.close_all()
@@ -223,7 +222,7 @@ class MainGUI(ttk.Frame):
         self.read_data_from_files()
         self.ButtonNote.get_sched_defs()
         self.WeekSched_TimeTable.create_relations_vector()
-        
+
         keys = ['sched_vector', 'sched_vector2']
         for i, current_but in enumerate(self.ButtonNote.buts):
             for x, current_schedtask in enumerate(self.ButtonNote.args):
