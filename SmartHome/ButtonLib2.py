@@ -507,7 +507,7 @@ class CoreButton(ttk.Frame):
         if self.pigpio_valid(self.ip_out) == 1:
             # FIX
             self.HW_output = gpiobuttonlib.HWRemoteOutput(self, ip=self.ip_out, output_pins=self.hw_out)
-            self.Indicators = gpiobuttonlib.Indicators(self.HW_output, self.buttons_frame, pdx=8)
+            self.Indicators = gpiobuttonlib.Indicators(self.HW_output, self.buttons_frame)
             if not self.hw_in == []: 
                 self.HW_input = gpiobuttonlib.HWRemoteInput(self, ip=self.ip_in, 
                                                             input_pins=self.hw_in)

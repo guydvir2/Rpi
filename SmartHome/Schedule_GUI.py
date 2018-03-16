@@ -250,12 +250,17 @@ class MainGUI(ttk.Frame):
 
     def log_window(self):
         # Create log Tab
-        self.text_tab = tk.Text(self.activity_log_tab, width=100, height=16, bg='snow4')
+        self.text_tab = tk.Text(self.activity_log_tab, width=110, height=16, bg='white', wrap=tk.NONE)
         self.text_tab.grid(row=0, column=0, sticky=tk.E + tk.W)
-        scrollbar = ttk.Scrollbar(self.activity_log_tab)
-        scrollbar.grid(row=0, column=1, sticky=tk.N + tk.S)
-        scrollbar.config(command=self.text_tab.yview)
-        self.text_tab.config(yscrollcommand=scrollbar.set)
+        scrollbar_y = ttk.Scrollbar(self.activity_log_tab, orient=tk.VERTICAL)
+        scrollbar_y.grid(row=0, column=1, sticky=tk.N + tk.S)
+        scrollbar_y.config(command=self.text_tab.yview)
+        
+        scrollbar_x = ttk.Scrollbar(self.activity_log_tab,orient=tk.HORIZONTAL)
+        scrollbar_x.grid(row=0, column=0, sticky=tk.E + tk.W+tk.S)
+        scrollbar_x.config(command=self.text_tab.xview)
+        self.text_tab.config(yscrollcommand=scrollbar_y.set)
+        self.text_tab.config(xscrollcommand=scrollbar_x.set)
         self.text_tab.config(state=tk.DISABLED)
 
         log_button = ttk.Button(self.activity_log_tab, text="Save log")  # , command=self.save_log)
