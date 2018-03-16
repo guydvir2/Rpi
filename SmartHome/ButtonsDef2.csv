@@ -2,4 +2,4 @@
 SW#00,1,ToggleButton,Lights,192.168.2.113,21,17
 SW#01,1,UpDownButton,RoomWindow,192.168.2.113,"20,13","16,26"
 SW#02,1,ToggleButton,Washer,192.168.2.113,11,5
-SW#03,1,MainsButton,Load,192.168.2.113,"12,8","23,9"
+SW#03,1,MainsButton,TheDude,192.168.2.113,"12,8","23,9"

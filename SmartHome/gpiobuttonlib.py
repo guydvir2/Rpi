@@ -6,24 +6,6 @@ from gpiozero import OutputDevice
 import datetime
 import os
 
-
-class Com2Log:
-    """ This class sends status logs to main GUI"""
-
-    def __init__(self, master, nick):
-        self.nick = nick
-        self.master = master
-
-    def message(self, text1):
-
-        time_now = str(datetime.datetime.now())[:-5]
-        text2 = '[%s] %s' % (time_now, text1)
-        try:
-            self.master.master.master.master.master.master.master.write2log(text2)
-        except AttributeError:
-            print(text2)
-
-
 class Indicators:
     """ This Calss displays output state of GPIO """
 
@@ -75,11 +57,10 @@ class HWRemoteInput:
         self.input_pins = []
 
         if self.master is None:
-            nick = 'RemoteInput Device'
+            self.nick = 'RemoteInput Device'
         else:
-            nick = self.master.nick
+            self.nick = self.master.nick
 
-        self.com = Com2Log(self.master, nick)
         self.hardware_config(input_pins=input_pins, ip=ip)
 
     def hardware_config(self, input_pins,ip):
@@ -89,7 +70,8 @@ class HWRemoteInput:
             # Line below is used when button switched off - setting the command to off
             self.input_pins[sw].when_released = lambda arg=[sw, 0]: self.pressed(arg)
 
-        self.com.message("[Remote-Intput][IP:%s][GPIO pins:%s]" % (ip, input_pins))
+        self.master.com.message("[%s][Remote-Intput][IP:%s][GPIO pins:%s]" % 
+                                (self.nick,ip, input_pins))
 
     # Detect press and make switch
     def pressed(self, arg):
@@ -107,7 +89,7 @@ class HWRemoteInput:
     def close_device(self):
         for sw in self.output_pins:
             sw.close()
-        self.com.message("[Device shut done]")
+        self.master.com.message("[%s][Device shut done]"%self.nick)
 
 
 class HWRemoteOutput:
@@ -118,18 +100,17 @@ class HWRemoteOutput:
         self.output_pins = []
 
         if self.master is None:
-            nick = 'RemoteOutput Device'
+            self.nick = 'RemoteOutput Device'
         else:
-            nick = self.master.nick
+            self.nick = self.master.nick
 
-        self.com = Com2Log(self.master, nick)
         self.hardware_config(output_pins=output_pins,ip=ip)
 
     def hardware_config(self, output_pins,ip):
         for sw, pin in enumerate(output_pins):
             self.output_pins.append(OutputDevice(pin, pin_factory=self.factory, initial_value=False))
 
-        self.com.message("[Remote-Output][IP:%s][GPIO pins:%s]" % (ip, output_pins))
+        self.master.com.message("[%s][Remote-Output][IP:%s][GPIO pins:%s]" % (self.nick,ip, output_pins))
 
     # Make the switch
     def set_state(self, sw, state):
@@ -148,7 +129,7 @@ class HWRemoteOutput:
         for sw in self.output_pins:
             sw.close()
         self.output_pins[0].close()
-        self.com.message("[Device shut done]")
+        self.master.com.message("[%s][Device shut done]"%self.nick)
         
         
 if __name__ == "__main__":

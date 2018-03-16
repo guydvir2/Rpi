@@ -112,7 +112,6 @@ class ButtonsGUI(ttk.Frame):
                     self.loaded_buts.append([x, self.args[l]['nickname']])
                     self.buts[x].grid(row=0, column=x)
                     x += 1
-                    #print([x, self.args[l]['nickname']],self.args[l])
             except ValueError:
                 self.master.write2log("Error loading Button" + str(l))
         self.master.write2log("Buttons loaded successfully: " + str([x[1] for x in self.loaded_buts]))
@@ -201,7 +200,6 @@ class MainGUI(ttk.Frame):
         self.weekly_sched_gui(0, 0)
 
     def weekly_sched_gui(self, r=0, c=0):
-
         devices_names = []
         # import configured devices names into timetable
         for dev in self.buts_defs:
