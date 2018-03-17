@@ -24,9 +24,9 @@ class ShowStatusLCD:
             self.t = threading.Thread(name='thread_disp_lcd', target=self.display_status_loop)
             self.t.start()
         except OSError:
-            msg="LCD hardware error"
+            msg = "LCD hardware error"
             print(msg)
-            self.file_log.append_log(msg)
+            self.file_log.append(msg)
 
     def display_status_loop(self):
         status = [[] for i in range(len(self.switches))]
@@ -71,7 +71,7 @@ class FileLog:
             else:
                 print('>>Log file %s failed to create' % self.filename)
 
-    def append_log(self, log_entry=''):
+    def append(self, log_entry=''):
         if self.valid_logfile is True:
             myfile = open(self.filename, 'a')
             myfile.write(log_entry + '\n')
@@ -79,48 +79,25 @@ class FileLog:
         else:
             print('Log err')
 
-    #
-    # def save_to_file(self, filename=''):
-    #     if filename == '':
-    #         filename = self.filename
-    #     if mat == []:
-    #         mat = self.data_from_file
-    #     if not self.titles in mat:
-    #         mat.insert(0, self.titles)
-    #     outputfile = open(filename, 'w', newline="")
-    #     outputwriter = csv.writer(outputfile)
-    #     outputwriter.writerows(mat)
-    #     outputfile.close()
-    #
-    #     print(filename, "saved")
-    #
-    # def load_file(self):
-    #     if os.path.isfile(file_in) is True:
-    #         with open(file_in, 'r') as f:
-    #             reader = csv.reader(f)
-    #             self.data_from_file = list(reader)[1:]
-    #     else:
-    #         print('file', self.filename, ' not found. default was created')
-    #         self.create_def_row()
 
+# Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press')
+log = FileLog(filename='/home/guy/Documents/github/Rpi/SmartHome/loc_switch.log')
+sw1 = LocalSwitch.LocSwitch(21, 5, name='Relay#1', mode='toggle',ext_log=log)
+sw2 = LocalSwitch.LocSwitch(20, 13, name='Relay#2', mode='toggle',ext_log=log)
 
-# # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press')
-# sw1 = LocalSwitch.LocSwitch(5, 21, name='Relay#1', mode='toggle')
-# sw2 = LocalSwitch.LocSwitch(20, 13, name='Relay#2', mode='toggle')
-#
-# # Disp on LCD
-# ShowStatusLCD([sw1, sw2])
-# time.sleep(1)
-#
-# # Make switch by code
-# sw1.switch_state = 1
-# time.sleep(5)
-# sw2.switch_state = 1
-#
-# sw1.switch_state = 0
-# time.sleep(5)
-# sw2.switch_state = 0
+# Disp on LCD
+ShowStatusLCD([sw1, sw2])
+time.sleep(1)
 
-a = FileLog('/home/guy/log.log')
-entry = str(datetime.datetime.now())
-a.append_log(entry)
+# Make switch by code
+sw1.switch_state = 1
+time.sleep(5)
+sw2.switch_state = 1
+
+sw1.switch_state = 0
+time.sleep(5)
+sw2.switch_state = 0
+
+# a = FileLog('/home/guy/log.log')
+# entry = str(datetime.datetime.now())
+# a.append_log(entry)

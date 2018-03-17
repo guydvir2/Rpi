@@ -6,7 +6,7 @@ import datetime
 
 
 class LocSwitch:
-    def __init__(self, button_pin=20, relay_pin=4, name='No-Name', mode='toggle'):
+    def __init__(self, button_pin=20, relay_pin=4, name='No-Name', mode='toggle',ext_log=None):
         self.button, self.relay = None, None
         self.button_pin = button_pin
         self.relay_pin = relay_pin
@@ -14,7 +14,7 @@ class LocSwitch:
         self.press_counter = 0
         self.name, self.mode = name, mode
         self.last_state, self.current_state = None, None
-        self.logbook = []
+        self.logbook, self.ext_log = [], ext_log
 
         self.validate_before_run()
 
@@ -93,6 +93,8 @@ class LocSwitch:
         msg = '[%s]: [%s] %s' % (time, self.name, text1)
         self.logbook.append(msg)
         print(self.logbook[-1])
+        if self.ext_log is not None:
+            self.ext_log.append(self.logbook[-1])
 
     def watch_dog(self):
         def run_watchdog():
