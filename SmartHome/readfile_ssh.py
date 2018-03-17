@@ -1,18 +1,6 @@
 import subprocess
-# from gpiozero import OutputDevice
-# from gpiozero.pins.pigpio import PiGPIOFactory
-
-# import  pigpio
-
-# from gpiozero.Factory import release_all
-
 import os
 import csv
-
-
-# import password_window
-# import tkinter as tk
-# from tkinter import ttk
 
 class SSHfile:
 
@@ -134,15 +122,14 @@ class LoadFile:
 
         self.load_file()
 
-    def create_def_row(self, titles=''):
+    def create_def_row(self): #, titles=''):
         self.mat = []
         titles = self.titles
 
         self.mat.append(titles)
         self.mat.append(self.defaults)
         self.data_from_file = self.mat
-        print(self.mat)
-
+        # print(self.mat)
         self.save_to_file(mat=self.mat)
 
     def save_to_file(self, filename='', mat=[]):  # save sched table to CSV file
