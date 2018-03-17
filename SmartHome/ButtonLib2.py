@@ -6,7 +6,6 @@ import time
 import gpiobuttonlib
 import os
 
-
 # FIX
 import pigpio
 
@@ -410,7 +409,7 @@ class CoreButton(ttk.Frame):
 
         # Styles
         self.style = ttk.Style()
-        self.bg = 'light steel blue'
+        self.bg = 'SlateGray2'#'light steel blue'
         self.style.configure("Azure.TFrame", background='azure4')
         self.style.configure("Blue.TFrame", background='blue')
         self.style.configure("Blue2.TFrame", background=self.bg)
@@ -520,7 +519,7 @@ class CoreButton(ttk.Frame):
     def pigpio_valid(self, address):
         # FIX
         #return 1
-        if os.system('ping %s -c 1' % address) == 0:
+        if os.system('ping -c 1 -w2 %s'%address +' >/dev/null 2>&1') == 0:
             if pigpio.pi(address).connected:
                 result = 1 # Connected
         else:
