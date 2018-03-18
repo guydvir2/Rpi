@@ -83,9 +83,9 @@ class LocSwitch:
             elif self.mode == 'toggle':
                 self.toggle_switch(add)
         else:
-            msg = '[%s] must be [0,1]' % (self.name)
+            msg = '[%s] must be [0,1]' % self.name
             self.log_record(msg)
-        return msg
+        # return msg
 
     def log_record(self, text1=''):
         msg = ''
