@@ -24,7 +24,7 @@ class ShowStatusLCD:
             self.t = threading.Thread(name='thread_disp_lcd', target=self.display_status_loop)
             self.t.start()
         except OSError:
-            msg="LCD hardware error"
+            msg = "LCD hardware error"
             print(msg)
             self.file_log.append_log(msg)
 
@@ -59,6 +59,13 @@ class FileLog:
     def __init__(self, filename):
         self.filename = filename
         self.check_logfile_valid()
+        self.first_boot_entry()
+
+    def first_boot_entry(self):
+        time_stamp = str(datetime.datetime.now())[:-5]
+        msg = '\n[%s] boot' % time_stamp
+        self.append_log(msg)
+        self.append_log('*' * len(msg))
 
     def check_logfile_valid(self):
         if os.path.isfile(self.filename) is True:
@@ -79,29 +86,15 @@ class FileLog:
         else:
             print('Log err')
 
-    #
-    # def save_to_file(self, filename=''):
-    #     if filename == '':
-    #         filename = self.filename
-    #     if mat == []:
-    #         mat = self.data_from_file
-    #     if not self.titles in mat:
-    #         mat.insert(0, self.titles)
-    #     outputfile = open(filename, 'w', newline="")
-    #     outputwriter = csv.writer(outputfile)
-    #     outputwriter.writerows(mat)
-    #     outputfile.close()
-    #
-    #     print(filename, "saved")
-    #
-    # def load_file(self):
-    #     if os.path.isfile(file_in) is True:
-    #         with open(file_in, 'r') as f:
-    #             reader = csv.reader(f)
-    #             self.data_from_file = list(reader)[1:]
-    #     else:
-    #         print('file', self.filename, ' not found. default was created')
-    #         self.create_def_row()
+
+def log_it(func):
+    def wrapper(*args, **kwargs):
+        # print('just for fun')
+        result = func(*args, **kwargs)
+        a.append_log(result)
+        #return result
+
+    return wrapper
 
 
 # # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press')
@@ -122,5 +115,14 @@ class FileLog:
 # sw2.switch_state = 0
 
 a = FileLog('/home/guy/log.log')
-entry = str(datetime.datetime.now())
-a.append_log(entry)
+# entry = str(datetime.datetime.now())
+# a.append_log(entry)
+
+
+@log_it
+def show_time():
+    A = str(datetime.datetime.now())
+    return A
+
+
+show_time()
