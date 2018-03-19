@@ -1,5 +1,4 @@
 import time
-# import gpiozero
 import threading
 import signal
 import datetime
@@ -10,15 +9,21 @@ import os
 path.append('/home/guy/Documents/github/Rpi/GPIO_Projects/lcd')
 path.append('/home/guy/Documents/github/Rpi/SmartHome')
 
+try:
+    import gpiozero
+    import use_lcd
+    import LocalSwitch
 
-# import use_lcd
-# import LocalSwitch
+    ok_modules = True
+except ModuleNotFoundError:
+    ok_modules = False
+    print('Fail to obtain one or more modules')
 
 
 class ShowStatusLCD:
-    def __init__(self, switches):
+    def __init__(self, switches, ext_log=None):
         self.switches = switches
-        self.file_log = FileLog(filename='/home/guy/Documents/github/Rpi/SmartHome/loc_switch.log')
+        self.file_log = ext_log  # FileLog(filename='/home/guy/Documents/github/Rpi/SmartHome/loc_switch.log')
         try:
             # Case of HW err
             self.lcd_display = use_lcd.MyLCD()
@@ -54,6 +59,12 @@ class ShowStatusLCD:
     def show_time(self):
         timeNow = str(datetime.datetime.now())[:-5].split(' ')
         self.lcd_display.center_str(text1=timeNow[0], text2=timeNow[1])
+
+    def local_log(self, log_entry=''):
+        self.loclog = []
+
+        def append_log():
+            self.loclog.append(log_entry)
 
 
 class Log2File:
@@ -106,16 +117,27 @@ class Log2File:
 
 
 class TestClass:
+    class InternalLog:
+        def __init__(self):
+            self.local_log = []
+
+        def append_log(self, log_entry):
+            time_stamp = str(datetime.datetime.now())[:-5]
+            msg = '[%s] %s' % (time_stamp, log_entry)
+            self.local_log.append(msg)
+
     def __init__(self, ext_log=None):
         self.now = 'boot' + str(datetime.datetime.now())
-        self.external_log = ext_log
-        self.external_log.append_log('Start')
+        if ext_log is not None:
+            self.log = ext_log
+            self.log.append_log('Start')
+        else:
+            self.log = TestClass.InternalLog()
 
     def update(self):
         self.now = "time update: " + str(datetime.datetime.now())
-        self.external_log.append_log(self.now)
+        self.log.append_log(self.now)
         return self.now
-
 
 def log_it(func):
     def wrapper(*args, **kwargs):
@@ -146,8 +168,9 @@ def log_it(func):
 
 # a = FileLog('/Users/guy/log.log')
 
-test = TestClass(ext_log=Log2File('log.log', screen=1))
+test = TestClass()  # ext_log=Log2File('log.log', screen=1))
 time.sleep(5)
 test.update()
 time.sleep(0.2)
 test.update()
+print(test.log.local_log)

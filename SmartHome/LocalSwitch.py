@@ -1,12 +1,19 @@
-import gpiozero
-from signal import pause
+# from signal import pause
 import threading
 from time import sleep
 import datetime
 
+try:
+    import gpiozero
+
+    ok_module = True
+except ModuleNotFoundError:
+    print("Fail to obtain gpiozero module")
+    ok_module = False
+
 
 class LocSwitch:
-    def __init__(self, button_pin=20, relay_pin=4, name='No-Name', mode='toggle',ext_log=None):
+    def __init__(self, button_pin=20, relay_pin=4, name='No-Name', mode='toggle', ext_log=None):
         self.button, self.relay = None, None
         self.button_pin = button_pin
         self.relay_pin = relay_pin
@@ -85,7 +92,6 @@ class LocSwitch:
         else:
             msg = '[%s] must be [0,1]' % self.name
             self.log_record(msg)
-        return msg
 
     def log_record(self, text1=''):
         msg = ''
@@ -94,8 +100,6 @@ class LocSwitch:
         self.logbook.append(msg)
         print(self.logbook[-1])
         return msg
-        # if self.ext_log is not None:
-        #     self.ext_log.append(self.logbook[-1])
 
     def watch_dog(self):
         def run_watchdog():
@@ -111,10 +115,13 @@ class LocSwitch:
 
 
 if __name__ == "__main__":
-    a = LocSwitch(21, 4, mode='toggle', name="GUYDVIR")
-    sleep(2)
-    a.watch_dog()
-    a.switch_state = 1
-    sleep(2)
-    a.switch_state = 0
-    c = LocSwitch(20, 4, mode='press', name="GUYDVIR2")
+    if ok_module is True:
+        a = LocSwitch(21, 4, mode='toggle', name="GUYDVIR")
+        sleep(2)
+        a.watch_dog()
+        a.switch_state = 1
+        sleep(2)
+        a.switch_state = 0
+        c = LocSwitch(20, 4, mode='press', name="GUYDVIR2")
+    else:
+        print("Can't run without gpiozero module")
