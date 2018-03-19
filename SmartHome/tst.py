@@ -1,13 +1,24 @@
+from sys import platform
+
+os_type = platform
+if os_type == 'darwin':
+    main_path = '/Users/guy/Documents/github/Rpi/'
+elif os_type == 'win32':
+    main_path = 'd:/users/guydvir/Documents/git/Rpi/'
+elif os_type == 'linux':
+    main_path = '/home/guy/Documents/github/Rpi/'
+
+from sys import path
+
+path.append(main_path + 'GPIO_Projects/lcd')
+path.append(main_path + 'SmartHome')
+
 import time
 import threading
 import signal
 import datetime
-from sys import path
-from sys import platform
-import os
 
-path.append('/home/guy/Documents/github/Rpi/GPIO_Projects/lcd')
-path.append('/home/guy/Documents/github/Rpi/SmartHome')
+import os
 
 try:
     import gpiozero
@@ -16,7 +27,7 @@ try:
 
     ok_modules = True
 
-except  ImportError:  # (ModuleNotFoundError,
+except ImportError:  # (ModuleNotFoundError,
     ok_modules = False
     print('Fail to obtain one or more modules')
 
@@ -84,7 +95,7 @@ class Log2File:
     def detectOS(self):
         os_type = platform
         if os_type == 'darwin':
-            self.path = '/Users/guyd/Documents/github/Rpi/SmartHome/'
+            self.path = '/Users/guy/Documents/github/Rpi/SmartHome/'
         elif os_type == 'win32':
             self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
         elif os_type == 'linux':
@@ -111,7 +122,7 @@ class Log2File:
             msg = '[%s] %s' % (self.time_stamp(), log_entry)
         else:
             msg = '%s' % log_entry
-                
+
         if self.valid_logfile is True:
             myfile = open(self.filename, 'a')
             myfile.write(msg + '\n')
@@ -122,28 +133,28 @@ class Log2File:
             print(msg)
 
 
-#class TestClass:
-    #class InternalLog:
-        #def __init__(self):
-            #self.local_log = []
+# class TestClass:
+# class InternalLog:
+# def __init__(self):
+# self.local_log = []
 
-        #def append_log(self, log_entry):
-            #time_stamp = str(datetime.datetime.now())[:-5]
-            #msg = '[%s] %s' % (time_stamp, log_entry)
-            #self.local_log.append(msg)
+# def append_log(self, log_entry):
+# time_stamp = str(datetime.datetime.now())[:-5]
+# msg = '[%s] %s' % (time_stamp, log_entry)
+# self.local_log.append(msg)
 
-    #def __init__(self, ext_log=None):
-        #self.now = 'boot' + str(datetime.datetime.now())
-        #if ext_log is not None:
-            #self.log = ext_log
-            #self.log.append_log('Start')
-        #else:
-            #self.log = TestClass.InternalLog()
+# def __init__(self, ext_log=None):
+# self.now = 'boot' + str(datetime.datetime.now())
+# if ext_log is not None:
+# self.log = ext_log
+# self.log.append_log('Start')
+# else:
+# self.log = TestClass.InternalLog()
 
-    #def update(self):
-        #self.now = "time update: " + str(datetime.datetime.now())
-        #self.log.append_log(self.now)
-        #return self.now
+# def update(self):
+# self.now = "time update: " + str(datetime.datetime.now())
+# self.log.append_log(self.now)
+# return self.now
 
 
 def log_it(func):
@@ -156,16 +167,16 @@ def log_it(func):
     return wrapper
 
 
- # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
-file_logger=Log2File('Newlog.log', screen=0)
-sw1 = LocalSwitch.LocSwitch(5, 21, name='Relay#1', mode='toggle',ext_log=file_logger)
-sw2 = LocalSwitch.LocSwitch(20, 13, name='Relay#2', mode='toggle',ext_log=file_logger)
+# Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
+file_logger = Log2File('Newlog.log', screen=0)
+sw1 = LocalSwitch.LocSwitch(5, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
+sw2 = LocalSwitch.LocSwitch(20, 13, name='Relay#2', mode='toggle', ext_log=file_logger)
 
- # Disp on LCD
-#ShowStatusLCD([sw1, sw2])
+# Disp on LCD
+# ShowStatusLCD([sw1, sw2])
 time.sleep(1)
 
- # Make switch by code
+# Make switch by code
 sw1.switch_state = 1
 time.sleep(5)
 sw2.switch_state = 1
@@ -176,8 +187,8 @@ sw2.switch_state = 0
 
 # a = FileLog('/Users/guy/log.log')
 
-#test = TestClass()  # ext_log=Log2File('log.log', screen=1))
-#time.sleep(5)
-#test.update()
-#time.sleep(0.2)
-#test.update()
+# test = TestClass()  # ext_log=Log2File('log.log', screen=1))
+# time.sleep(5)
+# test.update()
+# time.sleep(0.2)
+# test.update()
