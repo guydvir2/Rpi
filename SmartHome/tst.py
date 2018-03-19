@@ -1,9 +1,10 @@
 import time
 # import gpiozero
 import threading
-from signal import pause
+import signal
 import datetime
 from sys import path
+from sys import platform
 import os
 
 path.append('/home/guy/Documents/github/Rpi/GPIO_Projects/lcd')
@@ -55,15 +56,29 @@ class ShowStatusLCD:
         self.lcd_display.center_str(text1=timeNow[0], text2=timeNow[1])
 
 
-class FileLog:
-    def __init__(self, filename):
-        self.filename = filename
+class Log2File:
+    def __init__(self, filename, screen=0):
+        self.detectOS()
+        self.output2screen = screen
+        self.filename = self.path + filename
         self.check_logfile_valid()
         self.first_boot_entry()
 
+    def time_stamp(self):
+        t = str(datetime.datetime.now())[:-5]
+        return t
+
+    def detectOS(self):
+        os_type = platform
+        if os_type == 'darwin':
+            self.path = '/Users/guyd/Documents/github/Rpi/SmartHome/'
+        elif os_type == 'win32':
+            self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
+        elif os_type == 'linux':
+            self.path = '/home/guy/Documents/github/Rpi/SmartHome/'
+
     def first_boot_entry(self):
-        time_stamp = str(datetime.datetime.now())[:-5]
-        msg = '\n[%s] boot' % time_stamp
+        msg = 'log start @%s' % (str(platform))
         self.append_log(msg)
         self.append_log('*' * len(msg))
 
@@ -79,28 +94,33 @@ class FileLog:
                 print('>>Log file %s failed to create' % self.filename)
 
     def append_log(self, log_entry=''):
+        msg = '[%s] %s' % (self.time_stamp(), log_entry)
         if self.valid_logfile is True:
             myfile = open(self.filename, 'a')
-            myfile.write(log_entry + '\n')
+            myfile.write(msg + '\n')
             myfile.close()
         else:
             print('Log err')
+        if self.output2screen == 1:
+            print(msg)
 
 
 class TestClass:
-    def __init__(self):
+    def __init__(self, ext_log=None):
         self.now = 'boot' + str(datetime.datetime.now())
-        # return self.now
+        self.external_log = ext_log
+        self.external_log.append_log('Start')
 
     def update(self):
         self.now = "time update: " + str(datetime.datetime.now())
+        self.external_log.append_log(self.now)
         return self.now
 
 
 def log_it(func):
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
-        a.append_log("hello                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ")
+        a.append_log("Shit")
         print(result)
         return result
 
@@ -124,24 +144,10 @@ def log_it(func):
 # time.sleep(5)
 # sw2.switch_state = 0
 
-a = FileLog('/Users/guy/log.log')
+# a = FileLog('/Users/guy/log.log')
 
-
-# entry = str(datetime.datetime.now())
-# a.append_log(entry)
-
-
-@log_it
-def create_switch(out_pin, in_pin, name, mode):
-    pass
-    # LocalSwitch.LocSwitch(out_pin, in_pin, name, mode)
-
-
-@log_it
-def create_test():
-    temp = TestClass()
-    temp.update()
-
-ac=create_test()
-
-# sw1 = (5, 21, name='Relay#1', mode='toggle'))
+test = TestClass(ext_log=Log2File('log.log', screen=1))
+time.sleep(5)
+test.update()
+time.sleep(0.2)
+test.update()
