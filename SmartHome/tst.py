@@ -15,7 +15,8 @@ try:
     import LocalSwitch
 
     ok_modules = True
-except ModuleNotFoundError:
+
+except  ImportError:  # (ModuleNotFoundError,
     ok_modules = False
     print('Fail to obtain one or more modules')
 
@@ -139,6 +140,7 @@ class TestClass:
         self.log.append_log(self.now)
         return self.now
 
+
 def log_it(func):
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
@@ -173,4 +175,3 @@ time.sleep(5)
 test.update()
 time.sleep(0.2)
 test.update()
-print(test.log.local_log)
