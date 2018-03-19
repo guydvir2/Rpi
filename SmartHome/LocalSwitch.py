@@ -85,7 +85,7 @@ class LocSwitch:
         else:
             msg = '[%s] must be [0,1]' % self.name
             self.log_record(msg)
-        # return msg
+        return msg
 
     def log_record(self, text1=''):
         msg = ''
@@ -93,8 +93,9 @@ class LocSwitch:
         msg = '[%s]: [%s] %s' % (time, self.name, text1)
         self.logbook.append(msg)
         print(self.logbook[-1])
-        if self.ext_log is not None:
-            self.ext_log.append(self.logbook[-1])
+        return msg
+        # if self.ext_log is not None:
+        #     self.ext_log.append(self.logbook[-1])
 
     def watch_dog(self):
         def run_watchdog():

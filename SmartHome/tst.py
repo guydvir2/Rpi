@@ -78,7 +78,7 @@ class FileLog:
             else:
                 print('>>Log file %s failed to create' % self.filename)
 
-    def append(self, log_entry=''):
+    def append_log(self, log_entry=''):
         if self.valid_logfile is True:
             myfile = open(self.filename, 'a')
             myfile.write(log_entry + '\n')
@@ -87,35 +87,22 @@ class FileLog:
             print('Log err')
 
 
-<<<<<<< HEAD
-# Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press')
-log = FileLog(filename='/home/guy/Documents/github/Rpi/SmartHome/loc_switch.log')
-sw1 = LocalSwitch.LocSwitch(21, 5, name='Relay#1', mode='toggle',ext_log=log)
-sw2 = LocalSwitch.LocSwitch(20, 13, name='Relay#2', mode='toggle',ext_log=log)
+class TestClass:
+    def __init__(self):
+        self.now = 'boot' + str(datetime.datetime.now())
+        # return self.now
 
-# Disp on LCD
-ShowStatusLCD([sw1, sw2])
-time.sleep(1)
+    def update(self):
+        self.now = "time update: " + str(datetime.datetime.now())
+        return self.now
 
-# Make switch by code
-sw1.switch_state = 1
-time.sleep(5)
-sw2.switch_state = 1
 
-sw1.switch_state = 0
-time.sleep(5)
-sw2.switch_state = 0
-
-# a = FileLog('/home/guy/log.log')
-# entry = str(datetime.datetime.now())
-# a.append_log(entry)
-=======
 def log_it(func):
     def wrapper(*args, **kwargs):
-        # print('just for fun')
         result = func(*args, **kwargs)
-        a.append_log(result)
-        #return result
+        a.append_log("hello                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ")
+        print(result)
+        return result
 
     return wrapper
 
@@ -137,16 +124,24 @@ def log_it(func):
 # time.sleep(5)
 # sw2.switch_state = 0
 
-a = FileLog('/home/guy/log.log')
+a = FileLog('/Users/guy/log.log')
+
+
 # entry = str(datetime.datetime.now())
 # a.append_log(entry)
 
 
 @log_it
-def show_time():
-    A = str(datetime.datetime.now())
-    return A
+def create_switch(out_pin, in_pin, name, mode):
+    pass
+    # LocalSwitch.LocSwitch(out_pin, in_pin, name, mode)
 
 
-show_time()
->>>>>>> 162341dd09416590d48ee14116d993840520df7f
+@log_it
+def create_test():
+    temp = TestClass()
+    temp.update()
+
+ac=create_test()
+
+# sw1 = (5, 21, name='Relay#1', mode='toggle'))
