@@ -69,9 +69,10 @@ class ShowStatusLCD:
 
 
 class Log2File:
-    def __init__(self, filename, screen=0):
+    def __init__(self, filename, screen=0, time_in_log=0):
         self.detectOS()
         self.output2screen = screen
+        self.time_stamp_in_log = time_in_log
         self.filename = self.path + filename
         self.check_logfile_valid()
         self.first_boot_entry()
@@ -106,7 +107,11 @@ class Log2File:
                 print('>>Log file %s failed to create' % self.filename)
 
     def append_log(self, log_entry=''):
-        msg = '[%s] %s' % (self.time_stamp(), log_entry)
+        if self.time_stamp_in_log == 1:
+            msg = '[%s] %s' % (self.time_stamp(), log_entry)
+        else:
+            msg = '%s' % log_entry
+                
         if self.valid_logfile is True:
             myfile = open(self.filename, 'a')
             myfile.write(msg + '\n')
@@ -117,28 +122,28 @@ class Log2File:
             print(msg)
 
 
-class TestClass:
-    class InternalLog:
-        def __init__(self):
-            self.local_log = []
+#class TestClass:
+    #class InternalLog:
+        #def __init__(self):
+            #self.local_log = []
 
-        def append_log(self, log_entry):
-            time_stamp = str(datetime.datetime.now())[:-5]
-            msg = '[%s] %s' % (time_stamp, log_entry)
-            self.local_log.append(msg)
+        #def append_log(self, log_entry):
+            #time_stamp = str(datetime.datetime.now())[:-5]
+            #msg = '[%s] %s' % (time_stamp, log_entry)
+            #self.local_log.append(msg)
 
-    def __init__(self, ext_log=None):
-        self.now = 'boot' + str(datetime.datetime.now())
-        if ext_log is not None:
-            self.log = ext_log
-            self.log.append_log('Start')
-        else:
-            self.log = TestClass.InternalLog()
+    #def __init__(self, ext_log=None):
+        #self.now = 'boot' + str(datetime.datetime.now())
+        #if ext_log is not None:
+            #self.log = ext_log
+            #self.log.append_log('Start')
+        #else:
+            #self.log = TestClass.InternalLog()
 
-    def update(self):
-        self.now = "time update: " + str(datetime.datetime.now())
-        self.log.append_log(self.now)
-        return self.now
+    #def update(self):
+        #self.now = "time update: " + str(datetime.datetime.now())
+        #self.log.append_log(self.now)
+        #return self.now
 
 
 def log_it(func):
@@ -151,27 +156,28 @@ def log_it(func):
     return wrapper
 
 
-# # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press')
-# sw1 = LocalSwitch.LocSwitch(5, 21, name='Relay#1', mode='toggle')
-# sw2 = LocalSwitch.LocSwitch(20, 13, name='Relay#2', mode='toggle')
-#
-# # Disp on LCD
-# ShowStatusLCD([sw1, sw2])
-# time.sleep(1)
-#
-# # Make switch by code
-# sw1.switch_state = 1
-# time.sleep(5)
-# sw2.switch_state = 1
-#
-# sw1.switch_state = 0
-# time.sleep(5)
-# sw2.switch_state = 0
+ # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
+file_logger=Log2File('Newlog.log', screen=0)
+sw1 = LocalSwitch.LocSwitch(5, 21, name='Relay#1', mode='toggle',ext_log=file_logger)
+sw2 = LocalSwitch.LocSwitch(20, 13, name='Relay#2', mode='toggle',ext_log=file_logger)
+
+ # Disp on LCD
+#ShowStatusLCD([sw1, sw2])
+time.sleep(1)
+
+ # Make switch by code
+sw1.switch_state = 1
+time.sleep(5)
+sw2.switch_state = 1
+
+sw1.switch_state = 0
+time.sleep(5)
+sw2.switch_state = 0
 
 # a = FileLog('/Users/guy/log.log')
 
-test = TestClass()  # ext_log=Log2File('log.log', screen=1))
-time.sleep(5)
-test.update()
-time.sleep(0.2)
-test.update()
+#test = TestClass()  # ext_log=Log2File('log.log', screen=1))
+#time.sleep(5)
+#test.update()
+#time.sleep(0.2)
+#test.update()

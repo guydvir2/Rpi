@@ -1,4 +1,4 @@
-# from signal import pause
+from signal import pause
 import threading
 from time import sleep
 import datetime
@@ -99,6 +99,8 @@ class LocSwitch:
         msg = '[%s]: [%s] %s' % (time, self.name, text1)
         self.logbook.append(msg)
         print(self.logbook[-1])
+        if self.ext_log is not None:
+            self.ext_log.append_log(msg)
         return msg
 
     def watch_dog(self):
@@ -122,6 +124,6 @@ if __name__ == "__main__":
         a.switch_state = 1
         sleep(2)
         a.switch_state = 0
-        c = LocSwitch(20, 4, mode='press', name="GUYDVIR2")
+        c = LocSwitch(20, 5, mode='press', name="GUYDVIR2")
     else:
         print("Can't run without gpiozero module")
