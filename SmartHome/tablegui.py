@@ -7,11 +7,16 @@ import readfile_ssh
 class CoreTable(ttk.Frame):
     def __init__(self, master, data_filename=''):
         ttk.Frame.__init__(self, master)
+        try:
+            self.com = self.master.master,master.master.master.master.write2log
+        except:
+            print("DUSH")
 
         self.style = ttk.Style()
         self.style.theme_use('clam')
         self.style.configure("warning.TButton", foreground='red')
         self.style.configure("bg_title.TLabel", foreground='grey')
+        #self.com("GUY!!!")
 
         # bg_color = 'slate gray'
         # bg_color = 'gray31'

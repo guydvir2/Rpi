@@ -1,5 +1,6 @@
 
-SW#00,1,ToggleButton,Lights,192.168.2.114,21,26
-SW#01,0,UpDownButton,RoomWindow,192.168.2.114,"20,21","16,26"
-SW#02,1,ToggleButton,Washer,192.168.2.114,20,16
-SW#03,1,MainsButton,ShitHead,192.168.2.113,12,16
+SW#00,1,ToggleButton,Lights,192.168.2.113,21,17
+SW#01,1,UpDownButton,RoomWindow,192.168.2.113,"20,13","16,26"
+SW#02,1,ToggleButton,Washer,192.168.2.113,11,5
+SW#03,1,MainsButton,TheDude,192.168.2.113,"12,8","23,9"
+SW#04,1,ToggleButton,Light2,192.168.2.113,14,22

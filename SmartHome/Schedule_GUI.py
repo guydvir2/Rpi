@@ -12,12 +12,12 @@ class ButtonsGUI(ttk.Frame):
     """AllButtons GUI Class"""
 
     def __init__(self, master, mainframe):
-
         self.master = master
         self.mframe = mainframe
         ttk.Frame.__init__(self, master)
         self.reachable_ips = ['192.168.2.113', '192.168.2.114']
         self.master.write2log("Valid IP's to load:" + str(self.reachable_ips))
+        self.max_buts_in_row=4
 
         self.reload_all()
 
@@ -103,6 +103,7 @@ class ButtonsGUI(ttk.Frame):
     def build_gui(self):
 
         x = 0
+        row_index,col_index = 0, 0
         for l, current_button in enumerate(self.master.buts_defs):
             try:
                 # load button if it in allowed ip list, and checked
@@ -111,7 +112,11 @@ class ButtonsGUI(ttk.Frame):
                     self.buts.append(getattr(ButtonLib2, current_button[2])
                                      (self.mainframe, **self.args[l]))
                     self.loaded_buts.append([x, self.args[l]['nickname']])
-                    self.buts[x].grid(row=0, column=x)
+                    if col_index >self.max_buts_in_row-1 :
+                        row_index +=1
+                        col_index = 0
+                    self.buts[x].grid(row=row_index, column=col_index)
+                    col_index +=1
                     x += 1
             except ValueError:
                 self.master.write2log("Error loading Button" + str(l))
@@ -124,7 +129,6 @@ class ButtonsGUI(ttk.Frame):
             self.mainframe.destroy()
 
         self.master.write2log("Shutting all buttons...Done!")
-
 
     def close_but(self):
         for but in self.buts:
@@ -161,7 +165,7 @@ class MainGUI(ttk.Frame):
         self.main_frame.grid()
         self.connected_devices, self.sched_vector = [], []
         self.read_data_from_files()
-        self.build_gui()
+        self.build_notebook()
 
     def read_data_from_files(self):
         # Read data from file to code
@@ -180,28 +184,29 @@ class MainGUI(ttk.Frame):
     #     self.main_frame.destroy()
     #     self.reload_all()
 
-    def build_gui(self):
+    def build_notebook(self):
         notebook = ttk.Notebook(self.main_frame)
 
         self.sched_tab = ttk.Frame(notebook)
         self.config_but_tab = ttk.Frame(notebook)
         self.buttons_tab = ttk.Frame(notebook)
         self.activity_log_tab = ttk.Frame(notebook)
-
+        self.about_tab = ttk.Frame(notebook)
+        
         notebook.add(self.sched_tab, text="Weekly Schedule", compound=tk.TOP)
         notebook.add(self.buttons_tab, text="Buttons", compound=tk.TOP)
         notebook.add(self.config_but_tab, text="Hardware Config", compound=tk.TOP)
         notebook.add(self.activity_log_tab, text="Activity Log", compound=tk.TOP)
+        notebook.add(self.about_tab, text="About", compound=tk.TOP)
         notebook.grid()
 
         self.log_window()
-        self.write2log("Boot")
+        self.write2log("Notebooks built")
         self.butt_config_gui(2, 0)
         self.buttons_gui(1, 0)
         self.weekly_sched_gui(0, 0)
 
     def weekly_sched_gui(self, r=0, c=0):
-
         devices_names = []
         # import configured devices names into timetable
         for dev in self.buts_defs:
@@ -212,8 +217,8 @@ class MainGUI(ttk.Frame):
                 devices_names.append(dev[3])
 
         self.WeekSched_TimeTable = tablegui.TimeTableConfigGUI(self.sched_tab,
-                                                               data_file_name=self.path + self.sched_filename,
-                                                               list=devices_names)
+                                data_file_name=self.path + self.sched_filename,
+                                list=devices_names)
         self.WeekSched_TimeTable.grid(row=r, column=c)
         self.write2log("Weekly schedule GUI started")
 
@@ -225,7 +230,7 @@ class MainGUI(ttk.Frame):
         self.read_data_from_files()
         self.ButtonNote.get_sched_defs()
         self.WeekSched_TimeTable.create_relations_vector()
-        
+
         keys = ['sched_vector', 'sched_vector2']
         for i, current_but in enumerate(self.ButtonNote.buts):
             for x, current_schedtask in enumerate(self.ButtonNote.args):
@@ -239,39 +244,40 @@ class MainGUI(ttk.Frame):
                     current_but.schedule_update(new_sched)
 
     def butt_config_gui(self, r=0, c=0):
-
         buttons_type = getattr(ButtonLib2, 'button_list')  # Get Button type from ButtonLib
         self.ButConfigTable = tablegui.DeviceConfigGUI(self.config_but_tab,
                                                        data_file_name=self.path + self.but_filename,
                                                        list=buttons_type)
         self.ButConfigTable.grid(row=r, column=c)
-
         self.write2log("Buttons config GUI loaded")
 
     def buttons_gui(self, r=0, c=0):
-
         self.ButtonNote = ButtonsGUI(self, self.buttons_tab)
         self.ButtonNote.grid(row=0, column=0)
-
         self.write2log("Buttons GUI loaded")
 
     def log_window(self):
         # Create log Tab
-        self.text_tab = tk.Text(self.activity_log_tab, width=100, height=16, bg='snow4')
-        self.text_tab.grid(row=0, column=0, sticky=tk.E + tk.W)
-        scrollbar = ttk.Scrollbar(self.activity_log_tab)
-        scrollbar.grid(row=0, column=1, sticky=tk.N + tk.S)
-        scrollbar.config(command=self.text_tab.yview)
-        self.text_tab.config(yscrollcommand=scrollbar.set)
+        self.text_tab = tk.Text(self.activity_log_tab, bg='white', wrap=tk.NONE)
+        self.text_tab.grid(row=0, column=0)#, sticky=tk.E + tk.W+tk.N+tk.S)
+        scrollbar_y = ttk.Scrollbar(self.activity_log_tab, orient=tk.VERTICAL)
+        scrollbar_y.grid(row=0, column=1, sticky=tk.N + tk.S)
+        scrollbar_y.config(command=self.text_tab.yview)
+        scrollbar_x = ttk.Scrollbar(self.activity_log_tab,orient=tk.HORIZONTAL)
+        scrollbar_x.grid(row=0, column=0, sticky=tk.E + tk.W+tk.S)
+        scrollbar_x.config(command=self.text_tab.xview)
+        
+        self.text_tab.config(yscrollcommand=scrollbar_y.set)
+        self.text_tab.config(xscrollcommand=scrollbar_x.set)
         self.text_tab.config(state=tk.DISABLED)
 
-        log_button = ttk.Button(self.activity_log_tab, text="Save log")  # , command=self.save_log)
-        log_button.grid(row=1, column=0, sticky=tk.E, pady=10)
+        #log_button = ttk.Button(self.activity_log_tab, text="Save log")  # , command=self.save_log)
+        #log_button.grid(row=1, column=0, sticky=tk.E, pady=10)
 
     def write2log(self, text_in):
         try:
             self.text_tab.config(state=tk.NORMAL)
-            time2log = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+            time2log = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-5]
             start = tk.END
             if self.log_stack != []:
                 for msg in self.log_stack:
