@@ -35,7 +35,7 @@ except ImportError:  # (ModuleNotFoundError,
 class ShowStatusLCD:
     def __init__(self, switches, ext_log=None):
         self.switches = switches
-        self.file_log = ext_log  # FileLog(filename='/home/guy/Documents/github/Rpi/SmartHome/loc_switch.log')
+        self.log = ext_log
         try:
             # Case of HW err
             self.lcd_display = use_lcd.MyLCD()
@@ -44,7 +44,7 @@ class ShowStatusLCD:
         except OSError:
             msg = "LCD hardware error"
             print(msg)
-            self.file_log.append(msg)
+            self.log.append(msg)
 
     def display_status_loop(self):
         status = [[] for i in range(len(self.switches))]
@@ -71,12 +71,6 @@ class ShowStatusLCD:
     def show_time(self):
         timeNow = str(datetime.datetime.now())[:-5].split(' ')
         self.lcd_display.center_str(text1=timeNow[0], text2=timeNow[1])
-
-    def local_log(self, log_entry=''):
-        self.loclog = []
-
-        def append_log():
-            self.loclog.append(log_entry)
 
 
 class Log2File:
@@ -133,30 +127,6 @@ class Log2File:
             print(msg)
 
 
-# class TestClass:
-# class InternalLog:
-# def __init__(self):
-# self.local_log = []
-
-# def append_log(self, log_entry):
-# time_stamp = str(datetime.datetime.now())[:-5]
-# msg = '[%s] %s' % (time_stamp, log_entry)
-# self.local_log.append(msg)
-
-# def __init__(self, ext_log=None):
-# self.now = 'boot' + str(datetime.datetime.now())
-# if ext_log is not None:
-# self.log = ext_log
-# self.log.append_log('Start')
-# else:
-# self.log = TestClass.InternalLog()
-
-# def update(self):
-# self.now = "time update: " + str(datetime.datetime.now())
-# self.log.append_log(self.now)
-# return self.now
-
-
 def log_it(func):
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
@@ -169,11 +139,11 @@ def log_it(func):
 
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
 file_logger = Log2File('Newlog.log', screen=0)
-sw1 = LocalSwitch.LocSwitch(5, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
-sw2 = LocalSwitch.LocSwitch(20, 13, name='Relay#2', mode='toggle', ext_log=file_logger)
+sw1 = LocalSwitch.LocSwitch(5,21, name='Relay#1', mode='toggle', ext_log=file_logger)
+sw2 = LocalSwitch.LocSwitch(13,20, name='Relay#2', mode='toggle', ext_log=file_logger)
 
 # Disp on LCD
-# ShowStatusLCD([sw1, sw2])
+ShowStatusLCD([sw1, sw2])
 time.sleep(1)
 
 # Make switch by code
@@ -184,11 +154,3 @@ sw2.switch_state = 1
 sw1.switch_state = 0
 time.sleep(5)
 sw2.switch_state = 0
-
-# a = FileLog('/Users/guy/log.log')
-
-# test = TestClass()  # ext_log=Log2File('log.log', screen=1))
-# time.sleep(5)
-# test.update()
-# time.sleep(0.2)
-# test.update()

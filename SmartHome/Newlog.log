@@ -27,3 +27,53 @@ log start @darwin
 *****************
 log start @darwin
 *****************
+log start @linux
+****************
+[2018-03-19 23:02:50.8]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-19 23:02:50.8]: [Relay#2] init in [toggle] mode on [thread_gpio_13] 
+[2018-03-19 23:02:51.4]: [Relay#1] gpio init successfully
+[2018-03-19 23:02:51.5]: [Relay#2] gpio init successfully
+[2018-03-19 23:02:52.1]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-19 23:02:57.1]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-19 23:02:57.1]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-19 23:03:02.1]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-19 23:19:21.9]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-19 23:19:22.0]: [Relay#2] init in [toggle] mode on [thread_gpio_13] 
+[2018-03-19 23:19:22.5]: [Relay#1] gpio init successfully
+[2018-03-19 23:19:22.5]: [Relay#2] gpio init successfully
+[2018-03-19 23:19:23.8]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-19 23:19:28.8]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-19 23:19:28.9]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-19 23:19:33.9]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-19 23:29:13.6]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-19 23:29:13.8]: [Relay#2] init in [toggle] mode on [thread_gpio_13] 
+[2018-03-19 23:29:13.9]: [Relay#2] gpio init successfully
+[2018-03-19 23:29:13.9]: [Relay#1] gpio init successfully
+[2018-03-19 23:29:15.2]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-19 23:29:20.2]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-19 23:29:20.2]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-19 23:29:25.2]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-19 23:30:42.8]: [Relay#1] init in [toggle] mode on [thread_gpio_5] 
+[2018-03-19 23:30:42.9]: [Relay#2] init in [toggle] mode on [thread_gpio_13] 
+[2018-03-19 23:30:43.3]: [Relay#2] gpio init successfully
+[2018-03-19 23:30:43.3]: [Relay#1] gpio init successfully
+[2018-03-19 23:30:44.6]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-19 23:30:49.6]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-19 23:30:49.6]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-19 23:30:54.6]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-19 23:32:06.7]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-19 23:32:06.9]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-19 23:32:07.0]: [Relay#1] gpio init successfully
+[2018-03-19 23:32:07.1]: [Relay#2] gpio init successfully
+[2018-03-19 23:32:08.3]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-19 23:32:13.3]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-19 23:32:13.3]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-19 23:32:18.4]: [Relay#2] [True --> False] pressed [code] [2] times
