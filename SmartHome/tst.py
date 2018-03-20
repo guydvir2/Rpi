@@ -52,19 +52,21 @@ class ShowStatusLCD:
             t_stamp = datetime.datetime.now()
             t1, t2 = 0, 0
 
-            while t1 < 10:
+            while t1 < 3:
                 for i, current_switch in enumerate(self.switches):
                     if current_switch.switch_state[0] is False:
                         status[i] = '%s :%s' % (current_switch.name, 'off')
+                        self.log.append(status[i])
                     elif current_switch.switch_state[0] is True:
                         status[i] = '%s :%s' % (current_switch.name, 'on ')
+                        self.log.append(status[i])
 
                     self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
                     time.sleep(1)
                     t1 = (datetime.datetime.now() - t_stamp).total_seconds()
 
             self.lcd_display.clear_lcd()
-            while t2 < 15:
+            while t2 < 13:
                 self.show_time()
                 t2 = (datetime.datetime.now() - t_stamp).total_seconds()
 
@@ -107,9 +109,11 @@ class Log2File:
             open(self.filename, 'a').close()
             self.valid_logfile = os.path.isfile(self.filename)
             if self.valid_logfile is True:
-                print('>>Log file %s was created successfully' % self.filename)
+                msg = '>>Log file %s was created successfully' % self.filename
             else:
-                print('>>Log file %s failed to create' % self.filename)
+                msg = '>>Log file %s failed to create' % self.filename
+            print(msg)
+            self.append_log(msg)
 
     def append_log(self, log_entry=''):
         if self.time_stamp_in_log == 1:
