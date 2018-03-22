@@ -77,3 +77,411 @@ log start @linux
 [2018-03-19 23:32:13.3]: [Relay#2] [False --> True] pressed [code] [1] times
 [2018-03-19 23:32:13.3]: [Relay#1] [True --> False] pressed [code] [2] times
 [2018-03-19 23:32:18.4]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-20 06:10:39.6]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-20 06:10:39.7]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-20 06:10:39.9]: [Relay#1] gpio init successfully
+[2018-03-20 06:10:39.9]: [Relay#2] gpio init successfully
+[2018-03-20 06:10:41.2]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-20 06:10:46.2]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-20 06:10:46.2]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-20 06:10:51.2]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-20 16:42:41.9]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-20 16:42:41.9]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-20 16:42:42.1]: [Relay#1] gpio init successfully
+[2018-03-20 16:42:42.1]: [Relay#2] gpio init successfully
+[2018-03-20 16:42:43.4]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-20 16:42:48.4]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-20 16:42:48.4]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-20 16:42:53.4]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-20 22:57:48.3]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-20 22:57:48.5]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-20 22:57:48.7]: [Relay#1] gpio init successfully
+[2018-03-20 22:57:48.7]: [Relay#2] gpio init successfully
+[2018-03-20 22:57:50.0]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-20 22:57:55.0]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-20 22:57:55.0]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-20 22:58:00.0]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-20 23:21:12.3]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-20 23:21:12.4]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-20 23:21:12.6]: [Relay#1] gpio init successfully
+[2018-03-20 23:21:12.6]: [Relay#2] gpio init successfully
+[2018-03-20 23:21:13.8]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-20 23:21:18.9]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-20 23:21:18.9]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-20 23:21:23.9]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-20 23:24:02.4]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-20 23:24:02.5]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-20 23:24:02.7]: [Relay#1] gpio init successfully
+[2018-03-20 23:24:02.7]: [Relay#2] gpio init successfully
+[2018-03-20 23:24:03.9]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-20 23:24:08.9]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-20 23:24:09.0]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-20 23:24:14.0]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-20 23:24:54.4]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-20 23:24:54.5]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-20 23:24:54.7]: [Relay#1] gpio init successfully
+[2018-03-20 23:24:54.8]: [Relay#2] gpio init successfully
+[2018-03-20 23:24:56.0]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-20 23:25:01.0]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-20 23:25:01.0]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-20 23:25:06.0]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-21 21:01:48.6]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-21 21:01:48.7]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-21 21:01:49.0]: [Relay#1] gpio init successfully
+[2018-03-21 21:01:49.0]: [Relay#2] gpio init successfully
+[2018-03-21 21:01:50.2]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-21 21:01:55.3]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-21 21:01:55.3]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-21 21:02:00.3]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-21 21:38:27.5]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-21 21:38:27.6]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-21 21:38:27.8]: [Relay#1] gpio init successfully
+[2018-03-21 21:38:27.8]: [Relay#2] gpio init successfully
+Relay#1 :off
+[2018-03-21 21:38:29.0]: [Relay#1] [False --> True] pressed [code] [1] times
+Relay#2 :off
+Relay#1 :on 
+Relay#2 :off
+[2018-03-21 21:38:34.0]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-21 21:38:34.0]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-21 21:38:39.1]: [Relay#2] [True --> False] pressed [code] [2] times
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+log start @linux
+****************
+[2018-03-21 22:30:04.3]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-21 22:30:04.4]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-21 22:30:04.6]: [Relay#1] gpio init successfully
+[2018-03-21 22:30:04.6]: [Relay#2] gpio init successfully
+Relay#1 :off
+[2018-03-21 22:30:05.9]: [Relay#1] [False --> True] pressed [code] [1] times
+Relay#2 :off
+Relay#1 :on 
+Relay#2 :off
+[2018-03-21 22:30:10.9]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-21 22:30:10.9]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-21 22:30:15.9]: [Relay#2] [True --> False] pressed [code] [2] times
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+log start @linux
+****************
+[2018-03-21 22:57:49.4]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-21 22:57:49.6]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-21 22:57:49.8]: [Relay#1] gpio init successfully
+[2018-03-21 22:57:49.8]: [Relay#2] gpio init successfully
+log start @linux
+****************
+[2018-03-22 06:28:09.7]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-22 06:28:09.7]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-22 06:28:09.8]: [Relay#1] gpio init successfully
+[2018-03-22 06:28:09.8]: [Relay#2] gpio init successfully
+log start @linux
+****************
+[2018-03-22 06:31:10.6]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-22 06:31:10.7]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-22 06:31:10.9]: [Relay#1] gpio init successfully
+[2018-03-22 06:31:10.9]: [Relay#2] gpio init successfully
+log start @linux
+****************
+[2018-03-22 06:32:12.9]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-22 06:32:13.0]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-22 06:32:13.2]: [Relay#1] gpio init successfully
+[2018-03-22 06:32:13.2]: [Relay#2] gpio init successfully
+[2018-03-22 06:32:14.2]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-22 06:32:19.2]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-22 06:32:19.2]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-22 06:32:24.2]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-22 06:33:15.9]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-22 06:33:16.2]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-22 06:33:16.6]: [Relay#1] gpio init successfully
+[2018-03-22 06:33:16.6]: [Relay#2] gpio init successfully
+[2018-03-22 06:33:17.2]: [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-22 06:33:22.3]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-22 06:33:22.3]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-22 06:33:27.3]: [Relay#2] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-03-22 06:34:16.0]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-22 06:34:16.1]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-22 06:34:16.4]: [Relay#1] gpio init successfully
+[2018-03-22 06:34:16.4]: [Relay#2] gpio init successfully
+log start @linux
+****************
+[2018-03-22 06:36:03.8]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-22 06:36:03.8]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-22 06:36:04.4]: [Relay#1] gpio init successfully
+[2018-03-22 06:36:04.4]: [Relay#2] gpio init successfully
+Relay#1 :off
+[2018-03-22 06:36:05.7]: [Relay#1] [False --> True] pressed [code] [1] times
+Relay#2 :off
+Relay#1 :on 
+Relay#2 :off
+[2018-03-22 06:36:10.7]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-22 06:36:10.7]: [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-22 06:36:15.7]: [Relay#2] [True --> False] pressed [code] [2] times
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+log start @linux
+****************
+[2018-03-22 06:37:22.2]: [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-22 06:37:22.3]: [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-22 06:37:22.6]: [Relay#1] gpio init successfully
+[2018-03-22 06:37:22.6]: [Relay#2] gpio init successfully
+Relay#1 :off
+[2018-03-22 06:37:23.8]: [Relay#1] [False --> True] pressed [code] [1] times
+Relay#2 :off
+[2018-03-22 06:37:28.8]: [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-22 06:37:28.8]: [Relay#1] [True --> False] pressed [code] [2] times
+Relay#1 :off
+Relay#2 :on 
+[2018-03-22 06:37:33.9]: [Relay#2] [True --> False] pressed [code] [2] times
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off
+Relay#1 :off
+Relay#2 :off

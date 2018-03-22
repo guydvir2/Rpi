@@ -13,12 +13,11 @@ from sys import path
 path.append(main_path + 'GPIO_Projects/lcd')
 path.append(main_path + 'SmartHome')
 
-import time
-import threading
 import signal
 import datetime
-
+import time
 import os
+import threading
 
 try:
     import gpiozero
@@ -29,7 +28,7 @@ try:
 
 except ImportError:  # (ModuleNotFoundError,
     ok_modules = False
-    print('Fail to obtain one or more modules')
+    file_logger.append_log('Fail to obtain one or more modules')
 
 
 class ShowStatusLCD:
@@ -44,7 +43,7 @@ class ShowStatusLCD:
         except OSError:
             msg = "LCD hardware error"
             print(msg)
-            self.log.append(msg)
+            self.log.append_log(msg)
 
     def display_status_loop(self):
         status = [[] for i in range(len(self.switches))]
@@ -52,21 +51,21 @@ class ShowStatusLCD:
             t_stamp = datetime.datetime.now()
             t1, t2 = 0, 0
 
-            while t1 < 3:
+            while t1 < 2:
                 for i, current_switch in enumerate(self.switches):
                     if current_switch.switch_state[0] is False:
                         status[i] = '%s :%s' % (current_switch.name, 'off')
-                        self.log.append(status[i])
+                        self.log.append_log(status[i])
                     elif current_switch.switch_state[0] is True:
                         status[i] = '%s :%s' % (current_switch.name, 'on ')
-                        self.log.append(status[i])
+                        self.log.append_log(status[i])
 
                     self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
                     time.sleep(1)
                     t1 = (datetime.datetime.now() - t_stamp).total_seconds()
 
             self.lcd_display.clear_lcd()
-            while t2 < 13:
+            while t2 < 7:
                 self.show_time()
                 t2 = (datetime.datetime.now() - t_stamp).total_seconds()
 
@@ -115,10 +114,17 @@ class Log2File:
             print(msg)
             self.append_log(msg)
 
-    def append_log(self, log_entry=''):
-        if self.time_stamp_in_log == 1:
+    def append_log(self, log_entry='',time_stamp=None):
+        #permanent time_stamp
+        if time_stamp is None:
+            if self.time_stamp_in_log == 1:
+                msg = '[%s] %s' % (self.time_stamp(), log_entry)
+            else:
+                msg = '%s' % log_entry
+        #ADHOC time_stamp - over-rides permanent one
+        elif time_stamp is True:
             msg = '[%s] %s' % (self.time_stamp(), log_entry)
-        else:
+        elif time_stamp is False:
             msg = '%s' % log_entry
 
         if self.valid_logfile is True:
@@ -142,12 +148,14 @@ def log_it(func):
 
 
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
+
 file_logger = Log2File('Newlog.log', screen=0)
+
 sw1 = LocalSwitch.LocSwitch(5,21, name='Relay#1', mode='toggle', ext_log=file_logger)
 sw2 = LocalSwitch.LocSwitch(13,20, name='Relay#2', mode='toggle', ext_log=file_logger)
 
 # Disp on LCD
-ShowStatusLCD([sw1, sw2])
+ShowStatusLCD([sw1, sw2],ext_log=file_logger)
 time.sleep(1)
 
 # Make switch by code
