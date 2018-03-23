@@ -7,13 +7,13 @@ try:
     import gpiozero
 
     ok_module = True
-except ModuleNotFoundError:
+except ImportError:  # ModuleNotFoundError:
     print("Fail to obtain gpiozero module")
     ok_module = False
 
 
 class LocSwitch:
-    def __init__(self, button_pin=20, relay_pin=4, name='No-Name', mode='toggle', ext_log=None):
+    def __init__(self, button_pin=20, relay_pin=4, name='No-Name', mode='press', ext_log=None):
         self.button, self.relay = None, None
         self.button_pin = button_pin
         self.relay_pin = relay_pin
@@ -51,7 +51,7 @@ class LocSwitch:
             self.log_record('gpio init successfully')
             pause()
 
-        except:
+        except NameError:
             self.log_record("init gpio fail, Code quit")
             quit()
 
@@ -104,26 +104,32 @@ class LocSwitch:
         return msg
 
     def watch_dog(self):
+        # run inspection in background to check state of gpios
         def run_watchdog():
             last_state = 0
             while True:
                 if self.relay.value != last_state:
                     self.log_record("[watch_dog] [GPIO %s] [%s]" % (self.relay_pin, self.switch_state[0]))
                 last_state = self.relay.value
-                sleep(1)
-
+                sleep(0.2)
         self.t2 = threading.Thread(name='thread_watchdog', target=run_watchdog)
         self.t2.start()
 
 
 if __name__ == "__main__":
     if ok_module is True:
-        a = LocSwitch(21, 4, mode='toggle', name="GUYDVIR")
-        sleep(2)
+        a = LocSwitch(21, 4, mode='toggle', name="LocalSwitch_SW#1")
+        # a pause due to use of thread
+        sleep(1)
         a.watch_dog()
         a.switch_state = 1
         sleep(2)
         a.switch_state = 0
-        c = LocSwitch(20, 5, mode='press', name="GUYDVIR2")
+
+        b = LocSwitch(20, 5, mode='press', name="LocalSwitch_SW#2")
+        sleep(1)
+        b.switch_state = 1
+        sleep(2)
+        b.switch_state = 0
     else:
         print("Can't run without gpiozero module")

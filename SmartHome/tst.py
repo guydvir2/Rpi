@@ -28,7 +28,7 @@ try:
 
 except ImportError:  # (ModuleNotFoundError,
     ok_modules = False
-    file_logger.append_log('Fail to obtain one or more modules')
+    print('Fail to obtain one or more modules')
 
 
 class ShowStatusLCD:
@@ -50,41 +50,44 @@ class ShowStatusLCD:
                 print(msg)
 
     def display_status_loop(self):
+        while True:
+            self.disp_switch_status(time2show=2)
+            self.disp_time(time2show=8)
+
+    def disp_switch_status(self, time2show=2):
+        # time to display relays status on LCD
+        t1 = 0
+        t_stamp = datetime.datetime.now()
         status = [[] for i in range(len(self.switches))]
         last_status = [[] for i in range(len(self.switches))]
+        self.lcd_display.clear_lcd()
 
-        while True:
-            t_stamp = datetime.datetime.now()
-            t1, t2 = 0, 0
-            
-            # time to display relays status on LCD
-            while t1 < 2:
-                for i, current_switch in enumerate(self.switches):
-                    # Detect change
-                    if last_status[i] != current_switch.switch_state[0] :
-                        if current_switch.switch_state[0] is False:
-                            s='off'
-                        elif current_switch.switch_state[0] is True:
-                            s='on '
-                        status[i] = '%s :%s' % (current_switch.name, s)
-                        try:
-                            self.log.append_log(status[i], time_stamp=True)
-                        except AttributeError:
-                            pass
-                    last_status[i] = current_switch.switch_state[0]
+        while t1 < time2show:
+            for i, current_switch in enumerate(self.switches):
+                # Detect change
+                if last_status[i] != current_switch.switch_state[0]:
+                    if current_switch.switch_state[0] is False:
+                        s = 'off'
+                    elif current_switch.switch_state[0] is True:
+                        s = 'on '
+                    status[i] = '%s :%s' % (current_switch.name, s)
+                    try:
+                        self.log.append_log(status[i], time_stamp=1)
+                    except AttributeError:
+                        pass
+                last_status[i] = current_switch.switch_state[0]
 
-                self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
-                time.sleep(0.5)
-                t1 = (datetime.datetime.now() - t_stamp).total_seconds()
+            self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
+            time.sleep(0.5)
+            t1 = (datetime.datetime.now() - t_stamp).total_seconds()
 
-            self.lcd_display.clear_lcd()
-            while t2 < 7:
-                self.show_time()
-                t2 = (datetime.datetime.now() - t_stamp).total_seconds()
-
-    def show_time(self):
-        timeNow = str(datetime.datetime.now())[:-5].split(' ')
-        self.lcd_display.center_str(text1=timeNow[0], text2=timeNow[1])
+    def disp_time(self, time2show=5):
+        t2 = 0
+        self.lcd_display.clear_lcd()
+        while t2 < time2show:
+            time_now = str(datetime.datetime.now())[:-5].split(' ')
+            self.lcd_display.center_str(text1=time_now[0], text2=timeNow[1])
+            t2 = (datetime.datetime.now() - t_stamp).total_seconds()
 
 
 class Log2File:
@@ -110,7 +113,7 @@ class Log2File:
             self.path = '/home/guy/Documents/github/Rpi/SmartHome/'
 
     def first_boot_entry(self):
-        msg = 'log start @%s' % (str(platform))
+        msg = '\nlog start @%s' % (str(platform))
         self.append_log(msg)
         self.append_log('*' * len(msg))
 
@@ -125,19 +128,19 @@ class Log2File:
             else:
                 msg = '>>Log file %s failed to create' % self.filename
             print(msg)
-            self.append_log(msg)
+            self.append_log(msg, time_stamp=1)
 
-    def append_log(self, log_entry='',time_stamp=None):
-        #permanent time_stamp
+    def append_log(self, log_entry='', time_stamp=-1):
+        # permanent time_stamp
         if time_stamp is None:
             if self.time_stamp_in_log == 1:
                 msg = '[%s] %s' % (self.time_stamp(), log_entry)
             else:
                 msg = '%s' % log_entry
-        #ADHOC time_stamp - over-rides permanent one
-        elif time_stamp is True:
+        # ADHOC time_stamp - over-rides permanent one
+        elif time_stamp is 1:
             msg = '[%s] %s' % (self.time_stamp(), log_entry)
-        elif time_stamp is False:
+        elif time_stamp is 0:
             msg = '%s' % log_entry
 
         if self.valid_logfile is True:
@@ -150,18 +153,17 @@ class Log2File:
             print(msg)
 
 
-
-
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
 # Create a file logger to log outputs of switches
 try:
     file_logger = Log2File('Newlog.log', screen=0)
+    print(__name__)
 
-    sw1 = LocalSwitch.LocSwitch(5,21, name='Relay#1', mode='toggle', ext_log=file_logger)
-    sw2 = LocalSwitch.LocSwitch(13,20, name='Relay#2', mode='toggle', ext_log=file_logger)
+    sw1 = LocalSwitch.LocSwitch(5, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
+    sw2 = LocalSwitch.LocSwitch(13, 20, name='Relay#2', mode='toggle', ext_log=file_logger)
 
     # Disp on LCD
-    ShowStatusLCD([sw1, sw2])#,ext_log=file_logger)
+    ShowStatusLCD([sw1, sw2])  # ,ext_log=file_logger)
     time.sleep(1)
 
     # Make switch by code
