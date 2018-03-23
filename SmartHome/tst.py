@@ -42,27 +42,40 @@ class ShowStatusLCD:
             self.t.start()
         except OSError:
             msg = "LCD hardware error"
-            print(msg)
-            self.log.append_log(msg)
+            try:
+                self.log.append_log(msg)
+            except AttributeError:
+                pass
+            finally:
+                print(msg)
 
     def display_status_loop(self):
         status = [[] for i in range(len(self.switches))]
+        last_status = [[] for i in range(len(self.switches))]
+
         while True:
             t_stamp = datetime.datetime.now()
             t1, t2 = 0, 0
-
+            
+            # time to display relays status on LCD
             while t1 < 2:
                 for i, current_switch in enumerate(self.switches):
-                    if current_switch.switch_state[0] is False:
-                        status[i] = '%s :%s' % (current_switch.name, 'off')
-                        self.log.append_log(status[i])
-                    elif current_switch.switch_state[0] is True:
-                        status[i] = '%s :%s' % (current_switch.name, 'on ')
-                        self.log.append_log(status[i])
+                    # Detect change
+                    if last_status[i] != current_switch.switch_state[0] :
+                        if current_switch.switch_state[0] is False:
+                            s='off'
+                        elif current_switch.switch_state[0] is True:
+                            s='on '
+                        status[i] = '%s :%s' % (current_switch.name, s)
+                        try:
+                            self.log.append_log(status[i], time_stamp=True)
+                        except AttributeError:
+                            pass
+                    last_status[i] = current_switch.switch_state[0]
 
-                    self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
-                    time.sleep(1)
-                    t1 = (datetime.datetime.now() - t_stamp).total_seconds()
+                self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
+                time.sleep(0.5)
+                t1 = (datetime.datetime.now() - t_stamp).total_seconds()
 
             self.lcd_display.clear_lcd()
             while t2 < 7:
@@ -137,32 +150,27 @@ class Log2File:
             print(msg)
 
 
-def log_it(func):
-    def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)
-        a.append_log("Shit")
-        print(result)
-        return result
-
-    return wrapper
 
 
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
+# Create a file logger to log outputs of switches
+try:
+    file_logger = Log2File('Newlog.log', screen=0)
 
-file_logger = Log2File('Newlog.log', screen=0)
+    sw1 = LocalSwitch.LocSwitch(5,21, name='Relay#1', mode='toggle', ext_log=file_logger)
+    sw2 = LocalSwitch.LocSwitch(13,20, name='Relay#2', mode='toggle', ext_log=file_logger)
 
-sw1 = LocalSwitch.LocSwitch(5,21, name='Relay#1', mode='toggle', ext_log=file_logger)
-sw2 = LocalSwitch.LocSwitch(13,20, name='Relay#2', mode='toggle', ext_log=file_logger)
+    # Disp on LCD
+    ShowStatusLCD([sw1, sw2])#,ext_log=file_logger)
+    time.sleep(1)
 
-# Disp on LCD
-ShowStatusLCD([sw1, sw2],ext_log=file_logger)
-time.sleep(1)
+    # Make switch by code
+    sw1.switch_state = 1
+    time.sleep(5)
+    sw2.switch_state = 1
 
-# Make switch by code
-sw1.switch_state = 1
-time.sleep(5)
-sw2.switch_state = 1
-
-sw1.switch_state = 0
-time.sleep(5)
-sw2.switch_state = 0
+    sw1.switch_state = 0
+    time.sleep(5)
+    sw2.switch_state = 0
+except KeyboardInterrupt:
+    print("ctrl C pressed")

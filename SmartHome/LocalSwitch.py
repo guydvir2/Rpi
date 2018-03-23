@@ -96,7 +96,7 @@ class LocSwitch:
     def log_record(self, text1=''):
         msg = ''
         time = str(datetime.datetime.now())[:-5]
-        msg = '[%s]: [%s] %s' % (time, self.name, text1)
+        msg = '[%s] [%s] %s' % (time, self.name, text1)
         self.logbook.append(msg)
         print(self.logbook[-1])
         if self.ext_log is not None:
