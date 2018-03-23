@@ -1,36 +1,93 @@
->>Log file /home/guy/Documents/github/Rpi/SmartHome/Newlog.log was created successfully
+[2018-03-23 07:36:23.2] >>Log file /home/guy/Documents/github/Rpi/SmartHome/Newlog.log was created successfully
 log start @linux
 ****************
-[2018-03-22 21:29:18.7] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
-[2018-03-22 21:29:18.8] [Relay#2] init in [toggle] mode on [thread_gpio_20] 
-[2018-03-22 21:29:19.0] [Relay#1] gpio init successfully
-[2018-03-22 21:29:19.0] [Relay#2] gpio init successfully
-[2018-03-22 21:29:19.3] Relay#1 :off
-[2018-03-22 21:29:19.3] Relay#2 :off
-[2018-03-22 21:29:20.3] [Relay#1] [False --> True] pressed [code] [1] times
-[2018-03-22 21:29:20.8] Relay#1 :on 
-[2018-03-22 21:29:25.3] [Relay#2] [False --> True] pressed [code] [1] times
-[2018-03-22 21:29:25.3] [Relay#1] [True --> False] pressed [code] [2] times
-[2018-03-22 21:29:26.3] Relay#1 :off
-[2018-03-22 21:29:26.3] Relay#2 :on 
-[2018-03-22 21:29:30.3] [Relay#2] [True --> False] pressed [code] [2] times
-[2018-03-22 21:29:33.4] Relay#2 :off
+[2018-03-23 07:36:23.2] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-23 07:36:23.2] [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-23 07:36:23.7] [Relay#2] gpio init successfully
+[2018-03-23 07:36:23.7] [Relay#1] gpio init successfully
+[2018-03-23 07:36:25.0] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-23 07:36:30.0] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-23 07:36:30.0] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-23 07:36:35.0] [Relay#2] [True --> False] pressed [code] [2] times
 log start @linux
 ****************
-[2018-03-22 21:35:20.0] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
-[2018-03-22 21:35:20.1] [Relay#2] init in [toggle] mode on [thread_gpio_20] 
-[2018-03-22 21:35:20.4] [Relay#1] gpio init successfully
-[2018-03-22 21:35:20.4] [Relay#2] gpio init successfully
-[2018-03-22 21:35:21.6] [Relay#1] [False --> True] pressed [code] [1] times
-[2018-03-22 21:35:26.6] [Relay#2] [False --> True] pressed [code] [1] times
-[2018-03-22 21:35:26.7] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-23 07:37:33.2] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-23 07:37:33.4] [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-23 07:37:33.5] [Relay#1] gpio init successfully
+[2018-03-23 07:37:33.6] [Relay#2] gpio init successfully
+[2018-03-23 07:37:34.8] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-23 07:37:39.8] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-23 07:37:39.8] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-23 07:37:44.9] [Relay#2] [True --> False] pressed [code] [2] times
+[2018-03-23 10:15:19.2] [Relay#2] [False --> True] pressed [button] [3] times
+[2018-03-23 10:15:19.3] [Relay#2] [True --> False] pressed [button] [4] times
+[2018-03-23 10:15:24.9] [Relay#2] [False --> True] pressed [button] [5] times
+[2018-03-23 10:15:26.1] [Relay#2] [True --> False] pressed [button] [6] times
+[2018-03-23 10:15:27.0] [Relay#2] [False --> True] pressed [button] [7] times
+[2018-03-23 10:15:27.8] [Relay#2] [True --> False] pressed [button] [8] times
+[2018-03-23 10:15:28.7] [Relay#2] [False --> True] pressed [button] [9] times
+[2018-03-23 10:15:30.9] [Relay#2] [True --> False] pressed [button] [10] times
+[2018-03-23 10:15:31.5] [Relay#2] [False --> True] pressed [button] [11] times
+[2018-03-23 10:15:38.8] [Relay#2] [True --> False] pressed [button] [12] times
+[2018-03-23 10:15:40.7] [Relay#2] [False --> True] pressed [button] [13] times
+[2018-03-23 10:15:41.5] [Relay#2] [True --> False] pressed [button] [14] times
+[2018-03-23 10:15:41.6] [Relay#2] [False --> True] pressed [button] [15] times
+[2018-03-23 10:15:41.8] [Relay#2] [True --> False] pressed [button] [16] times
+[2018-03-23 10:15:43.8] [Relay#2] [False --> True] pressed [button] [17] times
+[2018-03-23 10:15:43.8] [Relay#2] [True --> False] pressed [button] [18] times
+[2018-03-23 10:15:47.5] [Relay#2] [False --> True] pressed [button] [19] times
+[2018-03-23 10:15:50.6] [Relay#2] [True --> False] pressed [button] [20] times
+[2018-03-23 10:15:51.7] [Relay#2] [False --> True] pressed [button] [21] times
+[2018-03-23 10:15:52.8] [Relay#2] [True --> False] pressed [button] [22] times
+[2018-03-23 10:16:01.3] [Relay#2] [False --> True] pressed [button] [23] times
+[2018-03-23 10:16:55.2] [Relay#2] [True --> False] pressed [button] [24] times
+[2018-03-23 10:17:02.3] [Relay#2] [False --> True] pressed [button] [25] times
+[2018-03-23 10:29:39.3] [Relay#1] [False --> True] pressed [button] [3] times
+[2018-03-23 10:30:26.0] [Relay#2] [False --> True] pressed [button] [26] times
 log start @linux
 ****************
-[2018-03-22 21:40:58.6] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
-[2018-03-22 21:40:58.8] [Relay#2] init in [toggle] mode on [thread_gpio_20] 
-[2018-03-22 21:40:58.9] [Relay#1] gpio init successfully
-[2018-03-22 21:40:59.0] [Relay#2] gpio init successfully
-[2018-03-22 21:41:00.2] [Relay#1] [False --> True] pressed [code] [1] times
-[2018-03-22 21:41:05.2] [Relay#2] [False --> True] pressed [code] [1] times
-[2018-03-22 21:41:05.2] [Relay#1] [True --> False] pressed [code] [2] times
-[2018-03-22 21:41:10.3] [Relay#2] [True --> False] pressed [code] [2] times
+[2018-03-23 10:33:48.1] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-23 10:33:48.1] [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-23 10:33:48.3] [Relay#1] [False --> True] pressed [button] [4] times
+[2018-03-23 10:33:48.3] [Relay#2] [False --> True] pressed [button] [27] times
+[2018-03-23 10:33:48.5] [Relay#1] gpio init successfully
+[2018-03-23 10:33:48.5] [Relay#2] gpio init successfully
+[2018-03-23 10:33:49.8] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-23 10:33:54.8] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-23 10:33:54.8] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-23 10:33:59.8] [Relay#2] [True --> False] pressed [code] [2] times
+[2018-03-23 10:34:50.8] [Relay#2] [True --> False] pressed [button] [3] times
+[2018-03-23 10:34:50.8] [Relay#2] [False --> True] pressed [button] [28] times
+[2018-03-23 11:00:27.8] [Relay#2] [False --> True] pressed [button] [29] times
+[2018-03-23 11:00:27.8] [Relay#2] [True --> False] pressed [button] [4] times
+log start @linux
+****************
+[2018-03-23 11:05:43.1] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-23 11:05:43.4] [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-23 11:05:43.4] [Relay#2] gpio init successfully
+[2018-03-23 11:05:43.4] [Relay#1] gpio init successfully
+[2018-03-23 11:05:44.7] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-23 11:05:49.7] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-23 11:05:49.7] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-23 11:05:54.7] [Relay#2] [True --> False] pressed [code] [2] times
+[2018-03-23 11:08:21.2] [Relay#2] [False --> True] pressed [button] [3] times
+[2018-03-23 11:08:24.8] [Relay#2] [False --> True] pressed [button] [4] times
+[2018-03-23 11:08:28.8] [Relay#2] [False --> True] pressed [button] [5] times
+[2018-03-23 11:08:32.8] [Relay#2] [False --> True] pressed [button] [6] times
+[2018-03-23 11:08:56.5] [Relay#2] [False --> True] pressed [button] [7] times
+[2018-03-23 11:08:58.7] [Relay#2] [True --> False] pressed [button] [8] times
+[2018-03-23 11:08:59.7] [Relay#2] [False --> True] pressed [button] [9] times
+[2018-03-23 11:09:01.7] [Relay#2] [True --> False] pressed [button] [10] times
+[2018-03-23 11:09:02.8] [Relay#2] [False --> True] pressed [button] [11] times
+[2018-03-23 11:09:08.5] [Relay#2] [True --> False] pressed [button] [12] times
+[2018-03-23 11:09:09.9] [Relay#2] [False --> True] pressed [button] [13] times
+[2018-03-23 11:09:45.0] [Relay#2] [False --> True] pressed [button] [14] times
+[2018-03-23 11:09:49.7] [Relay#2] [False --> True] pressed [button] [15] times
+[2018-03-23 11:09:50.9] [Relay#2] [False --> True] pressed [button] [16] times
+[2018-03-23 11:09:51.7] [Relay#2] [False --> True] pressed [button] [17] times
+[2018-03-23 11:09:52.6] [Relay#2] [False --> True] pressed [button] [18] times
+[2018-03-23 11:10:23.7] [Relay#2] [True --> False] pressed [button] [19] times
+[2018-03-23 11:10:41.5] [Relay#2] [False --> True] pressed [button] [20] times
+[2018-03-23 11:10:43.4] [Relay#2] [False --> True] pressed [button] [21] times
+[2018-03-23 11:10:44.0] [Relay#2] [False --> True] pressed [button] [22] times
+[2018-03-23 11:10:49.0] [Relay#2] [False --> True] pressed [button] [23] times

@@ -83,10 +83,11 @@ class ShowStatusLCD:
 
     def disp_time(self, time2show=5):
         t2 = 0
+        t_stamp = datetime.datetime.now()
         self.lcd_display.clear_lcd()
         while t2 < time2show:
             time_now = str(datetime.datetime.now())[:-5].split(' ')
-            self.lcd_display.center_str(text1=time_now[0], text2=timeNow[1])
+            self.lcd_display.center_str(text1=time_now[0], text2=time_now[1])
             t2 = (datetime.datetime.now() - t_stamp).total_seconds()
 
 
@@ -113,7 +114,7 @@ class Log2File:
             self.path = '/home/guy/Documents/github/Rpi/SmartHome/'
 
     def first_boot_entry(self):
-        msg = '\nlog start @%s' % (str(platform))
+        msg = 'log start @%s' % (str(platform))
         self.append_log(msg)
         self.append_log('*' * len(msg))
 
@@ -132,7 +133,7 @@ class Log2File:
 
     def append_log(self, log_entry='', time_stamp=-1):
         # permanent time_stamp
-        if time_stamp is None:
+        if time_stamp is -1:
             if self.time_stamp_in_log == 1:
                 msg = '[%s] %s' % (self.time_stamp(), log_entry)
             else:
@@ -157,10 +158,10 @@ class Log2File:
 # Create a file logger to log outputs of switches
 try:
     file_logger = Log2File('Newlog.log', screen=0)
-    print(__name__)
+    # print(__name__)
 
-    sw1 = LocalSwitch.LocSwitch(5, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
-    sw2 = LocalSwitch.LocSwitch(13, 20, name='Relay#2', mode='toggle', ext_log=file_logger)
+    sw1 = LocalSwitch.LocSwitch(16, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
+    sw2 = LocalSwitch.LocSwitch(26, 20, name='Relay#2', mode='toggle', ext_log=file_logger)
 
     # Disp on LCD
     ShowStatusLCD([sw1, sw2])  # ,ext_log=file_logger)
