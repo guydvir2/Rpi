@@ -688,9 +688,9 @@ class CoreButton(ttk.Frame):
 
             text1 = ''
             for i, current_but in enumerate(self.buts_names):
-                text1 = text1 + '[ %s:%s ]' % (current_but, str(self.HW_output.get_state()[i]))
+                text1 = text1 + '[%s:%s]' % (current_but, str(self.HW_output.get_state()[i]))
 
-            self.com.message('[ %s ][ %s ]' % (self.nick, self.switch_type) + text1)
+            self.com.message('[%s][%s]' % (self.nick, self.switch_type) + text1)
 
     def get_state(self):
         # hardware status
