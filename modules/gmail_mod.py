@@ -8,13 +8,21 @@ from email.mime.text import MIMEText
 
 
 class GmailSender:
+    """ This class designed to send emails using a gmail accout, including attachments.
+    parameters:
+    sender/password - as a class parameter or as a text file ufile, pfile
+    body - as a class parameter : a text from body of mail
+    subject - as a class parameter
+    attach - file attachments, as a ['file1','file2']
+    recipients - ['recip1','recip2']"""
+
     def __init__(self, sender='', password='', pfile='', ufile=''):
         self.pfile, self.ufile = pfile, ufile
         self.sender, self.password = sender, password
 
-        self.validate()
+        self.get_account_credits()
 
-    def validate(self):
+    def get_account_credits(self):
         if self.sender == '':
             if os.path.isfile(self.ufile) is True:
                 with open(self.ufile, 'r') as f:
@@ -64,7 +72,6 @@ class GmailSender:
 
     def file_attachments(self):
         # List of attachments
-        # Add the attachments to the message
         if self.attachments != ['']:
             for file in self.attachments:
                 if os.path.isfile(file) is True:
@@ -95,7 +102,7 @@ class GmailSender:
                 s.login(self.sender, self.password)
                 s.sendmail(self.sender, self.recipients, self.composed)
                 s.close()
-            print(">>>Email sent!<<<")
+            print(">>> Email sent! <<<")
             return 1
         except:
             print("Unable to send the email. Error: ", sys.exc_info()[0])
@@ -103,5 +110,6 @@ class GmailSender:
 
 
 if __name__ == '__main__':
-    GmailDaemon = GmailSender()#pfile='p.txt', ufile='user.txt')
-    GmailDaemon.compose_mail(recipients=['guy.ipaq@gmail.com'], attach=[''], body="This is an automated email")
+    GmailDaemon = GmailSender(pfile='p.txt', ufile='user.txt')  # or directly (sender='send@gmail.com',password='pswd')
+    GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], attach=[''], body="Python automated email",
+                             subject='Alarm!')
