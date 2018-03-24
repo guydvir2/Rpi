@@ -29,6 +29,8 @@ class Indicators:
             elif self.master.get_state()[i] is True:
                 fg, text2 = 'green', ' (On)'
 
+            #print('master:',i,self.master.get_state()[i]  )
+
             but.config(fg=fg)
             but.config(text=self.master.master.buts_names[i] + text2)
 
@@ -65,23 +67,38 @@ class HWRemoteInput:
     def hardware_config(self, input_pins, ip):
         for sw, pin in enumerate(input_pins):
             self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
-            self.input_pins[sw].when_pressed = lambda arg=[sw, 1]: self.pressed(arg)
+            #self.input_pins[sw].when_pressed = lambda arg=[sw, 1]: self.pressed(arg)
             # Line below is used when button switched off - setting the command to off
-            # self.input_pins[sw].when_released = lambda arg=[sw, 0]: self.pressed(arg)
+            #self.input_pins[sw].when_released = lambda arg=[sw, 0]: self.pressed(arg)
+            # TEST FROM HERE:
+            self.input_pins[sw].when_pressed = lambda arg=sw: self.pressed(arg)
 
         self.master.com.message("[%s][Remote-Intput][IP:%s][GPIO pins:%s]" %
                                 (self.nick, ip, input_pins))
 
-    # Detect press and make switch
+    # Detect press and make switch  
     def pressed(self, arg):
-        self.master.switch_type = 'HWButton Switch'
-        sw, state = arg[0], arg[1]  #
-        self.master.ext_press(sw, state, self.master.switch_type)
+        #self.master.switch_type = 'HWButton Switch'
+        #sw, state = arg[0], arg[1]  #
+        #self.master.ext_press(sw, state, self.master.switch_type)
+
+        #self.master.switch_type = 'HWButton Switch'
+        #sw = arg
+        ##print(self.master.get_state())
+        #if self.master.get_state()[sw] == True:
+            #print("switch is on")
+            #self.master.ext_press(sw, False, self.master.switch_type)
+        #elif self.master.get_state()[sw] == False:
+            #print("Swith is off")
+            #self.master.ext_press(sw, True, self.master.switch_type)
+        pass
+
 
     def get_state(self):
         stat = []
         for sw in self.input_pins:
             stat.append([sw.value])
+        print("stat is",stat)
         return stat
 
     # Close device
@@ -93,10 +110,11 @@ class HWRemoteInput:
 
 class HWRemoteOutput:
     # This Class creates Hardware state of ""gpio_pins"" of RPi at "ip"
-    def __init__(self, master=None, ip='', output_pins=[]):
+    def __init__(self, master=None, ip='', output_pins=[], switch_type='toggle'):
         self.master = master
         self.factory = PiGPIOFactory(host=ip)
         self.output_pins = []
+        self.switch_type = switch_type
 
         if self.master is None:
             self.nick = 'RemoteOutput Device'
@@ -113,10 +131,14 @@ class HWRemoteOutput:
 
     # Make the switch
     def set_state(self, sw, state):
-        if state == 1:
-            self.output_pins[sw].on()
-        elif state == 0:
-            self.output_pins[sw].off()
+        if self.switch_type == 'toggle':
+            self.output_pins[sw].toggle
+            print("PRESSES")
+        elif self.switch_type == 'press':
+            if state == 1:
+                self.output_pins[sw].on()
+            elif state == 0:
+                self.output_pins[sw].off()
 
     def get_state(self):
         stat = []

@@ -507,7 +507,7 @@ class CoreButton(ttk.Frame):
             # FIX
             self.HW_output = gpiobuttonlib.HWRemoteOutput(self, ip=self.ip_out, output_pins=self.hw_out)
             self.Indicators = gpiobuttonlib.Indicators(self.HW_output, self.buttons_frame)
-            if not self.hw_in == []: 
+            if not self.hw_in == []:
                 self.HW_input = gpiobuttonlib.HWRemoteInput(self, ip=self.ip_in, 
                                                             input_pins=self.hw_in)
             pass
@@ -891,8 +891,8 @@ button_list = ['UpDownButton', 'ToggleButton', 'MainsButton']
 if __name__ == "__main__":
     root = tk.Tk()
 
-    e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113',
-                     hw_out=[6], hw_in=[13], sched_vector=[[[7], "02:24:30", "23:12:10"],
+    e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.114',
+                     hw_out=[20], hw_in=[26], sched_vector=[[[7], "02:24:30", "23:12:10"],
                                                            [[2], "19:42:00", "23:50:10"],
                                                            [[4], "18:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
@@ -902,9 +902,9 @@ if __name__ == "__main__":
     # sched_vector=[[[6], "1:24:30", "23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
 
-    g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.114',
-                    hw_out=[21, 7], hw_in=[5,
-                                          13], sched_vector=[[[7, 4],"02:24:30", "23:55:10"],[[4, 5], "13:47:20", "23:50:10"]])
-    g.grid(row=0, column=2, sticky=tk.S)
+    #g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.114',
+                    #hw_out=[20, 21], hw_in=[26,
+                                          #16], sched_vector=[[[7, 4],"02:24:30", "23:55:10"],[[4, 5], "13:47:20", "23:50:10"]])
+    #g.grid(row=0, column=2, sticky=tk.S)
 
     root.mainloop()
