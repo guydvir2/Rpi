@@ -1,64 +1,80 @@
-#!/usr/bin/env python
-# encoding: utf-8
-"""
-python_3_email_with_attachment.py
-Created by Robert Dempsey on 12/6/14.
-Copyright (c) 2014 Robert Dempsey. Use at your own peril.
-This script works with Python 3.x
-NOTE: replace values in ALL CAPS with your own values
-"""
-
 import os
+import sys
 import smtplib
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
-COMMASPACE = ', '
 
-def main():
-    sender = 'YOUR GMAIL ADDRESS'
-    gmail_password = 'YOUR GMAIL PASSWORD'
-    recipients = ['EMAIL ADDRESSES HERE SEPARATED BY COMMAS']
-    
-    # Create the enclosing (outer) message
-    outer = MIMEMultipart()
-    outer['Subject'] = 'EMAIL SUBJECT'
-    outer['To'] = COMMASPACE.join(recipients)
-    outer['From'] = sender
-    outer.preamble = 'You will not see this in a MIME-aware mail reader.\n'
+class GmailSender:
+    def __init__(self, sender='', recipients=['dr.guydvir@gmail.com'], body='', attach=[''],
+                 password=''):
+        self.recipients = recipients
+        self.body, self.attachments = body, attach
+        if sender == '':
+            with open('user.txt', 'r') as f:
+                self.sender = f.read()
+                print("Sender details read from file: %s" % self.sender)
+        else:
+            self.sender = sender
+        if password == '':
+            with open('p.txt', 'r') as g:
+                self.password = g.read()
+        else:
+            self.password = password
+            print(type(self.password))
 
-    # List of attachments
-    attachments = ['FULL PATH TO ATTACHMENTS HERE']
+    def compose_mail(self):
+        # Create the enclosing (outer) message
+        COMMASPACE = ', '
+        self.outer = MIMEMultipart()
+        self.outer['Subject'] = 'Hi from guy'
+        self.outer['To'] = COMMASPACE.join(self.recipients)
+        self.outer['From'] = self.sender
+        body = 'This is the body of the email.'
+        self.body = MIMEText(body)  # convert the body to a MIME compatible string
+        self.outer.attach(self.body)  # attach it to your main message
+        self.outer.preamble = 'You will not see this in a MIME-aware mail reader.\n'
 
-    # Add the attachments to the message
-    for file in attachments:
+        self.file_attachments()
+        self.send()
+
+    def file_attachments(self):
+        # List of attachments
+        self.attachments = ['/Users/guy/log.log']
+
+        # Add the attachments to the message
+        if self.attachments != ['']:
+            for file in self.attachments:
+                try:
+                    with open(file, 'rb') as fp:
+                        msg = MIMEBase('application', "octet-stream")
+                        msg.set_payload(fp.read())
+                    encoders.encode_base64(msg)
+                    msg.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file))
+                    self.outer.attach(msg)
+                except:
+                    print("Unable to open one of the attachments. Error: ", sys.exc_info()[0])
+                    raise
+
+    def send(self):
+        # Send the email
+        self.composed = self.outer.as_string()
         try:
-            with open(file, 'rb') as fp:
-                msg = MIMEBase('application', "octet-stream")
-                msg.set_payload(fp.read())
-            encoders.encode_base64(msg)
-            msg.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file))
-            outer.attach(msg)
+            with smtplib.SMTP('smtp.gmail.com', 587) as s:
+                s.ehlo()
+                s.starttls()
+                s.ehlo()
+                s.login(self.sender, self.password)
+                s.sendmail(self.sender, self.recipients, self.composed)
+                s.close()
+            print("Email sent!")
         except:
-            print("Unable to open one of the attachments. Error: ", sys.exc_info()[0])
+            print("Unable to send the email. Error: ", sys.exc_info()[0])
             raise
 
-    composed = outer.as_string()
-
-    # Send the email
-    try:
-        with smtplib.SMTP('smtp.gmail.com', 587) as s:
-            s.ehlo()
-            s.starttls()
-            s.ehlo()
-            s.login(sender, gmail_password)
-            s.sendmail(sender, recipients, composed)
-            s.close()
-        print("Email sent!")
-    except:
-        print("Unable to send the email. Error: ", sys.exc_info()[0])
-        raise
 
 if __name__ == '__main__':
-    main()
+    GmailDaemon = GmailSender(recipients=['guy.ipaq@gmail.com'])
+    GmailDaemon.compose_mail()
