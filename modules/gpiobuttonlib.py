@@ -13,6 +13,7 @@ class Indicators:
         self.x = 0
         self.update_indicators()
         self.run_id = None
+        self.last_state = [None]*2
 
     def update_indicators(self):
         if self.x == 120 or self.x == 1:
@@ -23,10 +24,16 @@ class Indicators:
 
         self.x += 1
         for i, but in enumerate(self.master.master.buts):
-            if self.master.get_state()[i] is False:
+            current_state = self.master.get_state()[i]
+            if current_state is False:
                 fg, text2 = 'red', ' (Off)'
-            elif self.master.get_state()[i] is True:
+            elif current_state is True:
                 fg, text2 = 'green', ' (On)'
+            if current_state != self.last_state[i]:
+                self.last_state[i]=current_state
+                self.master.master.com.message("[%s][Monitor:%s]" %
+                                (self.master.nick, current_state))
+
 
             but.config(fg=fg)
             but.config(text=self.master.master.buts_names[i] + text2)
