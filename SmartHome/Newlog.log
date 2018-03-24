@@ -13,3 +13,13 @@ log start @linux
 [2018-03-24 18:33:15.6] [Relay#2] [False --> True] pressed [code] [1] times
 [2018-03-24 18:33:15.6] [Relay#1] [True --> False] pressed [code] [2] times
 [2018-03-24 18:33:20.6] [Relay#2] [True --> False] pressed [code] [2] times
+log start @darwin
+*****************
+log start @darwin
+*****************
+log start @darwin
+*****************
+log start @darwin
+*****************
+log start @darwin
+*****************

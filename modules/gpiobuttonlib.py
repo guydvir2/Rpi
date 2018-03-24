@@ -4,19 +4,21 @@ import gpiozero
 from gpiozero import OutputDevice
 import os
 
+
 class Indicators:
     """ This Calss displays output state of GPIO """
 
-    def __init__(self, master, frame):#, pdy=0, pdx=3, cols=[]):
+    def __init__(self, master, frame):
         self.master = master
         self.frame = frame
         self.x = 0
         self.update_indicators()
         self.run_id = None
-        self.last_state = [None]*2
+        self.last_state = [None] * 2
 
     def update_indicators(self):
-        if self.x == 120 or self.x == 1:
+        time_to_ping = [0, 60, 120]
+        if self.x in time_to_ping:
             self.ping_it()
             self.x = 1
         elif self.x > 20:
@@ -30,10 +32,8 @@ class Indicators:
             elif current_state is True:
                 fg, text2 = 'green', ' (On)'
             if current_state != self.last_state[i]:
-                self.last_state[i]=current_state
-                self.master.master.com.message("[%s][Monitor:%s]" %
-                                (self.master.nick, current_state))
-
+                self.last_state[i] = current_state
+                self.master.master.com.message("[%s][Monitor:%s]" % (self.master.nick, current_state))
 
             but.config(fg=fg)
             but.config(text=self.master.master.buts_names[i] + text2)
@@ -68,7 +68,7 @@ class HWRemoteInput:
 
         self.hardware_config(input_pins=input_pins, ip=ip)
 
-    def hardware_config(self, input_pins,ip):
+    def hardware_config(self, input_pins, ip):
         for sw, pin in enumerate(input_pins):
             self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
             self.input_pins[sw].when_pressed = lambda arg=[sw, 1]: self.pressed(arg)
@@ -76,7 +76,7 @@ class HWRemoteInput:
             self.input_pins[sw].when_released = lambda arg=[sw, 0]: self.pressed(arg)
 
         self.master.com.message("[%s][Remote-Intput][IP:%s][GPIO pins:%s]" %
-                                (self.nick,ip, input_pins))
+                                (self.nick, ip, input_pins))
 
     # Detect press and make switch
     def pressed(self, arg):
@@ -94,7 +94,7 @@ class HWRemoteInput:
     def close_device(self):
         for sw in self.output_pins:
             sw.close()
-        self.master.com.message("[%s][Device shut done]"%self.nick)
+        self.master.com.message("[%s][Device shut done]" % self.nick)
 
 
 class HWRemoteOutput:
@@ -110,13 +110,13 @@ class HWRemoteOutput:
         else:
             self.nick = self.master.nick
 
-        self.hardware_config(output_pins=output_pins,ip=ip)
+        self.hardware_config(output_pins=output_pins, ip=ip)
 
-    def hardware_config(self, output_pins,ip):
+    def hardware_config(self, output_pins, ip):
         for sw, pin in enumerate(output_pins):
             self.output_pins.append(OutputDevice(pin, pin_factory=self.factory, initial_value=False))
 
-        self.master.com.message("[%s][Remote-Output][IP:%s][GPIO pins:%s]" % (self.nick,ip, output_pins))
+        self.master.com.message("[%s][Remote-Output][IP:%s][GPIO pins:%s]" % (self.nick, ip, output_pins))
 
     # Make the switch
     def set_state(self, sw, state):
@@ -135,12 +135,12 @@ class HWRemoteOutput:
         for sw in self.output_pins:
             sw.close()
         self.output_pins[0].close()
-        self.master.com.message("[%s][Device shut done]"%self.nick)
+        self.master.com.message("[%s][Device shut done]" % self.nick)
 
 
 if __name__ == "__main__":
-    a= HWRemoteOutput(ip='192.168.2.114', output_pins=[21])
-    a.set_state(0,1)
+    a = HWRemoteOutput(ip='192.168.2.114', output_pins=[21])
+    a.set_state(0, 1)
     print(a.get_state())
     a.close_device()
 

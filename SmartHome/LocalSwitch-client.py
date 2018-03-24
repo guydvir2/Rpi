@@ -1,20 +1,23 @@
 from sys import platform
+# from sys import path
+#
+# os_type = platform
+# if os_type == 'darwin':
+#     main_path = '/Users/guy/Documents/github/Rpi/'
+# elif os_type == 'win32':
+#     main_path = 'd:/users/guydvir/Documents/git/Rpi/'
+# elif os_type == 'linux':
+#     main_path = '/home/guy/Documents/github/Rpi/'
+#
+# from sys import path
+#
+# path.append(main_path + 'GPIO_Projects/lcd')
+# path.append(main_path + 'SmartHome')
+# path.append(main_path + 'modules')
 
-os_type = platform
-if os_type == 'darwin':
-    main_path = '/Users/guy/Documents/github/Rpi/'
-elif os_type == 'win32':
-    main_path = 'd:/users/guydvir/Documents/git/Rpi/'
-elif os_type == 'linux':
-    main_path = '/home/guy/Documents/github/Rpi/'
-
-from sys import path
-
-path.append(main_path + 'GPIO_Projects/lcd')
-path.append(main_path + 'SmartHome')
-path.append(main_path + 'modules')
-
-import signal
+# import signal
+import my_paths
+# print(path)
 import datetime
 import time
 import os
@@ -52,8 +55,8 @@ class ShowStatusLCD:
 
     def display_status_loop(self):
         while True:
-            self.disp_switch_status(time2show=2)
-            self.disp_time(time2show=8)
+            self.disp_switch_status(time2show=3)
+            self.disp_time(time2show=3)
 
     def disp_switch_status(self, time2show=2):
         # time to display relays status on LCD
