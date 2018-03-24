@@ -91,3 +91,5 @@ log start @linux
 [2018-03-23 11:10:43.4] [Relay#2] [False --> True] pressed [button] [21] times
 [2018-03-23 11:10:44.0] [Relay#2] [False --> True] pressed [button] [22] times
 [2018-03-23 11:10:49.0] [Relay#2] [False --> True] pressed [button] [23] times
+log start @darwin
+*****************

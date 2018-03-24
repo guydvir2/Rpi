@@ -8,22 +8,26 @@ from email.mime.text import MIMEText
 
 
 class GmailSender:
-    def __init__(self, sender='', recipients=['dr.guydvir@gmail.com'], body='', attach=[''],
+    def __init__(self, sender='', recipients=[''], body='', attach=[''],
                  password=''):
-        self.recipients = recipients
+        self.recipients, self.sender, self.password = recipients, sender, password
         self.body, self.attachments = body, attach
-        if sender == '':
+        self.validate()
+
+    def validate(self):
+        if self.sender == '':
             with open('user.txt', 'r') as f:
                 self.sender = f.read()
                 print("Sender details read from file: %s" % self.sender)
-        else:
-            self.sender = sender
-        if password == '':
+        if self.password == '':
             with open('p.txt', 'r') as g:
                 self.password = g.read()
-        else:
-            self.password = password
-            print(type(self.password))
+        if self.recipients == ['']:
+            ask = input('No recipients defined. send to Sender or Abort [S/A]')
+            if ask.upper() == 'S':
+                self.recipients = [self.sender]
+            elif ask.upper() == 'A':
+                quit()
 
     def compose_mail(self):
         # Create the enclosing (outer) message
@@ -42,7 +46,7 @@ class GmailSender:
 
     def file_attachments(self):
         # List of attachments
-        self.attachments = ['/Users/guy/log.log']
+        # self.attachments = [
 
         # Add the attachments to the message
         if self.attachments != ['']:
@@ -69,12 +73,14 @@ class GmailSender:
                 s.login(self.sender, self.password)
                 s.sendmail(self.sender, self.recipients, self.composed)
                 s.close()
-            print("Email sent!")
+            print(">>>Email sent!<<<")
+            return 1
         except:
             print("Unable to send the email. Error: ", sys.exc_info()[0])
+            return 0
             raise
 
 
 if __name__ == '__main__':
-    GmailDaemon = GmailSender(recipients=['guy.ipaq@gmail.com'])
+    GmailDaemon = GmailSender()#recipients=[''])
     GmailDaemon.compose_mail()
