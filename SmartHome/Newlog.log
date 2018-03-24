@@ -1,0 +1,15 @@
+[2018-03-24 18:31:55.9] >>Log file /home/guy/Documents/github/Rpi/SmartHome/Newlog.log was created successfully
+log start @linux
+****************
+log start @linux
+****************
+log start @linux
+****************
+[2018-03-24 18:33:09.5] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-03-24 18:33:09.6] [Relay#2] init in [toggle] mode on [thread_gpio_20] 
+[2018-03-24 18:33:09.6] [Relay#1] gpio init successfully
+[2018-03-24 18:33:09.6] [Relay#2] gpio init successfully
+[2018-03-24 18:33:10.6] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-03-24 18:33:15.6] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-03-24 18:33:15.6] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-03-24 18:33:20.6] [Relay#2] [True --> False] pressed [code] [2] times

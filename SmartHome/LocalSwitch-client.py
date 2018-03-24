@@ -12,6 +12,7 @@ from sys import path
 
 path.append(main_path + 'GPIO_Projects/lcd')
 path.append(main_path + 'SmartHome')
+path.append(main_path + 'modules')
 
 import signal
 import datetime
