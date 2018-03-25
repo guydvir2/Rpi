@@ -1,23 +1,5 @@
 from sys import platform
-# from sys import path
-#
-# os_type = platform
-# if os_type == 'darwin':
-#     main_path = '/Users/guy/Documents/github/Rpi/'
-# elif os_type == 'win32':
-#     main_path = 'd:/users/guydvir/Documents/git/Rpi/'
-# elif os_type == 'linux':
-#     main_path = '/home/guy/Documents/github/Rpi/'
-#
-# from sys import path
-#
-# path.append(main_path + 'GPIO_Projects/lcd')
-# path.append(main_path + 'SmartHome')
-# path.append(main_path + 'modules')
-
-# import signal
 import my_paths
-# print(path)
 import datetime
 import time
 import os
@@ -162,7 +144,6 @@ class Log2File:
 # Create a file logger to log outputs of switches
 try:
     file_logger = Log2File('Newlog.log', screen=0)
-    # print(__name__)
 
     sw1 = LocalSwitch.LocSwitch(16, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
     sw2 = LocalSwitch.LocSwitch(26, 20, name='Relay#2', mode='toggle', ext_log=file_logger)
