@@ -82,7 +82,7 @@ class Log2File:
         self.detectOS()
         self.output2screen = screen
         self.time_stamp_in_log = time_in_log
-        self.filename = self.path + filename
+        self.filename = filename
         self.check_logfile_valid()
         self.first_boot_entry()
 
@@ -143,7 +143,7 @@ class Log2File:
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
 # Create a file logger to log outputs of switches
 try:
-    file_logger = Log2File('Newlog.log', screen=0)
+    file_logger = Log2File('/home/guy/LocalSwitch.log', screen=0)
 
     sw1 = LocalSwitch.LocSwitch(16, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
     sw2 = LocalSwitch.LocSwitch(26, 20, name='Relay#2', mode='toggle', ext_log=file_logger)

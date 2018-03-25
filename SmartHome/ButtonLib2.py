@@ -7,21 +7,7 @@ import os
 
 # FIX
 import pigpio
-from sys import platform
-
-os_type = platform
-if os_type == 'darwin':
-    main_path = '/Users/guy/Documents/github/Rpi/'
-elif os_type == 'win32':
-    main_path = 'd:/users/guydvir/Documents/git/Rpi/'
-elif os_type == 'linux':
-    main_path = '/home/guy/Documents/github/Rpi/'
-
-from sys import path
-
-path.append(main_path + 'GPIO_Projects/lcd')
-path.append(main_path + 'SmartHome')
-path.append(main_path + 'modules')
+import my_paths
 import gpiobuttonlib
 
 
@@ -420,8 +406,37 @@ class CoreButton(ttk.Frame):
                  ip_out='', sched_vector=[], sched_vector2=[], num_buts=1, on_off=1):
 
         ttk.Frame.__init__(self, master)
+        if ip_in == '':
+            ip_in = ip_out  # in case remote input is not defined
+        self.nick, self.ip_out, self.hw_out = nickname, ip_out, hw_out
+        self.ip_in, self.hw_in = ip_in, hw_in
+        self.on_off_var = tk.IntVar()  # Enables/Disables All button's GUI
+        self.on_off_var.set(on_off)
+        self.enable_disable_sched_var = tk.IntVar()  # Enables/ Disables Sched ( task_state)
+        self.but_stat, self.buts = [tk.IntVar() for i in range(num_buts)], []
+        self.is_alive, self.HW_input = None, None
+        self.cbit_laststate=[None, None]
+        self.switch_type = ''
         self.SchRun = [[], []]
 
+        # execute modules on boot
+        self.define_styles()
+        self.create_frames()
+        self.com = Com2Log(self, self.nick)
+        self.init_hardware()
+        self.on_off_cb()
+        self.init_SchRun(sched_vector=sched_vector, sched_vector2=sched_vector2)
+
+        # execute Gui's
+        self.build_gui()
+        self.counter_gui()
+        self.extras_gui()
+        self.connection_gui()
+
+        self.cbit()
+
+#### Structure methods ####
+    def define_styles(self):
         # Styles
         self.style = ttk.Style()
         self.bg = 'SlateGray2'  # 'light steel blue'
@@ -436,6 +451,7 @@ class CoreButton(ttk.Frame):
         self.style.configure('Title.TLabel', font=('helvetica', 10, 'bold'),
                              background=self.bg, foreground='black')
 
+    def create_frames(self):
         # Frames
         # Buttons&Indicators
         py, px = 2, 2
@@ -478,45 +494,6 @@ class CoreButton(ttk.Frame):
         self.conn_status_var = tk.StringVar()
         self.conn_status_var.set('wait...')
 
-        if ip_in == '':
-            ip_in = ip_out  # in case remote input is not defined
-
-        self.nick, self.ip_out, self.switch_type, self.hw_out = nickname, ip_out, '', hw_out
-        self.ip_in, self.hw_in = ip_in, hw_in
-        self.on_off_var = tk.IntVar()  # Enables/Disables All button's GUI
-        self.on_off_var.set(on_off)
-        self.enable_disable_sched_var = tk.IntVar()  # Enables/ Disables Sched ( task_state)
-        self.but_stat, self.buts = [tk.IntVar() for i in range(num_buts)], []
-        self.is_alive, self.HW_input = None, None
-
-        # create log
-        self.com = Com2Log(self, self.nick)
-
-        # Init Counter module
-        self.Counter = TimeOutCounter(self.timers_frame, remote=1, sw=0)
-        self.Counter.grid(row=0, column=1, pady=2, sticky=tk.W)
-
-        self.counter_label = ttk.Label(self.timers_frame, text="TimeOut: ",
-                                       style="Blue2.TLabel")
-        self.counter_label.grid(row=0, column=0, sticky=tk.E)
-
-        self.init_hardware()
-        self.init_SchRun(sched_vector=sched_vector, sched_vector2=sched_vector2)
-
-        # Run Gui
-        self.build_gui()
-        self.extras_gui()
-        self.connection_gui()
-
-        self.verify_on_off_state()
-
-    def verify_on_off_state(self):
-        if self.on_off_var.get() == 0:
-            self.is_alive = 0
-            self.disable_but()
-        else:
-            self.is_alive = 1
-
     def init_hardware(self):
         if self.pigpio_valid(self.ip_out) == 1:
             # FIX
@@ -542,6 +519,7 @@ class CoreButton(ttk.Frame):
             self.is_alive = 0
         return result
 
+#### Schedule related methods ####
     def init_SchRun(self, sched_vector=[], sched_vector2=[]):
         self.task_state = [[1] * len(sched_vector), [1] * len(sched_vector2)]
 
@@ -575,13 +553,6 @@ class CoreButton(ttk.Frame):
                 status = 'err'
         self.com.message('[ %s ][ %s ]' % (self.nick, 'schedule updated'))
 
-    def turn_off_switch(self, sw=''):
-        if sw == '':
-            for i in range(len(self.buts)):
-                self.execute_command(i, 0)
-        else:
-            self.execute_command(i, 0)  # Turn off sw=1
-
     def shutdown_SchRun(self, sw=None):
         # Terminate all Button's SchRuns
         if sw is None:
@@ -591,6 +562,47 @@ class CoreButton(ttk.Frame):
         else:
             self.SchRun[sw].close_device()
 
+#### Shutdown methods ####
+    def turn_off_switch(self, sw=''):
+        if sw == '':
+            for i in range(len(self.buts)):
+                self.execute_command(i, 0)
+        else:
+            self.execute_command(i, 0)  # Turn off sw=1
+
+    def disable_but(self):
+        # On/Off checkbox is selected
+        state = [tk.DISABLED, tk.NORMAL]
+        for i, but in enumerate(self.buts):
+            but.config(state=state[self.on_off_var.get()])
+            # FIX
+            self.execute_command(i, 0)  # Turn off sw=1
+        # set run_schedule on/ off
+        self.enable_disable_sched_var.set(self.on_off_var.get())  # Uncheck sched checkbox
+        if self.on_off_var.get() == 0:
+            for sch in self.SchRun:
+                if sch != []: sch.close_device()
+            # FIX
+            self.Indicators.close_device()
+        else:
+            for sch in self.SchRun:
+                if sch != []: sch.prep_to_run()
+            # FIX
+            self.Indicators.update_indicators()
+
+        # self.ck1.config(state=state[self.on_off_var.get()])
+        self.ck2.config(state=state[self.on_off_var.get()])
+
+    def unSuccLoad(self):
+        # this methd runs if any fail to reach ip/ pigpiod on host
+        state = [tk.DISABLED, tk.NORMAL]
+        for i, but in enumerate(self.buts):
+            but.config(state=state[0])
+
+        self.on_off_var.set(0)
+        self.enable_disable_sched_var.set(0)  # Uncheck sched checkbox
+
+### build guis methods ####
     def build_gui(self):
         raise NotImplementedError('You have to override method build_gui()')
 
@@ -623,6 +635,23 @@ class CoreButton(ttk.Frame):
         self.conn_lbl = ttk.Label(self.connection_frame, textvariable=self.conn_status_var, style='G.TLabel')
         self.conn_lbl.grid(row=0, column=1)
 
+    def counter_gui(self):
+        # Init Counter module
+        self.Counter = TimeOutCounter(self.timers_frame, remote=1, sw=0)
+        self.Counter.grid(row=0, column=1, pady=2, sticky=tk.W)
+
+        self.counter_label = ttk.Label(self.timers_frame, text="TimeOut: ",
+                                       style="Blue2.TLabel")
+        self.counter_label.grid(row=0, column=0, sticky=tk.E)
+
+    def on_off_cb(self):
+        if self.on_off_var.get() == 0:
+            self.is_alive = 0
+            self.disable_but()
+        else:
+            self.is_alive = 1
+
+### switchq button activation methods ###
     def sf_button_press(self, sw=0, btype=''):
         if btype == '':
             self.switch_type = 'SFButton Switch'
@@ -643,8 +672,27 @@ class CoreButton(ttk.Frame):
         if not self.switch_type == "Schedule Switch":
             self.decide_disable_sched()
 
+        if self.switch_type == 'Local HWButton':
+            text1 = '[%s:%s]' % (self.buts_names[sw], str(self.HW_output.get_state()[sw]))
+            self.com.message('[%s][%s]' % (self.nick, self.switch_type) + text1)
+            
+
         self.switch_logic(sw)
 
+    def execute_command(self, sw, stat, add_txt=''):
+        # FIX
+        if not self.HW_output.get_state()[sw] == stat:
+            self.HW_output.set_state(sw, stat)
+            self.but_stat[sw].set(stat)
+
+            text1 = ''
+            for i, current_but in enumerate(self.buts_names):
+                text1 = text1 + '[%s:%s]' % (current_but, str(self.HW_output.get_state()[i]))
+
+            self.com.message('[%s][%s]' % (self.nick, self.switch_type) + text1)
+
+
+### check schedules/ tasks to cancel methods ### 
     def decide_disable_sched(self):
         for i, ButSch in enumerate(self.SchRun):
             if ButSch != []:
@@ -694,18 +742,18 @@ class CoreButton(ttk.Frame):
             # No schedule to stop
             print("ATTR ERR")
 
-    def execute_command(self, sw, stat, add_txt=''):
-        # FIX
-        if not self.HW_output.get_state()[sw] == stat:
-            self.HW_output.set_state(sw, stat)
-            self.but_stat[sw].set(stat)
-
-            text1 = ''
-            for i, current_but in enumerate(self.buts_names):
-                text1 = text1 + '[%s:%s]' % (current_but, str(self.HW_output.get_state()[i]))
-
-            self.com.message('[%s][%s]' % (self.nick, self.switch_type) + text1)
-
+### status checks methods ###
+    def cbit(self):
+        get_status= self.get_state()
+        but_stat_transform =[False,True]
+        for i,current_state in enumerate(self.get_state()):
+            if current_state != but_stat_transform[self.but_stat[i].get()]:
+                #print('[%s][no:%d][GPIO_state:%s][but_state:%s]'%(self.nick, i, current_state, but_stat_transform[self.but_stat[i].get()]))
+                self.ext_press(i, state=current_state,type_s='Local HWButton')
+                
+            self.cbit_laststate[i]=current_state
+        self.after(500,self.cbit)
+   
     def get_state(self):
         # hardware status
         if self.is_alive == 1:
@@ -717,6 +765,7 @@ class CoreButton(ttk.Frame):
         # for future use in outer GUI
         return self.get_state(), self.SchRun.get_state()
 
+
     # def close_all(self):
     # try:
     # if self.HW_input != []:
@@ -726,38 +775,6 @@ class CoreButton(ttk.Frame):
     # self.Counter.close_device()
     # self.destroy()
     ## self.com.message(self.nick, 'Closed')
-
-    def disable_but(self):
-        # On/Off checkbox is selected
-        state = [tk.DISABLED, tk.NORMAL]
-        for i, but in enumerate(self.buts):
-            but.config(state=state[self.on_off_var.get()])
-            # FIX
-            self.execute_command(i, 0)  # Turn off sw=1
-        # set run_schedule on/ off
-        self.enable_disable_sched_var.set(self.on_off_var.get())  # Uncheck sched checkbox
-        if self.on_off_var.get() == 0:
-            for sch in self.SchRun:
-                if sch != []: sch.close_device()
-            # FIX
-            self.Indicators.close_device()
-        else:
-            for sch in self.SchRun:
-                if sch != []: sch.prep_to_run()
-            # FIX
-            self.Indicators.update_indicators()
-
-        # self.ck1.config(state=state[self.on_off_var.get()])
-        self.ck2.config(state=state[self.on_off_var.get()])
-
-    def unSuccLoad(self):
-        # this methd runs if any fail to reach ip/ pigpiod on host
-        state = [tk.DISABLED, tk.NORMAL]
-        for i, but in enumerate(self.buts):
-            but.config(state=state[0])
-
-        self.on_off_var.set(0)
-        self.enable_disable_sched_var.set(0)  # Uncheck sched checkbox
 
 
 class ToggleButton(CoreButton):
@@ -787,6 +804,8 @@ class ToggleButton(CoreButton):
         self.execute_command(sw=sw, stat=self.but_stat[sw].get())
         if self.but_stat[sw].get() == 0:  # Abourt Conter
             self.Counter.succ_end()
+            
+          
 
 
 class UpDownButton(CoreButton):
@@ -809,6 +828,8 @@ class UpDownButton(CoreButton):
         # Disabke Counter in this Button
         self.Counter.grid_forget()
         self.counter_label.grid_forget()
+        #self.cbit()
+
 
     def build_gui(self, height=1, width=13):
         self.button_0 = tk.Checkbutton(self.sub_frame, text=self.buts_names[0], \
@@ -906,15 +927,15 @@ if __name__ == "__main__":
     root = tk.Tk()
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.114',
-                     hw_out=[20], hw_in=[26], sched_vector=[[[7], "02:24:30", "23:12:10"],
+                     hw_out=[20], hw_in=[], sched_vector=[[[7], "02:24:30", "23:12:10"],
                                                            [[2], "19:42:00", "23:50:10"],
                                                            [[4], "18:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
 
-    # f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21],
-    # sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]])
-    ## sched_vector=[[[6], "1:24:30", "23:12:10"]])
-    # f.grid(row=0, column=1, sticky=tk.S)
+    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21],
+    sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]])
+    # sched_vector=[[[6], "1:24:30", "23:12:10"]])
+    f.grid(row=0, column=1, sticky=tk.S)
 
     # g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.114',
     # hw_out=[20, 21], hw_in=[26,
