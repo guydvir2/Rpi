@@ -671,11 +671,15 @@ class CoreButton(ttk.Frame):
 
         if not self.switch_type == "Schedule Switch":
             self.decide_disable_sched()
+            print("46546546")
+
 
         if self.switch_type == 'Local HWButton':
             text1 = '[%s:%s]' % (self.buts_names[sw], str(self.HW_output.get_state()[sw]))
             self.com.message('[%s][%s]' % (self.nick, self.switch_type) + text1)
-            
+
+        print("FGFGH")
+
 
         self.switch_logic(sw)
 
