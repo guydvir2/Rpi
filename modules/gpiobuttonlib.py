@@ -33,7 +33,7 @@ class Indicators:
                 fg, text2 = 'green', ' (On)'
             if current_state != self.last_state[i]:
                 self.last_state[i] = current_state
-                self.master.master.com.message("[%s][Monitor:%s]" % (self.master.nick, current_state))
+                self.master.master.com.message("[%s][Monitor SW#%d:%s]" % (self.master.nick,i, current_state))
             but.config(fg=fg)
             but.config(text=self.master.master.buts_names[i] + text2)
 

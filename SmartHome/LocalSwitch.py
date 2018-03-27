@@ -34,7 +34,7 @@ class LocSwitch:
                 self.t.start()
                 self.log_record('init in [%s] mode on [%s] ' % (self.mode, self.t.name))
             else:
-                self.log_record('pin definition error')
+                self.log_record('invalid GPIO defined. valid:', self.valid_gpios)
         else:
             self.log_record('err- modes can be "toggle" or "press" only')
 

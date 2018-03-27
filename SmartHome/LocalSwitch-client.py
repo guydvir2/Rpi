@@ -21,6 +21,8 @@ class ShowStatusLCD:
     def __init__(self, switches, ext_log=None):
         self.switches = switches
         self.log = ext_log
+        self.status = [None]*len(self.switches)
+        self.last_status = [None]*len(self.switches)
         try:
             # Case of HW err
             self.lcd_display = use_lcd.MyLCD()
@@ -37,44 +39,70 @@ class ShowStatusLCD:
 
     def display_status_loop(self):
         while True:
-            self.disp_switch_status(time2show=3)
-            self.disp_time(time2show=3)
+            self.looper(self.disp_time(),2)
+            self.looper(self.disp_switch_status(),2)
+            #self.disp_switch_status(time2show=3)
+            #self.disp_time(time2show=3)
 
-    def disp_switch_status(self, time2show=2):
+    def looper(self, func, loop_dur):
+        t, t_stamp = 0, datetime.datetime.now()
+        self.lcd_display.clear_lcd()
+        while t<loop_dur:
+            text2lcd=func
+            self.lcd_display.center_str(text1=text2lcd[0], text2=text2lcd[1])
+            t = (datetime.datetime.now() - t_stamp).total_seconds()
+
+    def disp_switch_status(self):
         # time to display relays status on LCD
-        t1 = 0
-        t_stamp = datetime.datetime.now()
-        status = [[] for i in range(len(self.switches))]
-        last_status = [[] for i in range(len(self.switches))]
-        self.lcd_display.clear_lcd()
+        #t1 = 0
+        #t_stamp = datetime.datetime.now()
+        #status = [None]*len(self.switches)#[[] for i in range(len(self.switches))]
+        #last_status = [None]*len(self.switches) #[[] for i in range(len(self.switches))]
+        #self.lcd_display.clear_lcd()
 
-        while t1 < time2show:
-            for i, current_switch in enumerate(self.switches):
-                # Detect change
-                if last_status[i] != current_switch.switch_state[0]:
-                    if current_switch.switch_state[0] is False:
-                        s = 'off'
-                    elif current_switch.switch_state[0] is True:
-                        s = 'on '
-                    status[i] = '%s :%s' % (current_switch.name, s)
-                    try:
-                        self.log.append_log(status[i], time_stamp=1)
-                    except AttributeError:
-                        pass
-                last_status[i] = current_switch.switch_state[0]
+        #while t1 < time2show:
+            #for i, current_switch in enumerate(self.switches):
+                ## Detect change
+                #if last_status[i] != current_switch.switch_state[0]:
+                    #if current_switch.switch_state[0] is False:
+                        #s = 'off'
+                    #elif current_switch.switch_state[0] is True:
+                        #s = 'on '
+                    #status[i] = '%s :%s' % (current_switch.name, s)
+                    #try:
+                        #self.log.append_log(status[i], time_stamp=1)
+                    #except AttributeError:
+                        #pass
+                #last_status[i] = current_switch.switch_state[0]
 
-            self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
-            time.sleep(0.5)
-            t1 = (datetime.datetime.now() - t_stamp).total_seconds()
+            #self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
+            #time.sleep(0.5)
+            #t1 = (datetime.datetime.now() - t_stamp).total_seconds()
+        for i, current_switch in enumerate(self.switches):
+            # Detect change
+            if self.last_status[i] != current_switch.switch_state[0]:
+                if current_switch.switch_state[0] is False:
+                    s = 'off'
+                elif current_switch.switch_state[0] is True:
+                    s = 'on '
+                self.status[i] = '%s :%s' % (current_switch.name, s)
+                try:
+                    self.log.append_log(status[i], time_stamp=1)
+                except AttributeError:
+                    pass
+            self.last_status[i] = current_switch.switch_state[0]
 
-    def disp_time(self, time2show=5):
-        t2 = 0
-        t_stamp = datetime.datetime.now()
-        self.lcd_display.clear_lcd()
-        while t2 < time2show:
-            time_now = str(datetime.datetime.now())[:-5].split(' ')
-            self.lcd_display.center_str(text1=time_now[0], text2=time_now[1])
-            t2 = (datetime.datetime.now() - t_stamp).total_seconds()
+    def disp_time(self)#, time2show=5):
+        #t2 = 0
+        #t_stamp = datetime.datetime.now()
+        #self.lcd_display.clear_lcd()
+        #while t2 < time2show:
+            #time_now = str(datetime.datetime.now())[:-5].split(' ')
+            #self.lcd_display.center_str(text1=time_now[0], text2=time_now[1])
+            #t2 = (datetime.datetime.now() - t_stamp).total_seconds()
+        time_now = str(datetime.datetime.now())[:-5].split(' ')
+        return time_now
+            
 
 
 class Log2File:
