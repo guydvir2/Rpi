@@ -1,6 +1,8 @@
 import os
 import sys
 import smtplib
+import getpass
+import datetime
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -16,28 +18,36 @@ class GmailSender:
     attach - file attachments, as a ['file1','file2']
     recipients - ['recip1','recip2']"""
 
-    def __init__(self, sender='', password='', pfile='', ufile=''):
+    def __init__(self, sender=None, password=None, pfile=None,ufile=None):
         self.pfile, self.ufile = pfile, ufile
         self.sender, self.password = sender, password
-
         self.get_account_credits()
 
     def get_account_credits(self):
-        if self.sender == '':
+        # case 1: user deails from file
+        if self.sender is None and self.ufile is not None:
             if os.path.isfile(self.ufile) is True:
                 with open(self.ufile, 'r') as f:
                     self.sender = f.read()
                     print(">> Sender details read from file: %s" % self.sender)
             else:
+                print("BVBV")
                 self.sender = input("Please enter a gmail sender: ")
+        # case 2: not supplied details
+        elif self.sender is None and self.ufile is None:
+            self.sender = input("Please enter a gmail sender: ")
 
-        if self.password == '':
+        # Case 1 - - detals from file
+        if self.password is None and self.pfile is not None:
             if os.path.isfile(self.pfile) is True:
                 with open(self.pfile, 'r') as g:
                     self.password = g.read()
                     print(">> Password read from file")
             else:
-                self.password = input("Password: ")
+                self.password = getpass.getpass("Password: ")
+        elif self.password is None and self.pfile is None:
+            self.password = getpass.getpass("Password: ")
+
 
     def compose_mail(self, subject='', body='', attach=[''], recipients=['']):
         # Create the enclosing (outer) message
@@ -110,6 +120,6 @@ class GmailSender:
 
 
 if __name__ == '__main__':
-    GmailDaemon = GmailSender(pfile='p.txt', ufile='user.txt')  # or directly (sender='send@gmail.com',password='pswd')
+    GmailDaemon = GmailSender()  # or directly (sender='send@gmail.com',password='pswd')
     GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], attach=[''], body="Python automated email",
                              subject='Alarm!')
