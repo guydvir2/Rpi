@@ -1,7 +1,2 @@
 
-TSK#00,1,TheDude,5,08:48:00,16:48:20,"wait: 6 days, 9:36:34"
-TSK#01,1,Lights,5,05:09:00,23:50:00,on: 0:38:34
-TSK#02,1,RoomWindow[Up],5,07:05:00,23:55:59,"wait: 5 days, 7:53:34"
-TSK#03,1,Washer,5,18:27:30,18:28:10,"wait: 6 days, 19:16:04"
-TSK#04,1,RoomWindow[Down],5,7:09:00,22:10:00,"wait: 6 days, 7:57:34"
-TSK#05,1,TheDude,4,12:00:00,21:08:00,"wait: 5 days, 12:48:34"
+TSK#00,1,How[Up],5,08:48:00,16:48:20,"wait: 4 days, 20:25:33"

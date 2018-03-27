@@ -17,7 +17,7 @@ class ButtonsGUI(ttk.Frame):
         ttk.Frame.__init__(self, master)
         self.reachable_ips = ['192.168.2.113', '192.168.2.114']
         self.master.write2log("Valid IP's to load:" + str(self.reachable_ips))
-        self.max_buts_in_row=4
+        self.max_buts_in_row=5
 
         self.reload_all()
 
@@ -108,6 +108,7 @@ class ButtonsGUI(ttk.Frame):
             try:
                 # load button if it in allowed ip list, and checked
                 # [ 'ID','ENABLED','Type','nick','ip_out','hw_out','hw_in']
+                print(l, self.args[l])
                 if current_button[4] in self.reachable_ips and current_button[1] == '1':
                     self.buts.append(getattr(ButtonLib2, current_button[2])
                                      (self.mainframe, **self.args[l]))
@@ -258,7 +259,7 @@ class MainGUI(ttk.Frame):
 
     def log_window(self):
         # Create log Tab
-        self.text_tab = tk.Text(self.activity_log_tab, bg='white', wrap=tk.NONE)
+        self.text_tab = tk.Text(self.activity_log_tab, bg='white', wrap=tk.NONE, width=110)
         self.text_tab.grid(row=0, column=0)#, sticky=tk.E + tk.W+tk.N+tk.S)
         scrollbar_y = ttk.Scrollbar(self.activity_log_tab, orient=tk.VERTICAL)
         scrollbar_y.grid(row=0, column=1, sticky=tk.N + tk.S)

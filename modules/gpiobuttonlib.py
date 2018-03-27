@@ -11,20 +11,20 @@ class Indicators:
     def __init__(self, master, frame):
         self.master = master
         self.frame = frame
-        self.x = 0
+        self.x, self.run_id, self.last_state =0, None, [None] * 2
         self.update_indicators()
-        self.run_id = None
-        self.last_state = [None] * 2
 
     def update_indicators(self):
-        time_to_ping = [0, 60, 120]
+        # periodic ping test
+        time_to_ping = [1, 60, 120]
         if self.x in time_to_ping:
             self.ping_it()
             self.x = 1
         elif self.x > 20:
             self.master.master.conn_lbl['style'] = 'B.TLabel'
-
         self.x += 1
+
+        # update button face at state change
         for i, but in enumerate(self.master.master.buts):
             current_state = self.master.get_state()[i]
             if current_state is False:
@@ -34,7 +34,6 @@ class Indicators:
             if current_state != self.last_state[i]:
                 self.last_state[i] = current_state
                 self.master.master.com.message("[%s][Monitor:%s]" % (self.master.nick, current_state))
-
             but.config(fg=fg)
             but.config(text=self.master.master.buts_names[i] + text2)
 
@@ -60,6 +59,7 @@ class HWRemoteInput:
         self.master = master
         self.factory = PiGPIOFactory(host=ip)
         self.input_pins = []
+        self.switch_type = switch_type
 
         if self.master is None:
             self.nick = 'RemoteInput Device'
@@ -69,19 +69,33 @@ class HWRemoteInput:
         self.hardware_config(input_pins=input_pins, ip=ip)
 
     def hardware_config(self, input_pins, ip):
-        for sw, pin in enumerate(input_pins):
-            self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
-            self.input_pins[sw].when_pressed = lambda arg=[sw, 1]: self.pressed(arg)
-            # Line below is used when button switched off - setting the command to off
-            self.input_pins[sw].when_released = lambda arg=[sw, 0]: self.pressed(arg)
+        if self.switch_type == 'press':
+            for sw, pin in enumerate(input_pins):
+                self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
+                self.input_pins[sw].when_pressed = lambda arg=[sw, 1]: self.pressed(arg)
+                # Line below is used when button switched off - setting the command to off
+                self.input_pins[sw].when_released = lambda arg=[sw, 0]: self.pressed(arg)
+        elif self.switch_type =='toggle':
+            for sw, pin in enumerate(input_pins):
+                self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
+                self.input_pins[sw].when_pressed = lambda arg=[sw]: self.toggled(arg)
 
-        self.master.com.message("[%s][Remote-Intput][IP:%s][GPIO pins:%s]" %
+        self.master.com.message("[%s][Remote-Intput][IP:%s][GPIO:%s]" %
                                 (self.nick, ip, input_pins))
 
     # Detect press and make switch
     def pressed(self, arg):
         self.master.switch_type = 'HWButton Switch'
         sw, state = arg[0], arg[1]  #
+        self.master.ext_press(sw, state, self.master.switch_type)
+
+    def toggled(self, arg):
+        self.master.switch_type = 'HWButton Switch'
+        sw = arg[0]
+        if self.master.get_state()[sw] is True:
+            state = 0
+        elif self.master.get_state()[sw] is False:
+            state = 1
         self.master.ext_press(sw, state, self.master.switch_type)
 
     def get_state(self):
@@ -116,7 +130,7 @@ class HWRemoteOutput:
         for sw, pin in enumerate(output_pins):
             self.output_pins.append(OutputDevice(pin, pin_factory=self.factory, initial_value=False))
 
-        self.master.com.message("[%s][Remote-Output][IP:%s][GPIO pins:%s]" % (self.nick, ip, output_pins))
+        self.master.com.message("[%s][Remote-Output][IP:%s][GPIO:%s]" % (self.nick, ip, output_pins))
 
     # Make the switch
     def set_state(self, sw, state):
