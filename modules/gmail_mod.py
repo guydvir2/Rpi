@@ -54,7 +54,7 @@ class GmailSender:
     def compose_mail(self, subject='', body='', attach=[''], recipients=['']):
         # Create the enclosing (outer) message
         self.body, self.attachments = body, attach
-        self.recipients = recipients
+        self.recipients, self.subject = recipients, subject
 
         if self.recipients == ['']:
             ask = input('No recipients defined. send to Sender or Abort [S/A]')
@@ -91,7 +91,7 @@ class GmailSender:
     def file_attachments(self):
         # List of attachments
         if self.attachments != ['']:
-            self.add_body('Attached files:')
+            self.add_body('\nAttached files:')
             self.add_body('~~~~~~~~~~~~~~~')
             for i,file in enumerate(self.attachments):
                 self.add_body(('File #%d/%d: %s'%(i+1,len(self.attachments),file)))
@@ -106,7 +106,7 @@ class GmailSender:
                     except FileNotFoundError:
                         print(">> Unable to open one of the attachments. Error: ", sys.exc_info()[0])
                         raise
-                else:
+            # self.add_body('~~~~~~~~~~~~~~~') else:
                     ask = input(">> Attachment not found, send anyway [y/n]?")
                     self.attachments[i] = self.attachments[i]+'_FAIL'
                     if ask.upper() == 'N':
@@ -117,9 +117,8 @@ class GmailSender:
 
     def send(self):
         # Send the email
-        # self.add_body('\n\n\n '+str(self.sum_of_send()))
         self.sum_of_send()
-        self.add_body('\n\nend e-mail')
+        self.add_body('\n\n** end e-mail')
 
         self.composed = self.outer.as_string()
         try:
@@ -144,19 +143,13 @@ class GmailSender:
 
     def sum_of_send(self):
         out_dict={}
-        print(self.subject,'subject:')
         self.keys = ['time', 'recipients', 'account', 'attachments', 'subject', 'success']
         self.values = [self.time_stamp(), self.recipients, self.sender, self.attachments, self.subject, self.send_result]
 
         for i,key in enumerate(self.keys):
             out_dict[key]=self.values[i]
             self.add_body('* '+str(key)+': '+str(out_dict[key]))
-
-
         # return out_dict
-
-
-
 
 if __name__ == '__main__':
     path='/Users/guy/Documents/github/Rpi/modules/'
