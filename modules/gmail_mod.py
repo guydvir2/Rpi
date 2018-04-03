@@ -18,9 +18,13 @@ class GmailSender:
     attach - file attachments, as a ['file1','file2']
     recipients - ['recip1','recip2']"""
 
-    def __init__(self, sender=None, password=None, pfile=None,ufile=None):
-        self.pfile, self.ufile = pfile, ufile
-        self.sender, self.password = sender, password
+    def __init__(self, sender=None, password=None, password_file=None,sender_file=None):
+        self.pfile, self.ufile = password_file, sender_file
+        self.sender, self.password, self.recipients= sender, password, None
+        self.subject, self.attachments = None, ''
+        self.values, self.keys = [], []
+        self.send_result=None
+
         self.get_account_credits()
 
     def get_account_credits(self):
@@ -31,7 +35,6 @@ class GmailSender:
                     self.sender = f.read()
                     print(">> Sender details read from file: %s" % self.sender)
             else:
-                print("BVBV")
                 self.sender = input("Please enter a gmail sender: ")
         # case 2: not supplied details
         elif self.sender is None and self.ufile is None:
@@ -48,7 +51,6 @@ class GmailSender:
         elif self.password is None and self.pfile is None:
             self.password = getpass.getpass("Password: ")
 
-
     def compose_mail(self, subject='', body='', attach=[''], recipients=['']):
         # Create the enclosing (outer) message
         self.body, self.attachments = body, attach
@@ -60,13 +62,14 @@ class GmailSender:
                 self.recipients = [self.sender]
             elif ask.upper() == 'A':
                 quit()
-
         if subject == '':
             ask = input('Enter subject: ')
             if ask == '':
                 subject = "Automated email"
             else:
                 subject = ask
+        if body == '':
+            self.body = input('Enter Body of email: ')
 
         COMMASPACE = ', '
         self.outer = MIMEMultipart()
@@ -80,10 +83,18 @@ class GmailSender:
         self.file_attachments()
         self.send()
 
+    def add_body(self, msg):
+        body = MIMEText('\n'+msg)  # convert the body to a MIME compatible string
+        self.outer.attach(body)  # attach it to your main message
+        self.outer.preamble = 'You will not see this in a MIME-aware mail reader.\n'
+
     def file_attachments(self):
         # List of attachments
         if self.attachments != ['']:
-            for file in self.attachments:
+            self.add_body('Attached files:')
+            self.add_body('~~~~~~~~~~~~~~~')
+            for i,file in enumerate(self.attachments):
+                self.add_body(('File #%d/%d: %s'%(i+1,len(self.attachments),file)))
                 if os.path.isfile(file) is True:
                     try:
                         with open(file, 'rb') as fp:
@@ -97,12 +108,19 @@ class GmailSender:
                         raise
                 else:
                     ask = input(">> Attachment not found, send anyway [y/n]?")
+                    self.attachments[i] = self.attachments[i]+'_FAIL'
                     if ask.upper() == 'N':
                         print("quit!")
                         quit()
+        else:
+            self.add_body('No attached files')
 
     def send(self):
         # Send the email
+        # self.add_body('\n\n\n '+str(self.sum_of_send()))
+        self.sum_of_send()
+        self.add_body('\n\nend e-mail')
+
         self.composed = self.outer.as_string()
         try:
             with smtplib.SMTP('smtp.gmail.com', 587) as s:
@@ -113,13 +131,34 @@ class GmailSender:
                 s.sendmail(self.sender, self.recipients, self.composed)
                 s.close()
             print(">>> Email sent! <<<")
-            return 1
+            self.send_result =  True
         except:
             print("Unable to send the email. Error: ", sys.exc_info()[0])
-            return 0
+            self.send_result = False
+        finally:
+            self.sum_of_send()
+
+    def time_stamp(self):
+        a = str(datetime.datetime.now())[:-5]
+        return a
+
+    def sum_of_send(self):
+        out_dict={}
+        print(self.subject,'subject:')
+        self.keys = ['time', 'recipients', 'account', 'attachments', 'subject', 'success']
+        self.values = [self.time_stamp(), self.recipients, self.sender, self.attachments, self.subject, self.send_result]
+
+        for i,key in enumerate(self.keys):
+            out_dict[key]=self.values[i]
+            self.add_body('* '+str(key)+': '+str(out_dict[key]))
+
+
+        # return out_dict
+
+
 
 
 if __name__ == '__main__':
-    GmailDaemon = GmailSender()  # or directly (sender='send@gmail.com',password='pswd')
-    GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], attach=[''], body="Python automated email",
-                             subject='Alarm!')
+    path='/Users/guy/Documents/github/Rpi/modules/'
+    GmailDaemon = GmailSender(sender_file=path+'ufile.txt', password_file=path+'pfile.txt')  # or directly (sender='send@gmail.com',password='pswd')
+    GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], body="Python automated email", subject='Alarm!',attach=['guy.txt'])
