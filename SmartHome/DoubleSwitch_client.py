@@ -143,22 +143,26 @@ class Log2File:
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
 # Create a file logger to log outputs of switches
 try:
-    file_logger = Log2File('Newlog.log', screen=0)
+    file_logger = Log2File('double_switch.log', screen=0)
+    double_switch = localswitches.DoubleSwitch(26, 16, 21, 20, name='Room#1_Shades')
 
-    sw1 = localswitches.SingleSwitch(16, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
-    sw2 = localswitches.SingleSwitch(26, 20, name='Relay#2', mode='toggle', ext_log=file_logger)
+    # sw1 = localswitches.SingleSwitch(16, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
+    # sw2 = localswitches.SingleSwitch(26, 20, name='Relay#2', mode='toggle', ext_log=file_logger)
 
     # Disp on LCD
-    ShowStatusLCD([sw1, sw2])  # ,ext_log=file_logger)
-    time.sleep(1)
+    # ShowStatusLCD([sw1, sw2])  # ,ext_log=file_logger)
+    # time.sleep(1)
 
     # Make switch by code
-    sw1.switch_state = 1
+    double_switch.switch0.switch_state = 1
     time.sleep(5)
-    sw2.switch_state = 1
+    double_switch.switch1.switch_state = 1
 
-    sw1.switch_state = 0
+    time.sleep(1)
+    uble_switch.switch0.switch_state = 0
     time.sleep(5)
-    sw2.switch_state = 0
+    double_switch.switch1.switch_state = 0
+
+
 except KeyboardInterrupt:
     print("ctrl C pressed")
