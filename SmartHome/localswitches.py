@@ -13,7 +13,7 @@ except ImportError:  # ModuleNotFoundError:
 
 
 class SingleSwitch:
-    def __init__(self, button_pin=20, relay_pin=4, name='No-Name', mode='press', ext_log=None, other_SingleSwitch=None):
+    def __init__(self, button_pin=20, relay_pin=4, name='No-Name', mode='press', ext_log=None):
         self.button, self.relay = None, None
         self.button_pin = button_pin
         self.relay_pin = relay_pin
@@ -23,12 +23,9 @@ class SingleSwitch:
         self.last_state, self.current_state = None, None
         self.logbook, self.ext_log = [], ext_log
         # case of using DoubleSwitch only
-        self.other_SingleSwitch = other_SingleSwitch
-        if self.other_SingleSwitch is not None:
-            self.other_state = self.other_SingleSwitch.switch_state[0]
-        else:
-            self.other_state = None
-
+        self.other_SingleSwitch = None
+        self.in_double_state = 0
+        
         self.validate_before_run()
 
     def validate_before_run(self):
@@ -63,14 +60,14 @@ class SingleSwitch:
 
     def press_switch(self, add=''):
         # case of DoubleSwitch only
-        if self.off_other_switch()==1:
-            if add == '':
-                add = 'button'
-            self.press_counter += 1
-            msg = ('pressed [%s] [%d] times' % (add, self.press_counter))
-            self.log_record(msg)
-        else:
-            print("error with other switch")
+        #if self.off_other_switch()==1:
+        if add == '':
+            add = 'button'
+        self.press_counter += 1
+        msg = ('pressed [%s] [%d] times' % (add, self.press_counter))
+        self.log_record(msg)
+        #else:
+            #print("error with other switch")
 
 
     def release_switch(self):
@@ -81,6 +78,9 @@ class SingleSwitch:
         if add == '':
             add = 'button'
         self.last_state = self.relay.value
+
+        self.off_other_switch()
+            
         self.relay.toggle()
         self.current_state = self.relay.value
         self.press_counter += 1
@@ -114,14 +114,14 @@ class SingleSwitch:
             self.ext_log.append_log(msg)
         return msg
 
+    def add_other_switch(self,other_switch):
+        self.other_SingleSwitch = other_switch
+
     def off_other_switch(self):
-        if self.other_SingleSwitch[0] == 0:
-            self.other_SingleSwitch.switch_state = 0
-            # verify success
-            if self.other_SingleSwitch[0] == 0:
-                return 1
-            else:
-                return 0
+        if self.other_SingleSwitch is not None:
+            if self.other_SingleSwitch.switch_state[0] is True:
+                self.other_SingleSwitch.switch_state=0
+                sleep(1)
 
 
     def watch_dog(self):
@@ -136,33 +136,38 @@ class SingleSwitch:
         self.t2 = threading.Thread(name='thread_watchdog', target=run_watchdog)
         self.t2.start()
 
-class DoubleSwitch(SingleSwitch):
-    def __init__(self, master=None, name='Doble_switch',button_pin1, button_pin2, relay_pin1, relay_pin2):
-        SingleSwitch.__init__(self)
-        self.switch0 = SingleSwitch(button_pin=button_pin1, relay_pin=relay_pin1, mode='toggle',name='switch0')
-        self.switch1 = SingleSwitch(button_pin=button_pin2, relay_pin=relay_pin2, mode='toggle',name='switch1')
-    #
-    # def logic_sw(self):
-    #     while True:
-    #         if self.switch0.switch_state[0] == self.switch1.switch_state[0]:
+class DoubleSwitch:
+    def __init__(self,button_pin1, button_pin2, relay_pin1, relay_pin2, name='Double_switch'):
 
+        self.switch0 = SingleSwitch(button_pin=button_pin1, relay_pin=relay_pin1, mode='toggle',name=name+'/SW#0')
+        self.switch1 = SingleSwitch(button_pin=button_pin2, relay_pin=relay_pin2, mode='toggle',name=name+'/SW#1')
+        self.switch0.add_other_switch(self.switch1)
+        self.switch1.add_other_switch(self.switch0)
+  
 
 
 
 if __name__ == "__main__":
     if ok_module is True:
-        a = SingleSwitch(21, 4, mode='toggle', name="LocalSwitch_SW#1")
-        # a pause due to use of thread
-        sleep(1)
-        a.watch_dog()
-        a.switch_state = 1
-        sleep(2)
-        a.switch_state = 0
 
-        b = SingleSwitch(20, 5, mode='press', name="LocalSwitch_SW#2")
-        sleep(1)
-        b.switch_state = 1
-        sleep(2)
-        b.switch_state = 0
-    else:
-        print("Can't run without gpiozero module")
+        #### CASE A########
+        
+        #a = SingleSwitch(21, 4, mode='toggle', name="LocalSwitch_SW#1")
+        ## a pause due to use of thread
+        #sleep(1)
+        #a.watch_dog()
+        #a.switch_state = 1
+        #sleep(2)
+        #a.switch_state = 0
+
+        #b = SingleSwitch(20, 5, mode='press', name="LocalSwitch_SW#2")
+        #sleep(1)
+        #b.switch_state = 1
+        #sleep(2)
+        #b.switch_state = 0
+    #else:
+        #print("Can't run without gpiozero module")
+
+
+        #### CASE B #########
+        doubleswitch=DoubleSwitch(26,19,21,20, name='Room#1_Shades')
