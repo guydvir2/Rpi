@@ -12,9 +12,9 @@ try:
 
     ok_modules = True
 
-except ImportError:  # (ModuleNotFoundError,
+except ImportError:
     ok_modules = False
-    print('Fail to obtain one or more modules')
+    print('Fail to obtain one or more RaspberryPi modules')
 
 
 class ShowStatusLCD:
