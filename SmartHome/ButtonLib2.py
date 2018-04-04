@@ -4,13 +4,25 @@ from time import sleep
 import datetime
 import time
 import os
+import threading
 
 # FIX
 import pigpio
 import my_paths
 import gpiobuttonlib
 
+class CBit:
+    def __init__(self, clock_rate=500):
+        self.clock_rate = clock_rate
+        self.thread = threading.Thread(name='CBit_thread', target=self.run_processes)
+        self.thread.start()
 
+    def run_processes(self):
+        while True:
+            print(datetime.datetime.now(), "run cbit at rate of %d milliseconds"%self.clock_rate)
+            time.sleep(self.clock_rate/1000)
+        
+        
 class Com2Log:
     """ This class sends status logs to main GUI"""
 
@@ -747,6 +759,8 @@ class CoreButton(ttk.Frame):
                 if ButSch.get_state()[0][0] == 1 and \
                         self.task_state[i][ButSch.get_state()[0][1]] == 1:
                             self.task_state[i][ButSch.get_state()[0][1]]=0
+                            #self.ext_press(i, state=0,type_s='Local HWButton')
+                            #self.switch_logic(0)
                             #self.execute_command(i,0)
         
         
@@ -758,21 +772,12 @@ class CoreButton(ttk.Frame):
         but_stat_transform =[False,True]
         for i,current_state in enumerate(self.get_state()):
             if current_state != self.but_stat[i].get():
-                #print("before", self.but_stat[i].get())
-               
-                #print("after", self.but_stat[i].get())
-                print("switch:%d, state:%s"%(i,current_state))
-                #self.decide_disable_sched()
-                #print(self.SchRun[1].get_state())#.task_state)
                 self.find_active_task()
                 self.but_stat[i].set(current_state)
-                #self.execute_command(1,stat=0)
-                #self.ext_press(i, state=current_state,type_s='Local HWButton')
-                #self.ext_press(i, state=current_state,type_s='Local HWButton')
-                #self.sf_button_press(i)
+                self.switch_logic(0)
                 
             self.cbit_laststate[i]=current_state
-        self.after(200,self.cbit)
+        self.after(100,self.cbit)
    
     def get_state(self):
         # hardware status
@@ -948,6 +953,7 @@ class MainsButton(CoreButton):
 button_list = ['UpDownButton', 'ToggleButton', 'MainsButton']
 
 if __name__ == "__main__":
+    cbit=CBit()
     root = tk.Tk()
 
     #e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.114',
@@ -956,7 +962,7 @@ if __name__ == "__main__":
                                                            #[[4], "18:42:00", "23:50:10"]])#, switch_mode='toggle')
     #e.grid(row=0, column=0, sticky=tk.S)
 
-    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.114', hw_out=[20, 21], hw_in=[], sched_vector2=[[[1], "22:24:30", "23:12:10"], [[2, 5], "08:56:00", "21:50:10"]])
+    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.114', hw_out=[20, 21], hw_in=[], sched_vector2=[[[1], "22:24:30", "23:12:10"], [[3, 5], "08:56:00", "21:50:10"]])
     # sched_vector=[[[6], "1:24:30", "23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
 
