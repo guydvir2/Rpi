@@ -45,7 +45,7 @@ class GmailSender:
             if os.path.isfile(self.pfile) is True:
                 with open(self.pfile, 'r') as g:
                     self.password = g.read()
-                    print(">> Password read from file")
+                    # print(">> Password read from file")
             else:
                 self.password = getpass.getpass("Password: ")
         elif self.password is None and self.pfile is None:
@@ -94,9 +94,9 @@ class GmailSender:
             self.add_body('\nAttached files:')
             self.add_body('~~~~~~~~~~~~~~~')
             for i,file in enumerate(self.attachments):
-                self.add_body(('File #%d/%d: %s'%(i+1,len(self.attachments),file)))
                 if os.path.isfile(file) is True:
                     try:
+                        prefix=''
                         with open(file, 'rb') as fp:
                             msg = MIMEBase('application', "octet-stream")
                             msg.set_payload(fp.read())
@@ -105,20 +105,25 @@ class GmailSender:
                         self.outer.attach(msg)
                     except FileNotFoundError:
                         print(">> Unable to open one of the attachments. Error: ", sys.exc_info()[0])
+                        prefix='failed: '
                         raise
-            # self.add_body('~~~~~~~~~~~~~~~') else:
+                else:
+                    prefix='failed: '
                     ask = input(">> Attachment not found, send anyway [y/n]?")
-                    self.attachments[i] = self.attachments[i]+'_FAIL'
+                    self.attachments[i] = 'fail to send: '+self.attachments[i]
                     if ask.upper() == 'N':
                         print("quit!")
                         quit()
+                self.add_body(('file #%d/%d: %s'%(i+1,len(self.attachments),prefix+file)))
+            self.add_body('~~~~~~~~~~~~~~~')
+
         else:
             self.add_body('No attached files')
 
     def send(self):
         # Send the email
         self.sum_of_send()
-        self.add_body('\n\n** end e-mail')
+        self.add_body('\n\n*** end of e-mail ***')
 
         self.composed = self.outer.as_string()
         try:
@@ -154,4 +159,4 @@ class GmailSender:
 if __name__ == '__main__':
     path='/Users/guy/Documents/github/Rpi/modules/'
     GmailDaemon = GmailSender(sender_file=path+'ufile.txt', password_file=path+'pfile.txt')  # or directly (sender='send@gmail.com',password='pswd')
-    GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], body="Python automated email", subject='Alarm!',attach=['guy.txt'])
+    GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], body="Python automated email", subject='Hi from gmail application in Python',attach=[''])
