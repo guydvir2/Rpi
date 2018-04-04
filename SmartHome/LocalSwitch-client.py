@@ -6,54 +6,51 @@ import os
 import threading
 
 try:
+    # modules for Rpi only
     import gpiozero
     import use_lcd
     import LocalSwitch
 
     ok_modules = True
 
-except ImportError:  # (ModuleNotFoundError,
+except ImportError:
     ok_modules = False
     print('Fail to obtain one or more modules')
 
 
 class ShowStatusLCD:
     def __init__(self, switches, ext_log=None):
-        self.switches = switches
-        self.log = ext_log
-        self.status = [None]*len(self.switches)
-        self.last_status = [None]*len(self.switches)
+        self.switches,self.log = switches, ext_log
+        self.status = [None] * len(self.switches)
+        self.last_status = [None] * len(self.switches)
         try:
-            # Case of HW err
+            # Case of LCD HW err
             self.lcd_display = use_lcd.MyLCD()
             self.t = threading.Thread(name='thread_disp_lcd', target=self.display_status_loop)
             self.t.start()
         except OSError:
-            msg = "LCD hardware error"
             try:
                 self.log.append_log(msg)
             except AttributeError:
-                pass
-            finally:
                 print(msg)
 
     def display_status_loop(self):
         while True:
-            self.looper(self.disp_time,4)
-            self.looper(self.disp_switch_status,4)
+            self.looper(self.disp_time, 4)
+            self.looper(self.disp_switch_status, 4)
 
     def looper(self, func, loop_dur):
         t, t_stamp = 0, datetime.datetime.now()
         self.lcd_display.clear_lcd()
-        while t<loop_dur:
-            text2lcd=func()
+        while t < loop_dur:
+            text2lcd = func()
             self.lcd_display.center_str(text1=text2lcd[0], text2=text2lcd[1])
             t = (datetime.datetime.now() - t_stamp).total_seconds()
             time.sleep(0.2)
 
     def disp_switch_status(self):
         for i, current_switch in enumerate(self.switches):
-            # Detect change
+            # case of change
             if self.last_status[i] != current_switch.switch_state[0]:
                 if current_switch.switch_state[0] is False:
                     s = 'off'
@@ -70,7 +67,6 @@ class ShowStatusLCD:
     def disp_time(self):
         time_now = str(datetime.datetime.now())[:-5].split(' ')
         return time_now
-            
 
 
 class Log2File:
