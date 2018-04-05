@@ -1,0 +1,19 @@
+[2018-04-05 10:56:21.9] >>Log file /home/guy/Documents/github/Rpi/SmartHome/SingleSwitch.log was created successfully
+log start @linux
+****************
+[2018-04-05 10:56:21.9] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-04-05 10:56:21.9] [Relay#1] GPIO initialize successfully
+[2018-04-05 10:56:23.2] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-05 10:56:28.2] [Relay#1] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-04-05 10:57:15.8] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-04-05 10:57:15.9] [Relay#1] GPIO initialize successfully
+[2018-04-05 10:57:16.8] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-05 10:57:21.8] [Relay#1] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-04-05 10:59:29.0] [Relay#1] init in [toggle] mode on [thread_gpio_21] 
+[2018-04-05 10:59:29.0] [Relay#1] GPIO initialize successfully
+[2018-04-05 10:59:30.0] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-05 10:59:35.0] [Relay#1] [True --> False] pressed [code] [2] times
