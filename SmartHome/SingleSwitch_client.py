@@ -146,10 +146,9 @@ try:
     file_logger = Log2File('SingleSwitch.log', screen=0)
 
     sw1 = localswitches.SingleSwitch(16, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
-    #sw2 = localswitches.SingleSwitch(26, 20, name='Relay#2', mode='toggle', ext_log=file_logger)
 
     # Disp on LCD
-    #ShowStatusLCD([sw1])  # ,ext_log=file_logger)
+    ShowStatusLCD([sw1])  # ,ext_log=file_logger)
     time.sleep(1)
 
     # Make switch by code
@@ -157,7 +156,7 @@ try:
     time.sleep(5)
     #sw2.switch_state = 1
 
-    sw1.switch_state = 1
+    sw1.switch_state = 0
     time.sleep(5)
     #sw2.switch_state = 0
 except KeyboardInterrupt:

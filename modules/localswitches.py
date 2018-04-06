@@ -39,7 +39,7 @@ class SingleSwitch:
         if self.mode in ['toggle', 'press'] and self.verify_gpio_selection() == 1:
             self.t = threading.Thread(name='thread_gpio_' + str(self.relay_pin), target=self.start_gpio_hw)
             self.t.start()
-            self.log_record('init in [%s] mode on [%s] ' % (self.mode, self.t.name))
+            self.log_record('init [%s mode][GPIO in/out:%s/%s] ' % (self.mode, self.button_pin, self.relay_pin))
         else:
             self.log_record('err- modes can be "toggle" or "press" only')
 
@@ -48,7 +48,7 @@ class SingleSwitch:
             self.button = gpiozero.Button(self.button_pin)
             self.relay = gpiozero.OutputDevice(self.relay_pin)
             if self.mode == 'toggle':
-                self.button = self.toggle_switch
+                self.button.when_pressed = self.toggle_switch
             elif self.mode == 'press':
                 self.relay.source = self.button.values
                 self.button.when_pressed = self.press_switch
@@ -64,20 +64,24 @@ class SingleSwitch:
         if add == '':
             add = 'button'
         self.press_counter += 1
-        msg = ('pressed [%s] [%d] times' % (add, self.press_counter))
+        msg = ('[pressed] [%s] [%d times]' % (add, self.press_counter))
         self.log_record(msg)
 
-    def release_switch(self):
-        msg = ('[%s] released' % (self.name))
+    def release_switch(self, add=''):
+        if add == '':
+            add = 'button'
+        msg = ('[released] [%s]'% (add))
         self.log_record(msg)
 
     def toggle_switch(self, add=''):
         if add == '':
             add = 'button'
         self.last_state = self.relay.value
+        
         # in case of DoubleSwitch
         self.off_other_switch()
         #
+        
         self.relay.toggle()
         self.current_state = self.relay.value
         self.press_counter += 1
@@ -94,37 +98,26 @@ class SingleSwitch:
         if value == 0:
             if self.mode == 'toggle':
                 if self.relay.value == True:
-                    self.toggle_switch()
+                    self.toggle_switch(add='code')
             elif self.mode == "press":
                 if self.relay.value == True:
-                    self.release_switch()
+                    self.release_switch(add='code')
                     self.relay.off()
-                    print("off")
         elif value == 1:
             if self.mode == 'toggle':
                 if self.relay.value == False:
-                    self.toggle_switch()
+                    self.toggle_switch(add='code')
             elif self.mode == "press":
                 if self.relay.value == False:
-                    #self.press_switch()
+                    self.press_switch(add='code')
                     self.relay.on()
-                    print("on")
-            
-                
-                    
-        #if value in [0, 1]:
-            #add = 'code'
-            #if self.mode == 'press':
-                #self.press_switch(add)
-            #elif self.mode == 'toggle':
-                #self.toggle_switch(add)
-        #else:
-            #msg = '[%s] must be [0,1]' % self.name
-            #self.log_record(msg)
+        else:
+            msg = '[%s] must be [0,1]' % self.name
+            self.log_record(msg)
 
     def log_record(self, text1=''):
         msg = ''
-        time = str(datetime.datetime.now())[:-5]
+        time = str(datetime.datetime.now())[:-1]
         msg = '[%s] [%s] %s' % (time, self.name, text1)
         self.logbook.append(msg)
         print(self.logbook[-1])
@@ -144,18 +137,16 @@ class SingleSwitch:
     def watch_dog(self):
         # run inspection in background to check state of gpios
         def run_watchdog():
-            last_state = 0
+            last_state = self.relay.value
             while True:
-                print(self.relay.value)
                 if self.relay.value != last_state:
                     self.log_record("[watch_dog] [GPIO %s] [%s]" % (self.relay_pin, self.switch_state[0]))
-                last_state = self.relay.value
-                sleep(1)
+                    last_state = self.relay.value
+                sleep(0.1)
 
         self.t2 = threading.Thread(name='thread_watchdog', target=run_watchdog)
         self.t2.start()
-    def on(self):
-        self.relay.on()
+  
 
 
 class DoubleSwitch:
@@ -170,23 +161,25 @@ if __name__ == "__main__":
     if ok_module is True:
         #### CASE A- SingleSwitch ########
 
-        a = SingleSwitch(21, 4, mode='press', name="LocalSwitch_SW#1")
-        # a pause due to use of thread
-        sleep(1)
-        a.watch_dog()
-        sleep(1)
+        #a = SingleSwitch(26, 20, mode='press', name="LocalSwitch_SW#1")
+        ## a pause due to use of thread
+        #sleep(1)
+        #a.watch_dog()
+        #sleep(1)
         #a.switch_state = 1
-        a.on()
         #sleep(2)
         #a.switch_state = 0
+        #sleep(0.11)
 
-        #b = SingleSwitch(20, 5, mode='press', name="LocalSwitch_SW#2")
+        #a.switch_state = 1
+
+        #b = SingleSwitch(19, 21, mode='toggle', name="LocalSwitch_SW#2")
         #sleep(1)
         #b.switch_state = 1
         #sleep(2)
         #b.switch_state = 0
-    else:
-        print("Can't run without gpiozero module")
+    #else:
+        #print("Can't run without gpiozero module")
 
         #### CASE B - Using Double Switch#########
-        #doubleswitch = DoubleSwitch(26, 19, 21, 20, name='Room#1_Shades')
+        doubleswitch = DoubleSwitch(26, 19, 21, 20, name='Room#1_Shades')

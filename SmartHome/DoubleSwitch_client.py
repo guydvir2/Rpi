@@ -144,7 +144,7 @@ class Log2File:
 # Create a file logger to log outputs of switches
 try:
     file_logger = Log2File('double_switch.log', screen=0)
-    double_switch= localswitches.DoubleSwitch(26, 16, 21, 20, name='DS')
+    double_switch= localswitches.DoubleSwitch(26, 19, 21, 20, name='DS')
 
     # Disp on LCD
     ShowStatusLCD([double_switch.switch0, double_switch.switch1] ,ext_log=file_logger)
