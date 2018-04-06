@@ -118,7 +118,7 @@ class SingleSwitch:
         if self.other_SingleSwitch is not None:
             if self.other_SingleSwitch.switch_state[0] is True:
                 self.other_SingleSwitch.switch_state = 0
-                sleep(1)
+                sleep(0.3)
 
     def watch_dog(self):
         # run inspection in background to check state of gpios
