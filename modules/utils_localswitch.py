@@ -17,7 +17,11 @@ except ImportError:
     quit()
 
 
-class ShowStatusLCD:
+class Output2LCD:
+    """ This class outputs data to 2 lines of LCD matrix,
+    parameters:
+    1)switches - max of 2 lines od data
+    2) ext_log - use class Log2File to save what displayed on LCD"""
     def __init__(self, switches, ext_log=None):
         self.switches = switches
         self.log = ext_log

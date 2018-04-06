@@ -1,13 +1,13 @@
 import my_paths
-import envelope_localswitch
+import utils_localswitch
 import localswitches
 import time
 
-file_logger = envelope_localswitch.Log2File('SingleSwitch.log', screen=0)
+file_logger = utils_localswitch.Log2File('SingleSwitch.log', screen=0)
 sw1 = localswitches.SingleSwitch(26, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
 
 # Disp on LCD
-envelope_localswitch.ShowStatusLCD([sw1])# ,ext_log=file_logger)
+utils_localswitch.Output2LCD([sw1])# ,ext_log=file_logger)
 time.sleep(1)
 
 # Make switch by code
