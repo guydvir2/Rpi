@@ -49,6 +49,7 @@ class ShowStatusLCD:
         self.lcd_display.clear_lcd()
 
         while t1 < time2show:
+            textonlcd=['','']
             for i, current_switch in enumerate(self.switches):
                 # Detect change
                 if last_status[i] != current_switch.switch_state[0]:
@@ -58,12 +59,13 @@ class ShowStatusLCD:
                         s = 'on '
                     status[i] = '%s :%s' % (current_switch.name, s)
                     try:
+                        textonlcd[i] = str(status[i])
                         self.log.append_log(status[i], time_stamp=1)
                     except AttributeError:
                         pass
-                last_status[i] = current_switch.switch_state[0]
-
-            self.lcd_display.center_str(text1=str(status[0]), text2=str(status[1]))
+                    last_status[i] = current_switch.switch_state[0]
+                    self.lcd_display.center_str(textonlcd[0],textonlcd[1])
+            # take it easy :)
             time.sleep(0.5)
             t1 = (datetime.datetime.now() - t_stamp).total_seconds()
 
@@ -145,7 +147,7 @@ class Log2File:
 try:
     file_logger = Log2File('SingleSwitch.log', screen=0)
 
-    sw1 = localswitches.SingleSwitch(16, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
+    sw1 = localswitches.SingleSwitch(26, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
 
     # Disp on LCD
     ShowStatusLCD([sw1])  # ,ext_log=file_logger)
