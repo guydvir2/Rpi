@@ -29,7 +29,7 @@ class SingleSwitch:
 
     def verify_gpio_selection(self):
         if self.button_pin in self.valid_gpios and self.relay_pin in self.valid_gpios and \
-                self.button_pin != self.relay_pin:
+                self.button_pin != self.relay_pin:                    
             return 1
         else:
             self.log_record('pin definition error')
@@ -48,7 +48,7 @@ class SingleSwitch:
             self.button = gpiozero.Button(self.button_pin)
             self.relay = gpiozero.OutputDevice(self.relay_pin)
             if self.mode == 'toggle':
-                self.button.when_pressed = self.toggle_switch
+                self.button = self.toggle_switch
             elif self.mode == 'press':
                 self.relay.source = self.button.values
                 self.button.when_pressed = self.press_switch
@@ -91,15 +91,36 @@ class SingleSwitch:
 
     @switch_state.setter
     def switch_state(self, value):
-        if value in [0, 1]:
-            add = 'code'
-            if self.mode == 'press':
-                self.press_switch(add)
-            elif self.mode == 'toggle':
-                self.toggle_switch(add)
-        else:
-            msg = '[%s] must be [0,1]' % self.name
-            self.log_record(msg)
+        if value == 0:
+            if self.mode == 'toggle':
+                if self.relay.value == True:
+                    self.toggle_switch()
+            elif self.mode == "press":
+                if self.relay.value == True:
+                    self.release_switch()
+                    self.relay.off()
+                    print("off")
+        elif value == 1:
+            if self.mode == 'toggle':
+                if self.relay.value == False:
+                    self.toggle_switch()
+            elif self.mode == "press":
+                if self.relay.value == False:
+                    #self.press_switch()
+                    self.relay.on()
+                    print("on")
+            
+                
+                    
+        #if value in [0, 1]:
+            #add = 'code'
+            #if self.mode == 'press':
+                #self.press_switch(add)
+            #elif self.mode == 'toggle':
+                #self.toggle_switch(add)
+        #else:
+            #msg = '[%s] must be [0,1]' % self.name
+            #self.log_record(msg)
 
     def log_record(self, text1=''):
         msg = ''
@@ -125,13 +146,16 @@ class SingleSwitch:
         def run_watchdog():
             last_state = 0
             while True:
+                print(self.relay.value)
                 if self.relay.value != last_state:
                     self.log_record("[watch_dog] [GPIO %s] [%s]" % (self.relay_pin, self.switch_state[0]))
                 last_state = self.relay.value
-                sleep(0.2)
+                sleep(1)
 
         self.t2 = threading.Thread(name='thread_watchdog', target=run_watchdog)
         self.t2.start()
+    def on(self):
+        self.relay.on()
 
 
 class DoubleSwitch:
@@ -146,21 +170,23 @@ if __name__ == "__main__":
     if ok_module is True:
         #### CASE A- SingleSwitch ########
 
-        # a = SingleSwitch(21, 4, mode='toggle', name="LocalSwitch_SW#1")
-        ## a pause due to use of thread
-        # sleep(1)
-        # a.watch_dog()
-        # a.switch_state = 1
-        # sleep(2)
-        # a.switch_state = 0
+        a = SingleSwitch(21, 4, mode='press', name="LocalSwitch_SW#1")
+        # a pause due to use of thread
+        sleep(1)
+        a.watch_dog()
+        sleep(1)
+        #a.switch_state = 1
+        a.on()
+        #sleep(2)
+        #a.switch_state = 0
 
-        # b = SingleSwitch(20, 5, mode='press', name="LocalSwitch_SW#2")
-        # sleep(1)
-        # b.switch_state = 1
-        # sleep(2)
-        # b.switch_state = 0
-        # else:
-        # print("Can't run without gpiozero module")
+        #b = SingleSwitch(20, 5, mode='press', name="LocalSwitch_SW#2")
+        #sleep(1)
+        #b.switch_state = 1
+        #sleep(2)
+        #b.switch_state = 0
+    else:
+        print("Can't run without gpiozero module")
 
         #### CASE B - Using Double Switch#########
-        doubleswitch = DoubleSwitch(26, 19, 21, 20, name='Room#1_Shades')
+        #doubleswitch = DoubleSwitch(26, 19, 21, 20, name='Room#1_Shades')
