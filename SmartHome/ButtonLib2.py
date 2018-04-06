@@ -906,9 +906,9 @@ if __name__ == "__main__":
     root = tk.Tk()
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.114',
-                     hw_out=[20], hw_in=[26], sched_vector=[[[7], "02:24:30", "23:12:10"],
-                                                           [[2], "19:42:00", "23:50:10"],
-                                                           [[4], "18:42:00", "23:50:10"]])
+                     hw_out=[20])#, hw_in=[26], sched_vector=[[[7], "02:24:30", "23:12:10"],
+                                  #                         [[2], "19:42:00", "23:50:10"],
+                                   #                        [[4], "18:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
 
     # f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21],
