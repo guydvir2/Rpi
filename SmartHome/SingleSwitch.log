@@ -132,3 +132,40 @@ log start @linux
 [2018-04-06 20:10:08.45800] [Relay#1] GPIO initialize successfully
 [2018-04-06 20:10:09.71214] [Relay#1] [False --> True] pressed [code] [1] times
 [2018-04-06 20:10:14.71796] [Relay#1] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+log start @linux
+****************
+[2018-04-06 20:39:34.00248] [Relay#1] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-06 20:39:34.15611] [Relay#1] GPIO initialize successfully
+log start @linux
+****************
+[2018-04-06 20:40:18.86552] [Relay#1] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-06 20:40:19.05015] [Relay#1] GPIO initialize successfully
+[2018-04-06 20:40:20.32100] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-06 20:40:21.32645] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-06 20:40:25.73787] [Relay#1] [False --> True] pressed [button] [3] times
+[2018-04-06 20:40:26.40730] [Relay#1] [True --> False] pressed [button] [4] times
+[2018-04-06 20:40:26.98173] [Relay#1] [False --> True] pressed [button] [5] times
+[2018-04-06 20:40:27.98148] [Relay#1] [True --> False] pressed [button] [6] times
+log start @linux
+****************
+[2018-04-06 22:41:46.62000] [Relay#1] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-06 22:41:46.78178] [Relay#1] GPIO initialize successfully
+[2018-04-06 22:41:47.0] Relay#1 :off
+[2018-04-06 22:41:48.04311] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-06 22:41:48.2] Relay#1 :on 
+[2018-04-06 22:41:49.05022] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-06 22:41:49.3] Relay#1 :off
+[2018-04-06 22:41:53.5] Relay#1 :off
+[2018-04-06 22:41:59.9] Relay#1 :off
+[2018-04-06 22:42:06.1] Relay#1 :off
+[2018-04-06 22:42:12.4] Relay#1 :off
+[2018-04-06 22:42:18.7] Relay#1 :off
+[2018-04-06 22:42:24.9] Relay#1 :off
+log start @linux
+****************
+[2018-04-06 22:55:54.94412] [Relay#1] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-06 22:55:55.14337] [Relay#1] GPIO initialize successfully
+[2018-04-06 22:55:56.40557] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-06 22:55:57.41161] [Relay#1] [True --> False] pressed [code] [2] times
