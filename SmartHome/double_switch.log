@@ -3335,3 +3335,6 @@ log start @linux
 [2018-04-05 10:55:43.6] DS/SW#1 :off
 [2018-04-05 10:55:50.2] DS/SW#0 :on 
 [2018-04-05 10:55:50.2] DS/SW#1 :off
+log start @linux
+****************
+LCD hardware error

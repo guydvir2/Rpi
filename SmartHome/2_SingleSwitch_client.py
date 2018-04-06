@@ -145,8 +145,8 @@ class Log2File:
 try:
     file_logger = Log2File('Newlog.log', screen=0)
 
-    sw1 = localswitches.SingleSwitch(16, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
-    sw2 = localswitches.SingleSwitch(26, 20, name='Relay#2', mode='toggle', ext_log=file_logger)
+    sw1 = localswitches.SingleSwitch(19, 21, name='Relay#1', mode='toggle', ext_log=file_logger)
+    sw2 = localswitches.SingleSwitch(26, 20, name='Relay#2', mode='press', ext_log=file_logger)
 
     # Disp on LCD
     ShowStatusLCD([sw1, sw2])  # ,ext_log=file_logger)
