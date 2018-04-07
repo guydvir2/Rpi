@@ -15,29 +15,24 @@ class CBit:
     def run_processes(self):
         while True:
             for current_process in self.processes:
-                current_process()
-            time.sleep(self.clock_rate/float(1000))
+                current_process(self.args)
+            time.sleep(self.clock_rate / float(1000))
 
-    def append_process(self, p):
+    def append_process(self, p, *args):
+        self.args = args
         self.processes.append(p)
 
     def remove_process(self, p):
         del self.processes[self.processes.index(p)]
 
 
-def print_hi():
-    print(datetime.datetime.now())
+def print_hi(x=0, y=1231):
+    print(datetime.datetime.now(), x, y)
+
 
 def print_OK():
     print('OK')
 
 
-x=0
 a = CBit(500)
-a.append_process(print_hi)
-a.append_process(print_OK)
-time.sleep(2)
-a.remove_process(print_hi)
-a.remove_process(print_OK)
-
-print('That is all folks')
+a.append_process(print_hi, 3, 11)
