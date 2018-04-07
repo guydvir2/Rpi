@@ -7,21 +7,7 @@ import os
 
 # FIX
 import pigpio
-from sys import platform
-
-os_type = platform
-if os_type == 'darwin':
-    main_path = '/Users/guy/Documents/github/Rpi/'
-elif os_type == 'win32':
-    main_path = 'd:/users/guydvir/Documents/git/Rpi/'
-elif os_type == 'linux':
-    main_path = '/home/guy/Documents/github/Rpi/'
-
-from sys import path
-
-path.append(main_path + 'GPIO_Projects/lcd')
-path.append(main_path + 'SmartHome')
-path.append(main_path + 'modules')
+import my_paths
 import gpiobuttonlib
 
 
@@ -678,8 +664,6 @@ class CoreButton(ttk.Frame):
                             self.task_state[s] = [1 for i in self.task_state[s]]
 
                         self.switch_logic(s)
-
-
             # specific task
             elif task_num != 'all':
                 self.task_state[sw][self.SchRun[sw].get_state()[0][1]] = 0
@@ -906,7 +890,7 @@ if __name__ == "__main__":
     root = tk.Tk()
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.114',
-                     hw_out=[20])#, hw_in=[26], sched_vector=[[[7], "02:24:30", "23:12:10"],
+                     hw_out=[21])#, hw_in=[26], sched_vector=[[[7], "02:24:30", "23:12:10"],
                                   #                         [[2], "19:42:00", "23:50:10"],
                                    #                        [[4], "18:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
