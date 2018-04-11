@@ -12,7 +12,7 @@ import my_paths
 import gpiobuttonlib
 
 class CBit:
-    def __init__(self, clock_rate=500):
+    def __init__(self, clock_rate=2000):
         self.clock_rate = clock_rate
         self.thread = threading.Thread(name='CBit_thread', target=self.run_processes)
         self.thread.start()
@@ -956,15 +956,15 @@ if __name__ == "__main__":
     cbit=CBit()
     root = tk.Tk()
 
-    #e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.114',
-                     #hw_out=[20], hw_in=[], sched_vector=[[[2], "02:24:30", "23:12:10"],
-                                                           #[[2], "19:42:00", "23:50:10"],
-                                                           #[[4], "18:42:00", "23:50:10"]])#, switch_mode='toggle')
-    #e.grid(row=0, column=0, sticky=tk.S)
+    e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.114',
+                     hw_out=[20], hw_in=[], sched_vector=[[[2], "02:24:30", "23:12:10"],
+                                                           [[2], "19:42:00", "23:50:10"],
+                                                           [[4], "18:42:00", "23:50:10"]])#, switch_mode='toggle')
+    e.grid(row=0, column=0, sticky=tk.S)
 
-    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.114', hw_out=[20, 21], hw_in=[], sched_vector2=[[[1], "22:24:30", "23:12:10"], [[3, 5], "08:56:00", "21:50:10"]])
-    # sched_vector=[[[6], "1:24:30", "23:12:10"]])
-    f.grid(row=0, column=1, sticky=tk.S)
+    #f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.114', hw_out=[20, 21], hw_in=[], sched_vector2=[[[1], "22:24:30", "23:12:10"], [[3, 5], "08:56:00", "21:50:10"]])
+    ## sched_vector=[[[6], "1:24:30", "23:12:10"]])
+    #f.grid(row=0, column=1, sticky=tk.S)
 
     #g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.114',
     #hw_out=[20, 21], hw_in=[], sched_vector=[[[7, 4],"02:24:30", "23:55:10"],[[2, 5], "13:47:20", "23:50:10"]])
