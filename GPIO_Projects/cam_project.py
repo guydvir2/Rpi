@@ -23,6 +23,7 @@ path.append(main_path + 'SmartHome')
 path.append(main_path + 'modules')
 
 import gmail_mod
+import use_lcd
 
 
 class TempHumid():
@@ -49,17 +50,45 @@ class SoundDetect():
         GPIO.setup(SOUND_PIN, GPIO.IN)
         GPIO.add_event_detect(SOUND_PIN, GPIO.RISING)#, callback=self.test)
         print(">> Sound Module started GPIO")
-        self.detection()
+        self.detection(pin)
 
-    def detection(self):
+    def detection(self,pin):
         counter = 0
-        pin = 13
         while True:
             if GPIO.event_detected(pin):
-                counter +=1
-                print("Got you-", counter)
+                #counter +=1
+                print("Sound Heard", counter)
                 time.sleep(1)
-                #self.output()
+                return 1
+
+class VibSensor():
+    def __init__(self, gpio):
+        channel = gpio
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(channel, GPIO.IN)
+        GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)  # let us know when the pin goes HIGH or LOW
+        #GPIO.add_event_callback(channel, self.callback)  # assign function to GPIO PIN, Run function on change
+        #self.detection(channel)
+
+    def detection(self,pin=13):
+        counter = 0
+        return GPIO.input(pin)
+        while True:
+            if GPIO.input(pin)==True or False:
+            #if GPIO.event_detected(pin):
+                counter +=1
+                print("Vib Detected", counter)
+                time.sleep(1)
+
+     
+    def callback(channel):
+            if GPIO.input(channel):
+                    print ("Movement Detected1!")
+            else:
+                    print ("Movement Detected2!")
+ 
+
+
 
 
 class Buzz():
@@ -90,7 +119,6 @@ class Button():
         self.button = gpiozero.Button(gpio)
         print(">> Button Module started GPIO",gpio)
 
-#class LCDdisplay():
         
 class Camera():
 
@@ -119,38 +147,50 @@ class Camera():
     def send_cap(self):
         GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], attach=[self.fname], body="Python automated email",subject='Pic4U')
 
-
     def preview(self,time1=5):
         self.camera.start_preview()
         time.sleep(time1)
         self.camera.stop_preview()
     
-
+def show_lcd(text1='',text2='', to=2):
+    try:
+        lcd.center_str(text1,text2, to=to)
+    except NameError:
+        print(text1+'\n'+text2)
 GmailDaemon = gmail_mod.GmailSender(pfile='/home/guy/Documents/github/Rpi/BuildingBlocks/p.txt', ufile='/home/guy/Documents/github/Rpi/BuildingBlocks/user.txt')
 
+vib_sense=VibSensor(13)
 #temp_humid=TempHumid(12)
-#pir = gpiozero.MotionSensor(19)
+pir = gpiozero.MotionSensor(19)
 pic_button=Button(21)
 vid_button=Button(20)
 cam=Camera()
 buzzer=Buzz(26)
-sound_sensor = SoundDetect()
+#sound_sensor = SoundDetect()
 motion_counter=0
-
-#cam.capture()
-#cam.cap_show()
-
+vib_count=0
+try:
+    lcd=use_lcd.MyLCD()
+    show_lcd("Hello","World !")
+except OSError:
+    print('Fail to run LCD')
 
 while True:
+    tstamp = str(datetime.datetime.now())[:-7]
     if pic_button.button.is_pressed:
-        #button.button.wait_for_press()
         buzzer.buzz()
         cam.capture()
+        show_lcd(text1='Picture', text2=tstamp, to=2)
         cam.cap_show()
-    #if pir.motion_detected:
-        #motion_counter +=1
-        #buzzer.light_buzz()
-        #print('motion_detected: #',motion_counter)
-        #time.sleep(1)
+    if pir.motion_detected:
+        motion_counter +=1
+        buzzer.light_buzz()
+        print('motion_detected: #',motion_counter)
+        time.sleep(1)
     if vid_button.button.is_pressed:
+        show_lcd(text1='show video', text2=tstamp, to=2)
         cam.preview()
+        show_lcd(text1='stop video', text2=tstamp, to=2)
+    if vib_sense.detection() == 1:
+        vib_count +=1
+        show_lcd(text1='vibration: '+str(vib_count), text2=tstamp, to=0.5)
