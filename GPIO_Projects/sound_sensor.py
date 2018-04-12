@@ -5,7 +5,7 @@ import os
 
 
 GPIO.setmode(GPIO.BCM)
-SOUND_PIN = 13
+SOUND_PIN = 6
 GPIO.setup(SOUND_PIN, GPIO.IN)
 
 count = 0

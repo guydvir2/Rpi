@@ -28,7 +28,18 @@ import use_lcd
 
 class TempHumid():
     def __init__(self, gpio):
-        self.run_it(gpio)
+        #self.run_it(gpio)
+        self.gpio=gpio
+        pass
+
+    def measure(self):
+        res=[]
+        h0,t0 = Adafruit_DHT.read(11,self.gpio)
+        if h0 and t0:
+            if h0 < 100 and t0 < 100 :
+                res=[t0, h0]
+        return res            
+        
         
     def run_it(self,gpio):
         while True:
@@ -67,9 +78,9 @@ class VibSensor():
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(channel, GPIO.IN)
         GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)  # let us know when the pin goes HIGH or LOW
-        #GPIO.add_event_callback(channel, self.callback)  # assign function to GPIO PIN, Run function on change
-        #self.detection(channel)
+        print(">> Vib Module Module started GPIO", gpio)
 
+       
     def detection(self,pin=13):
         counter = 0
         return GPIO.input(pin)
@@ -86,9 +97,6 @@ class VibSensor():
                     print ("Movement Detected1!")
             else:
                     print ("Movement Detected2!")
- 
-
-
 
 
 class Buzz():
@@ -113,6 +121,7 @@ class Buzz():
             time.sleep(0.15)
             self.buzzer.off()
             time.sleep(0.1)
+
 
 class Button():
     def __init__(self, gpio):
@@ -151,24 +160,27 @@ class Camera():
         self.camera.start_preview()
         time.sleep(time1)
         self.camera.stop_preview()
+
     
 def show_lcd(text1='',text2='', to=2):
     try:
         lcd.center_str(text1,text2, to=to)
     except NameError:
         print(text1+'\n'+text2)
+
 GmailDaemon = gmail_mod.GmailSender(pfile='/home/guy/Documents/github/Rpi/BuildingBlocks/p.txt', ufile='/home/guy/Documents/github/Rpi/BuildingBlocks/user.txt')
 
 vib_sense=VibSensor(13)
-#temp_humid=TempHumid(12)
-pir = gpiozero.MotionSensor(19)
+temp_humid=TempHumid(19)
+pir = gpiozero.MotionSensor(12)
 pic_button=Button(21)
 vid_button=Button(20)
 cam=Camera()
 buzzer=Buzz(26)
-#sound_sensor = SoundDetect()
+#sound_sensor = SoundDetect(6)
 motion_counter=0
 vib_count=0
+
 try:
     lcd=use_lcd.MyLCD()
     show_lcd("Hello","World !")
@@ -177,20 +189,28 @@ except OSError:
 
 while True:
     tstamp = str(datetime.datetime.now())[:-7]
+
     if pic_button.button.is_pressed:
         buzzer.buzz()
         cam.capture()
         show_lcd(text1='Picture', text2=tstamp, to=2)
         cam.cap_show()
+        cam.send_cap()
     if pir.motion_detected:
         motion_counter +=1
         buzzer.light_buzz()
-        print('motion_detected: #',motion_counter)
-        time.sleep(1)
+        show_lcd(text1='motion_det: #'+str(motion_counter))
+        time.sleep(2)
     if vid_button.button.is_pressed:
         show_lcd(text1='show video', text2=tstamp, to=2)
         cam.preview()
         show_lcd(text1='stop video', text2=tstamp, to=2)
     if vib_sense.detection() == 1:
         vib_count +=1
-        show_lcd(text1='vibration: '+str(vib_count), text2=tstamp, to=0.5)
+        buzzer.buzz()
+        show_lcd(text1='vibration: '+str(vib_count), text2=tstamp, to=1)
+    #if sound_sensor.detect()==1:
+        #print("HI")
+    #th= temp_humid.measure()
+    #if th != []:
+     #   show_lcd(text1='Temp: %d Hum: %d'%(th[0],th[1]), text2=tstamp, to=5)

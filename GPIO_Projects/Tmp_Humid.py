@@ -39,7 +39,7 @@ def cel_fr():  ## convert C to F
         
 def ht_data():
     global t, h
-    h0,t0 = Adafruit_DHT.read(11,12)
+    h0,t0 = Adafruit_DHT.read(11,19)
     if h0 and t0:
         if h0 < 100 and t0 < 100 :
             h=h0
