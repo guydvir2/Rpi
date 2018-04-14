@@ -13,7 +13,7 @@ import picamera
 #     return text_out
 #
 # display = lcddriver.lcd()
-pir = MotionSensor(4)
+pir = MotionSensor(19)
 led_red = LED(17)
 camera = picamera.PiCamera()
 

@@ -1,8 +1,9 @@
 import datetime
 import sys
 from time import sleep
+import my_paths
 
-sys.path.append('/home/guy/Documents/github/Rpi/GPIO_Projects/lcd')
+#sys.path.append('/home/guy/Documents/github/Rpi/GPIO_Projects/lcd')
 import use_lcd
 
 lcd = use_lcd.MyLCD()

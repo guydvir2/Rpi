@@ -39,7 +39,7 @@ def cel_fr():  ## convert C to F
         
 def ht_data():
     global t, h
-    h0,t0 = Adafruit_DHT.read(11,4)
+    h0,t0 = Adafruit_DHT.read(11,19)
     if h0 and t0:
         if h0 < 100 and t0 < 100 :
             h=h0
@@ -49,8 +49,8 @@ def ht_data():
                 t=32+1.8*t0
         temp_var.set("%d"%t)
         hum_var.set("%d%%"%h)
-        display.lcd_display_string(center_str('Temp: %dC' %(t)), 1)
-        display.lcd_display_string(center_str('Humidity: %d%s' %(h,"%")), 2)
+        #display.lcd_display_string(center_str('Temp: %dC' %(t)), 1)
+        #display.lcd_display_string(center_str('Humidity: %d%s' %(h,"%")), 2)
     root.after(2000, ht_data)
 
 
@@ -101,11 +101,11 @@ uptime_lab.grid(row=4, column=0,rowspan=3)
 ########
 
 ##### Initialize LCD display ###
-display = lcddriver.lcd()
-display.lcd_clear()
-display.lcd_display_string(center_str("Let's Start !!"), 1)
-time.sleep (2)
-display.lcd_clear()
+#display = lcddriver.lcd()
+#display.lcd_clear()
+#display.lcd_display_string(center_str("Let's Start !!"), 1)
+#time.sleep (2)
+#display.lcd_clear()
 ##########
 
 
@@ -114,10 +114,3 @@ clock()
 ht_data()
 
 root.mainloop()
-
-
-   
-
-
-
-

@@ -33,7 +33,7 @@ class Indicators:
                 fg, text2 = 'green', ' (On)'
             if current_state != self.last_state[i]:
                 self.last_state[i] = current_state
-                self.master.master.com.message("[%s][Monitor:%s]" % (self.master.nick, current_state))
+                self.master.master.com.message("[%s][Monitor SW#%d:%s]" % (self.master.nick,i, current_state))
             but.config(fg=fg)
             but.config(text=self.master.master.buts_names[i] + text2)
 
@@ -55,12 +55,14 @@ class Indicators:
 
 class HWRemoteInput:
     # This class create a link between input_pins(HW buttons) to output pins
-    def __init__(self, master=None, ip='', input_pins=[], switch_type='toggle'):
+    def __init__(self, master=None, ip='', input_pins=[], switch_mode='toggle'):
         self.master = master
         self.factory = PiGPIOFactory(host=ip)
         self.input_pins = []
-        self.switch_type = switch_type
-
+        if switch_mode == '':
+            self.switch_mode = 'toggle'
+        else:
+            self.switch_mode = switch_mode
         if self.master is None:
             self.nick = 'RemoteInput Device'
         else:
@@ -69,19 +71,19 @@ class HWRemoteInput:
         self.hardware_config(input_pins=input_pins, ip=ip)
 
     def hardware_config(self, input_pins, ip):
-        if self.switch_type == 'press':
+        if self.switch_mode == 'press':
             for sw, pin in enumerate(input_pins):
                 self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
                 self.input_pins[sw].when_pressed = lambda arg=[sw, 1]: self.pressed(arg)
                 # Line below is used when button switched off - setting the command to off
                 self.input_pins[sw].when_released = lambda arg=[sw, 0]: self.pressed(arg)
-        elif self.switch_type =='toggle':
+        elif self.switch_mode =='toggle':
             for sw, pin in enumerate(input_pins):
                 self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
                 self.input_pins[sw].when_pressed = lambda arg=[sw]: self.toggled(arg)
 
-        self.master.com.message("[%s][Remote-Intput][IP:%s][GPIO:%s]" %
-                                (self.nick, ip, input_pins))
+        self.master.com.message("[%s][mode:%s][Remote-Intput][IP:%s][GPIO:%s]" %
+                                (self.nick, self.switch_mode, ip, input_pins))
 
     # Detect press and make switch
     def pressed(self, arg):
