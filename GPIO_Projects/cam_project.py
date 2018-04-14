@@ -36,8 +36,8 @@ class TempHumid():
         if h0 and t0:
             if h0 < 100 and t0 < 100 :
                 res=[t0, h0]
-        return res
-
+        return res            
+        
 
 class SoundDetect():
     def __init__(self, pin=13):
@@ -67,7 +67,7 @@ class VibSensor():
         GPIO.setup(channel, GPIO.IN)
         GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)  # let us know when the pin goes HIGH or LOW
         print(">> Vib Module Module started GPIO", gpio)
-
+       
     def detection(self,pin=13):
         return GPIO.input(pin)
 
@@ -77,7 +77,7 @@ class Buzz():
     def __init__(self, gpio):
         self.buzzer = gpiozero.Buzzer(gpio)
         print(">> Buzzer Module started GPIO", gpio)
-
+        
     def buzz(self):
         self.buzzer.on()
         time.sleep(0.5)
@@ -87,7 +87,7 @@ class Buzz():
         self.buzzer.on()
         time.sleep(0.05)
         self.buzzer.off()
-
+        
     def bizbuz(self):
         for i in range (5):
             self.buzzer.on()
@@ -167,7 +167,7 @@ except OSError:
 
 while True:
     tstamp = str(datetime.datetime.now())[:-7]
-
+    
     #if pic_button.button.is_pressed:
         #buzzer.buzz()
         #cam.capture()
