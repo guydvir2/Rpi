@@ -175,3 +175,15 @@ log start @linux
 [2018-04-07 14:33:55.02851] [Relay#1] GPIO initialize successfully
 [2018-04-07 14:33:56.03093] [Relay#1] [False --> True] pressed [code] [1] times
 [2018-04-07 14:33:57.03281] [Relay#1] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-04-13 20:59:58.05277] [Relay#1] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-13 20:59:58.09264] [Relay#1] GPIO initialize successfully
+[2018-04-13 20:59:59.09029] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-13 21:00:00.09214] [Relay#1] [True --> False] pressed [code] [2] times
+log start @linux
+****************
+[2018-04-13 21:12:54.83373] [Relay#1] GPIO initialize successfully
+[2018-04-13 21:12:54.83774] [Relay#1] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-13 21:12:56.09852] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-13 21:12:57.10062] [Relay#1] [True --> False] pressed [code] [2] times

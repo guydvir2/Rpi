@@ -9,6 +9,7 @@ import os
 import pigpio
 import my_paths
 import gpiobuttonlib
+from cbit import CBit
 
 
 class Com2Log:
@@ -53,8 +54,10 @@ class ScheduledEvents(ttk.Frame):
         if self.tasks != []:
             self.result_vector, self.future_on = [0] * len(self.tasks), [0] * len(self.tasks)
             self.empty_sched = False
+            #print("MY CLASS",self.master.master.master.master.__doc__)
+
             if self.check_integrity_time_table() == 0:
-                self.switch_descision()
+                self.master.master.master.cbit.append_process(self.switch_descision)
             else:
                 print("Errors in TimeTable")
         else:
@@ -230,7 +233,7 @@ class ScheduledEvents(ttk.Frame):
                 update_label("Cancel: " + str(sch_stat[2]), 'red')
 
         check_state(self.run_schedule())
-        self.run_id = self.after(500, self.switch_descision)
+        #self.run_id = self.after(500, self.switch_descision)
 
     def close_device(self):
         if self.run_id != None:
@@ -407,6 +410,8 @@ class CoreButton(ttk.Frame):
 
         ttk.Frame.__init__(self, master)
         self.SchRun = [[], []]
+        self.cbit = CBit(500)
+        self.cbit.init_thread()
 
         # Styles
         self.style = ttk.Style()
@@ -890,9 +895,9 @@ if __name__ == "__main__":
     root = tk.Tk()
 
     e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.114',
-                     hw_out=[21])#, hw_in=[26], sched_vector=[[[7], "02:24:30", "23:12:10"],
-                                  #                         [[2], "19:42:00", "23:50:10"],
-                                   #                        [[4], "18:42:00", "23:50:10"]])
+                     hw_out=[21], hw_in=[26], sched_vector=[[[7], "02:24:30", "23:12:10"],
+                                                           [[2], "19:42:00", "23:50:10"],
+                                                           [[4], "18:42:00", "23:50:10"]])
     e.grid(row=0, column=0, sticky=tk.S)
 
     # f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21],
