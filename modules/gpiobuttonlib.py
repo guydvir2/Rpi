@@ -12,9 +12,12 @@ class Indicators:
         self.master = master
         self.frame = frame
         self.x, self.run_id, self.last_state =0, None, [None] * 2
-        self.update_indicators()
+        self.master.master.cbit.append_process(self.update_button_indicators)
+        self.master.master.cbit.append_process(self.ping_test)
+        self.master.master.cbit.append_process(self.gpio_watchdog)
 
-    def update_indicators(self):
+        
+    def ping_test(self):
         # periodic ping test
         time_to_ping = [1, 60, 120]
         if self.x in time_to_ping:
@@ -23,7 +26,8 @@ class Indicators:
         elif self.x > 20:
             self.master.master.conn_lbl['style'] = 'B.TLabel'
         self.x += 1
-
+        
+    def update_button_indicators(self):
         # update button face at state change
         for i, but in enumerate(self.master.master.buts):
             current_state = self.master.get_state()[i]
@@ -31,13 +35,19 @@ class Indicators:
                 fg, text2 = 'red', ' (Off)'
             elif current_state is True:
                 fg, text2 = 'green', ' (On)'
-            if current_state != self.last_state[i]:
-                self.last_state[i] = current_state
-                self.master.master.com.message("[%s][Monitor SW#%d:%s]" % (self.master.nick,i, current_state))
             but.config(fg=fg)
             but.config(text=self.master.master.buts_names[i] + text2)
 
-        self.run_id = self.frame.after(500, self.update_indicators)
+    def gpio_watchdog(self):
+        # notify for change
+        for i, but in enumerate(self.master.master.buts):
+            current_state = self.master.get_state()[i]
+            if current_state != self.last_state[i]:
+                self.last_state[i] = current_state
+                self.master.master.com.message("[%s][WatchDog SW#%d:%s]" % (self.master.nick,i, current_state))
+
+
+        #self.run_id = self.frame.after(500, self.update_indicators)
 
     def ping_it(self):
         conn_stat = ['Connected', 'Lost']
