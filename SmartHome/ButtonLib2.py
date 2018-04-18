@@ -747,9 +747,12 @@ class CoreButton(ttk.Frame):
             return [0]
 
     def compare_state(self):
+        """in case of diff between button's cb status and physical gpio state
+        - mostly due to remote/local switch changes that need to update gui status"""
         for i, current_switch in enumerate(self.but_stat):
             if current_switch.get()!= self.get_state()[i]:
-                print('diff detected in %s at %s'(self.nick, str(datetime.datetime.now())))
+                self.com.message('[%s] diff detected in gpio/ buttons SW#%d' % (self.nick,i))
+                self.ext_press(sw=i,state=self.get_state()[i],type_s='error')
 
 
 
@@ -913,15 +916,15 @@ button_list = ['UpDownButton', 'ToggleButton', 'MainsButton']
 if __name__ == "__main__":
     root = tk.Tk()
 
-    #e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.113',
-                     #hw_out=[21], hw_in=[], sched_vector=[[[7], "02:24:30", "23:12:10"],
-                                                           #[[2], "19:42:00", "23:50:10"],
-                                                           #[[4], "18:42:00", "23:50:10"]])
-    #e.grid(row=0, column=0, sticky=tk.S)
+    e = ToggleButton(root, nickname='LivingRoom Lights', ip_out='192.168.2.114',
+                     hw_out=[21], hw_in=[], sched_vector=[[[7], "02:24:30", "23:12:10"],
+                                                           [[2], "19:42:00", "23:50:10"],
+                                                           [[4], "18:42:00", "23:50:10"]])
+    e.grid(row=0, column=0, sticky=tk.S)
 
-    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.113', hw_out=[12, 8], hw_in=[9, 21], sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]])
-    # sched_vector=[[[6], "1:24:30", "23:12:10"]])
-    f.grid(row=0, column=1, sticky=tk.S)
+    #f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.114', hw_out=[21, 20], hw_in=[9, 8], sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]])
+    ## sched_vector=[[[6], "1:24:30", "23:12:10"]])
+    #f.grid(row=0, column=1, sticky=tk.S)
 
     # g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.114',
     # hw_out=[20, 21], hw_in=[26,
