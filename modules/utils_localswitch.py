@@ -6,15 +6,16 @@ import threading
 
 try:
     import my_paths
-    import gpiozero
-    import use_lcd
-    import localswitches
+    #import gpiozero
+    #import use_lcd
+    #import localswitches
+
     all_rpi_modules = True
 
 except ImportError:
     all_rpi_modules = False
     print('Fail to obtain one or more RaspberryPi modules')
-    quit()
+    #quit()
 
 
 class Output2LCD:
@@ -22,6 +23,7 @@ class Output2LCD:
     parameters:
     1)switches - max of 2 lines od data
     2) ext_log - use class Log2File to save what displayed on LCD"""
+
     def __init__(self, switches, ext_log=None):
         self.switches = switches
         self.log = ext_log
@@ -144,3 +146,23 @@ class Log2File:
             print('Log err')
         if self.output2screen == 1:
             print(msg)
+
+
+class CutLogFile:
+    def __init__(self, filename):
+        self.fname = filename
+        self.read_logfile()
+
+    def read_logfile(self):
+        if os.path.isfile(self.fname) is True:
+            with open(self.fname, 'r') as f:
+                my_lines = f.readline()
+                print(my_lines)
+                # reader = csv.reader(f)
+                # self.data_from_file = list(reader)[1:]
+        else:
+            print('file', self.filename, ' not found. default was created')
+            self.create_def_row()
+
+if __name__=="__main__":
+    cut_log=CutLogFile(filename='/home/guy/Documents/github/Rpi/SmartHome/double_switch.log')
