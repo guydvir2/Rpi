@@ -16,7 +16,7 @@ try:
 except ImportError:
     all_rpi_modules = False
     print('Fail to obtain one or more RaspberryPi modules')
-    quit()
+    # quit()
 
 
 class Output2LCD:
@@ -153,7 +153,7 @@ class Log2File:
 class XTractLastLogEvent:
     def __init__(self, filename):
         self.fname = filename
-        self.chopped_log = []
+        self.chopped_log = ''
         self.read_logfile()
 
     def read_logfile(self):
@@ -162,10 +162,10 @@ class XTractLastLogEvent:
                 data_file = f.readlines()
                 for line in reversed(data_file):
                     if 'log start' in line:
-                        self.chopped_log.insert(0, line)
+                        self.chopped_log = line + self.chopped_log
                         break
                     else:
-                        self.chopped_log.insert(0, line)
+                        self.chopped_log = line + self.chopped_log
         else:
             print('file', self.fname, ' not found')
 
@@ -178,5 +178,5 @@ class XTractLastLogEvent:
 
 if __name__ == "__main__":
     cut_log = XTractLastLogEvent(filename='/Users/guy/Documents/github/Rpi/SmartHome/2SingleSwitches.log')
-    for i, line in enumerate(cut_log.xport_chopped_log()):
-        print(i, line)
+    print(cut_log.xport_chopped_log())
+
