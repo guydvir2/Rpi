@@ -5,7 +5,6 @@ import datetime
 
 try:
     import gpiozero
-
     ok_module = True
 except ImportError:  # ModuleNotFoundError:
     print("Fail to obtain gpiozero module")
@@ -97,18 +96,18 @@ class SingleSwitch:
     def switch_state(self, value):
         if value == 0:
             if self.mode == 'toggle':
-                if self.relay.value == True:
+                if self.relay.value is True:
                     self.toggle_switch(add='code')
             elif self.mode == "press":
-                if self.relay.value == True:
+                if self.relay.value is True:
                     self.release_switch(add='code')
                     self.relay.off()
         elif value == 1:
             if self.mode == 'toggle':
-                if self.relay.value == False:
+                if self.relay.value is False:
                     self.toggle_switch(add='code')
             elif self.mode == "press":
-                if self.relay.value == False:
+                if self.relay.value is False:
                     self.press_switch(add='code')
                     self.relay.on()
         else:
@@ -155,6 +154,7 @@ class DoubleSwitch:
         self.switch1 = SingleSwitch(button_pin=button_pin2, relay_pin=relay_pin2, mode='toggle', name=name + '/SW#1')
         self.switch0.add_other_switch(self.switch1)
         self.switch1.add_other_switch(self.switch0)
+
 
 
 if __name__ == "__main__":

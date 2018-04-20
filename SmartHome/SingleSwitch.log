@@ -187,3 +187,14 @@ log start @linux
 [2018-04-13 21:12:54.83774] [Relay#1] init [toggle mode][GPIO in/out:26/21] 
 [2018-04-13 21:12:56.09852] [Relay#1] [False --> True] pressed [code] [1] times
 [2018-04-13 21:12:57.10062] [Relay#1] [True --> False] pressed [code] [2] times
+log start @ MacBook-Pro.local, IP: 192.168.2.127, OS: darwin
+************************************************************
+[2018-04-20 10:20:21.26173] [Relay#1] GPIO initialize fail.
+quit
+[2018-04-20 10:20:21.26186] [Relay#1] init [toggle mode][GPIO in/out:26/21] 
+
+log start @ MacBook-Pro.local, IP: 192.168.2.127, OS: darwin
+*************************************************************
+[2018-04-20 10:34:29.15438] [Relay#1] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-20 10:34:29.15428] [Relay#1] GPIO initialize fail.
+quit

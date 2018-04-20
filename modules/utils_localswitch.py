@@ -3,19 +3,20 @@ import datetime
 import time
 import os
 import threading
+from socket import gethostname
 
 try:
     import my_paths
-    #import gpiozero
-    #import use_lcd
-    #import localswitches
+    import gpiozero
+    import use_lcd
+    import localswitches
 
     all_rpi_modules = True
 
 except ImportError:
     all_rpi_modules = False
     print('Fail to obtain one or more RaspberryPi modules')
-    #quit()
+    quit()
 
 
 class Output2LCD:
@@ -108,7 +109,8 @@ class Log2File:
             self.path = '/home/guy/Documents/github/Rpi/SmartHome/'
 
     def first_boot_entry(self):
-        msg = 'log start @%s' % (str(platform))
+        # msg = 'log start @%s' % (str(platform))
+        msg = '\nlog start @ %s, IP: %s, OS: %s' % (gethostname(), str(getip.get_ip()[0]), platform)
         self.append_log(msg)
         self.append_log('*' * len(msg))
 
@@ -148,21 +150,33 @@ class Log2File:
             print(msg)
 
 
-class CutLogFile:
+class XTractLastLogEvent:
     def __init__(self, filename):
         self.fname = filename
+        self.chopped_log = []
         self.read_logfile()
 
     def read_logfile(self):
         if os.path.isfile(self.fname) is True:
             with open(self.fname, 'r') as f:
-                my_lines = f.readline()
-                print(my_lines)
-                # reader = csv.reader(f)
-                # self.data_from_file = list(reader)[1:]
+                data_file = f.readlines()
+                for line in reversed(data_file):
+                    if 'log start' in line:
+                        self.chopped_log.insert(0, line)
+                        break
+                    else:
+                        self.chopped_log.insert(0, line)
         else:
-            print('file', self.filename, ' not found. default was created')
-            self.create_def_row()
+            print('file', self.fname, ' not found')
 
-if __name__=="__main__":
-    cut_log=CutLogFile(filename='/home/guy/Documents/github/Rpi/SmartHome/double_switch.log')
+    def xport_chopped_log(self):
+        if self.chopped_log != []:
+            return self.chopped_log
+        else:
+            return ('failed action')
+
+
+if __name__ == "__main__":
+    cut_log = XTractLastLogEvent(filename='/Users/guy/Documents/github/Rpi/SmartHome/2SingleSwitches.log')
+    for i, line in enumerate(cut_log.xport_chopped_log()):
+        print(i, line)
