@@ -12,10 +12,12 @@ try:
     sw2 = localswitches.SingleSwitch(26, 20, name='Relay#2', mode='toggle', ext_log=file_logger)
     path='/home/guy/Documents/github/Rpi/modules/'
     GmailDaemon = GmailSender(sender_file=path+'ufile.txt', password_file=path+'pfile.txt')
+    cut_log = utils_localswitch.XTractLastLogEvent(filename='/home/guy/Documents/github/Rpi/SmartHome/2SingleSwitches.log')
+    print(cut_log.xport_chopped_log())
 
     # Disp on LCD
     utils_localswitch.Output2LCD([sw1, sw2],ext_log=file_logger)
-    GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='Load Summary Rpi-Switch',body='System loaded OK')
+    GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='Load Summary Rpi-Switch',body=cut_log.xport_chopped_log())
 
 except:
     GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='Load Summary Rpi-Switch',body='Fail to load correctly')

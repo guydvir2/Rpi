@@ -6,9 +6,10 @@ import threading
 from socket import gethostname
 
 try:
-    import my_paths
+    #import my_paths
+    import getip
     import gpiozero
-    import use_lcd
+    #import use_lcd
     import localswitches
 
     all_rpi_modules = True
