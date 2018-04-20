@@ -67,3 +67,33 @@ LCD hardware error
 [2018-04-19 19:17:29.05816] [Relay#2] [False --> True] pressed [code] [1] times
 [2018-04-19 19:17:29.05973] [Relay#1] [True --> False] pressed [code] [2] times
 [2018-04-19 19:17:34.09415] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 13:22:45.43221] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 13:22:45.44106] [Relay#1] GPIO initialize successfully
+[2018-04-20 13:22:45.45004] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 13:22:45.45331] [Relay#2] GPIO initialize successfully
+LCD hardware error
+[2018-04-20 13:22:49.76214] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 13:22:54.76788] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 13:22:54.76871] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 13:22:59.77917] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 13:27:16.07040] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 13:27:16.08038] [Relay#1] GPIO initialize successfully
+[2018-04-20 13:27:16.07664] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 13:27:16.08875] [Relay#2] GPIO initialize successfully
+LCD hardware error
+[2018-04-20 13:27:21.56456] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 13:27:26.57091] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 13:27:26.57237] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 13:27:31.57808] [Relay#2] [True --> False] pressed [code] [2] times

@@ -7,7 +7,7 @@ import time
 # Create a file logger to log outputs of switches
 
 file_logger = utils_localswitch.Log2File('double_switch.log', screen=0)
-double_switch = localswitches.DoubleSwitch(26, 19, 21, 20, name='DS')
+double_switch = localswitches.DoubleSwitch(26, 19, 21, 20, name='DubSwitch')
 
 # Disp on LCD
 utils_localswitch.Output2LCD([double_switch.switch0, double_switch.switch1])#, ext_log=file_logger)
@@ -20,4 +20,3 @@ time.sleep(2)
 double_switch.switch1.switch_state = 1
 time.sleep(0.7)
 double_switch.switch0.switch_state = 1
-
