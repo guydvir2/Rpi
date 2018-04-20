@@ -6,10 +6,10 @@ import threading
 from socket import gethostname
 
 try:
-    #import my_paths
+    import my_paths
     import getip
     import gpiozero
-    #import use_lcd
+    import use_lcd
     import localswitches
 
     all_rpi_modules = True
@@ -28,12 +28,14 @@ class Output2LCD:
 
     def __init__(self, switches, ext_log=None):
         self.switches = switches
+        self.boot_success = False
         self.log = ext_log
         try:
             # Case of HW err
             self.lcd_display = use_lcd.MyLCD()
             self.t = threading.Thread(name='thread_disp_lcd', target=self.display_status_loop)
             self.t.start()
+            self.boot_success = True
         except OSError:
             msg = "LCD hardware error"
             try:
@@ -88,8 +90,10 @@ class Output2LCD:
 
 
 class Log2File:
-    def __init__(self, filename, screen=0, time_in_log=0):
-        self.detectOS()
+    def __init__(self, filename, screen=0, time_in_log=0, name_of_master=''):
+        self.path=''
+        #self.detectOS()
+        self.name_of_master = name_of_master
         self.output2screen = screen
         self.time_stamp_in_log = time_in_log
         self.filename = self.path + filename
@@ -111,7 +115,7 @@ class Log2File:
 
     def first_boot_entry(self):
         # msg = 'log start @%s' % (str(platform))
-        msg = '\nlog start @ %s, IP: %s, OS: %s' % (gethostname(), str(getip.get_ip()[0]), platform)
+        msg = '\nlog start @%s, IP:%s, OS:%s, Name:%s' % (gethostname(), str(getip.get_ip()[0]), platform, self.name_of_master)
         self.append_log(msg)
         self.append_log('*' * len(msg))
 
@@ -178,6 +182,5 @@ class XTractLastLogEvent:
 
 
 if __name__ == "__main__":
-    cut_log = XTractLastLogEvent(filename='/Users/guy/Documents/github/Rpi/SmartHome/2SingleSwitches.log')
+    cut_log = XTractLastLogEvent(filename='/home/guy/Documents/github/Rpi/SmartHome/2SingleSwitches.log')
     print(cut_log.xport_chopped_log())
-

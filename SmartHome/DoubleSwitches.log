@@ -1,0 +1,77 @@
+[2018-04-20 20:16:20.9] >>Log file /home/guy/Documents/github/Rpi/SmartHome/DoubleSwitches.log was created successfully
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+[2018-04-20 22:00:11.1] [LCD Display] not present/ driver error
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+[2018-04-20 22:05:20.3] [Window/SW#0] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-20 22:05:20.3] [Window/SW#0] GPIO initialize successfully
+[2018-04-20 22:05:20.4] [Window/SW#1] GPIO initialize successfully
+[2018-04-20 22:05:20.4] [Window/SW#1] init [toggle mode][GPIO in/out:19/20] 
+[2018-04-20 22:05:22.4] [LCD Display] not present/ driver error
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+[2018-04-20 23:30:33.6] [Window/SW#0] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-20 23:30:33.6] [Window/SW#0] GPIO initialize successfully
+[2018-04-20 23:30:33.6] [Window/SW#1] GPIO initialize successfully
+[2018-04-20 23:30:33.6] [Window/SW#1] init [toggle mode][GPIO in/out:19/20] 
+[2018-04-20 23:30:36.6] [Window/SW#0] [WatchDog] init
+[2018-04-20 23:30:37.6] [Window/SW#1] [WatchDog] init
+[2018-04-20 23:30:37.6] [LCD Display] not present/ driver error
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+[2018-04-20 23:34:14.3] [Window/SW#0] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-20 23:34:14.3] [Window/SW#0] GPIO initialize successfully
+[2018-04-20 23:34:14.3] [Window/SW#1] init [toggle mode][GPIO in/out:19/20] 
+[2018-04-20 23:34:14.3] [Window/SW#1] GPIO initialize successfully
+[2018-04-20 23:34:17.3] [Window/SW#0] [WatchDog] init
+[2018-04-20 23:34:18.3] [Window/SW#1] [WatchDog] init
+[2018-04-20 23:34:18.3] [LCD Display] not present/ driver error
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+[2018-04-20 23:35:27.2] [WindowUP] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-20 23:35:27.2] [WindowDOWN] init [toggle mode][GPIO in/out:19/20] 
+[2018-04-20 23:35:27.2] [WindowDOWN] GPIO initialize successfully
+[2018-04-20 23:35:27.2] [WindowUP] GPIO initialize successfully
+[2018-04-20 23:35:30.2] [WindowUP] [WatchDog] init
+[2018-04-20 23:35:31.2] [WindowDOWN] [WatchDog] init
+[2018-04-20 23:35:31.2] [LCD Display] not present/ driver error
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:Window
+****************************************************************
+[2018-04-20 23:35:59.0] [Window /UP] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-20 23:35:59.1] [Window /DOWN] init [toggle mode][GPIO in/out:19/20] 
+[2018-04-20 23:35:59.1] [Window /DOWN] GPIO initialize successfully
+[2018-04-20 23:35:59.1] [Window /UP] GPIO initialize successfully
+[2018-04-20 23:36:02.1] [Window /UP] [WatchDog] init
+[2018-04-20 23:36:03.1] [Window /DOWN] [WatchDog] init
+[2018-04-20 23:36:03.1] [LCD Display] not present/ driver error

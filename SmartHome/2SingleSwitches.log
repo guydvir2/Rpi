@@ -97,3 +97,377 @@ LCD hardware error
 [2018-04-20 13:27:26.57091] [Relay#2] [False --> True] pressed [code] [1] times
 [2018-04-20 13:27:26.57237] [Relay#1] [True --> False] pressed [code] [2] times
 [2018-04-20 13:27:31.57808] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 14:00:05.11992] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 14:00:05.13340] [Relay#1] GPIO initialize successfully
+[2018-04-20 14:00:05.14783] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+LCD hardware error
+[2018-04-20 14:00:05.15541] [Relay#2] GPIO initialize successfully
+[2018-04-20 14:00:11.45834] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 14:00:16.46485] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 14:00:16.46612] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 14:00:21.46845] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 14:05:07.09448] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 14:05:07.10485] [Relay#1] GPIO initialize successfully
+[2018-04-20 14:05:07.11249] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 14:05:07.11625] [Relay#2] GPIO initialize successfully
+[2018-04-20 14:05:13.33683] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 14:05:18.33924] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 14:05:18.34007] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 14:05:23.34600] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 15:27:54.19159] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 15:27:54.20072] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 15:27:54.19764] [Relay#1] GPIO initialize successfully
+[2018-04-20 15:27:54.20497] [Relay#2] GPIO initialize successfully
+[2018-04-20 15:27:58.37358] [Relay#1] [False --> True] pressed [code] [1] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 15:47:44.93868] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 15:47:44.94440] [Relay#1] GPIO initialize successfully
+[2018-04-20 15:47:44.94695] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 15:47:44.94925] [Relay#2] GPIO initialize successfully
+[2018-04-20 15:47:48.28731] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 15:47:53.29389] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 15:47:53.29463] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 15:47:58.30037] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 15:48:38.33983] [Relay#1] GPIO initialize successfully
+[2018-04-20 15:48:38.33129] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 15:48:38.34519] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 15:48:38.35230] [Relay#2] GPIO initialize successfully
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 15:50:16.20993] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 15:50:16.22318] [Relay#1] GPIO initialize successfully
+[2018-04-20 15:50:16.23240] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 15:50:16.23789] [Relay#2] GPIO initialize successfully
+[2018-04-20 15:50:19.30299] [Relay#1] [False --> True] pressed [code] [1] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 15:50:52.57882] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 15:50:52.58589] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 15:50:52.61071] [Relay#2] GPIO initialize successfully
+[2018-04-20 15:50:52.62086] [Relay#1] GPIO initialize successfully
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 15:55:15.38248] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 15:55:15.39004] [Relay#1] GPIO initialize successfully
+[2018-04-20 15:55:15.39025] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 15:55:15.39221] [Relay#2] GPIO initialize successfully
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:03:20.53003] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:03:20.53645] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:03:20.54099] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:03:20.55014] [Relay#2] GPIO initialize successfully
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:04:43.90851] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:04:43.91964] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:04:43.92651] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:04:43.93036] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:04:44.93571] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:04:49.94184] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:04:49.94317] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 16:04:54.94925] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:07:25.54759] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:07:25.55301] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:07:25.55845] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:07:25.55940] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:07:26.56195] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:07:31.56813] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:07:31.56946] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 16:07:36.57565] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:08:47.14069] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:08:47.14625] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:08:47.14853] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:08:47.15748] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:08:48.16145] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:08:53.16453] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:08:53.16537] [Relay#1] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:13:23.47107] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:13:23.47847] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:13:23.47872] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:13:23.48087] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:13:24.48426] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:13:29.49059] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:13:29.49131] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 16:13:34.49718] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:14:32.59496] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:14:32.61799] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:14:32.61841] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:14:32.63010] [Relay#1] GPIO initialize successfully
+LCD not present/ driver error
+[2018-04-20 16:14:33.64164] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:14:38.64811] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:14:38.64924] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 16:14:43.65540] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:15:25.73291] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:15:25.74250] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:15:25.75125] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:15:25.7] LCD not present/ driver error
+[2018-04-20 16:15:25.77097] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:15:26.76137] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:15:31.76780] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:15:31.76900] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 16:15:36.77501] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:16:21.67018] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:16:21.67515] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:16:21.67819] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:16:21.68022] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:16:21.6] [LCD Display] not present/ driver error
+[2018-04-20 16:16:22.68430] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:16:27.68812] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:16:27.68930] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 16:16:32.69544] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:17:46.7] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:17:46.7] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:17:46.7] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:17:46.7] [LCD Display] not present/ driver error
+[2018-04-20 16:17:46.7] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:17:47.7] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:17:52.7] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:17:52.7] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 16:17:57.7] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:22:52.7] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:22:52.7] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:22:52.7] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:22:52.7] [LCD Display] not present/ driver error
+[2018-04-20 16:22:52.8] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:22:56.1] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:23:01.1] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:23:01.1] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 16:23:06.1] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:36:45.3] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:36:45.3] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:36:45.3] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:36:45.3] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:36:45.3] [LCD Display] not present/ driver error
+[2018-04-20 16:36:49.5] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:36:54.5] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:36:54.5] [Relay#1] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 16:58:28.5] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 16:58:28.5] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 16:58:28.5] [LCD Display] not present/ driver error
+[2018-04-20 16:58:28.5] [Relay#2] GPIO initialize successfully
+[2018-04-20 16:58:28.6] [Relay#1] GPIO initialize successfully
+[2018-04-20 16:58:31.6] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 16:58:36.6] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 16:58:36.6] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 16:58:41.6] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @ guy-desktop, IP: 192.168.2.113, OS: linux
+******************************************************
+[2018-04-20 17:00:24.4] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:00:24.5] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:00:24.5] [Relay#1] GPIO initialize successfully
+[2018-04-20 17:00:24.5] [Relay#2] GPIO initialize successfully
+[2018-04-20 17:00:26.5] [LCD Display] not present/ driver error
+[2018-04-20 17:00:29.5] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 17:00:34.5] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 17:00:34.5] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 17:00:39.5] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:
+**********************************************************
+[2018-04-20 17:08:17.6] [Relay#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:08:17.6] [Relay#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:08:17.6] [Relay#1] GPIO initialize successfully
+[2018-04-20 17:08:17.6] [Relay#2] GPIO initialize successfully
+[2018-04-20 17:08:19.6] [LCD Display] not present/ driver error
+[2018-04-20 17:08:22.9] [Relay#1] [False --> True] pressed [code] [1] times
+[2018-04-20 17:08:28.3] [Relay#2] [False --> True] pressed [code] [1] times
+[2018-04-20 17:08:28.3] [Relay#1] [True --> False] pressed [code] [2] times
+[2018-04-20 17:08:33.3] [Relay#2] [True --> False] pressed [code] [2] times
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 17:13:40.2] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:13:40.2] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:13:40.2] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 17:13:40.2] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 17:13:42.2] [LCD Display] not present/ driver error
+[2018-04-20 17:13:45.2] [PergulaLights#1] [False --> True] pressed [code] [1] times
+[2018-04-20 17:13:50.2] [PergulaLights#2] [False --> True] pressed [code] [1] times
+[2018-04-20 17:13:50.2] [PergulaLights#1] [True --> False] pressed [code] [2] times
+[2018-04-20 17:13:55.2] [PergulaLights#2] [True --> False] pressed [code] [2] times
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 17:15:29.2] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:15:29.2] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:15:29.2] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 17:15:29.2] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 17:15:31.2] [LCD Display] not present/ driver error
+[2018-04-20 17:15:34.1] [PergulaLights#1] [False --> True] pressed [code] [1] times
+[2018-04-20 17:15:39.1] [PergulaLights#2] [False --> True] pressed [code] [1] times
+[2018-04-20 17:15:39.1] [PergulaLights#1] [True --> False] pressed [code] [2] times
+[2018-04-20 17:15:44.1] [PergulaLights#2] [True --> False] pressed [code] [2] times
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 17:42:09.0] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:42:09.0] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:42:09.0] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 17:42:09.0] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 17:42:11.0] [LCD Display] not present/ driver error
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 17:45:48.2] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:45:48.3] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 17:45:48.3] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 17:45:48.3] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:45:50.3] [LCD Display] not present/ driver error
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 17:49:46.7] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:49:46.7] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:49:46.7] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 17:49:46.7] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 17:49:48.7] [LCD Display] not present/ driver error
+[2018-04-20 17:49:52.2] [PergulaLights#1] [False --> True] pressed [code] [1] times
+[2018-04-20 17:49:57.3] [PergulaLights#2] [False --> True] pressed [code] [1] times
+[2018-04-20 17:49:57.3] [PergulaLights#1] [True --> False] pressed [code] [2] times
+[2018-04-20 17:50:02.3] [PergulaLights#2] [True --> False] pressed [code] [2] times
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 17:50:23.9] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:50:23.9] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:50:23.9] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 17:50:23.9] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 17:50:25.9] [LCD Display] not present/ driver error
+[2018-04-20 17:50:28.9] [PergulaLights#1] [False --> True] pressed [code] [1] times
+[2018-04-20 17:50:33.9] [PergulaLights#2] [False --> True] pressed [code] [1] times
+[2018-04-20 17:50:33.9] [PergulaLights#1] [True --> False] pressed [code] [2] times
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 17:50:36.4] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:50:36.4] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 17:50:36.4] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 17:50:36.4] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:50:38.4] [LCD Display] not present/ driver error
+[2018-04-20 17:50:41.3] [PergulaLights#1] [False --> True] pressed [code] [1] times
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 17:52:58.5] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 17:52:58.5] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 17:52:58.5] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 17:52:58.5] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 17:53:00.5] [LCD Display] not present/ driver error
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 22:18:52.1] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 22:18:52.1] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 22:18:52.1] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 22:18:52.1] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 22:18:54.1] [LCD Display] not present/ driver error
+[2018-04-20 22:18:57.9] [PergulaLights#1] [False --> True] pressed [code] [1] times
+[2018-04-20 22:19:02.9] [PergulaLights#2] [False --> True] pressed [code] [1] times
+[2018-04-20 22:19:03.0] [PergulaLights#1] [True --> False] pressed [code] [2] times
+[2018-04-20 22:19:08.0] [PergulaLights#2] [True --> False] pressed [code] [2] times
+
+log start @guy-desktop, IP:192.168.2.113, OS:linux, Name:PergulaLights
+***********************************************************************
+[2018-04-20 23:17:50.0] [PergulaLights#1] init [toggle mode][GPIO in/out:19/21] 
+[2018-04-20 23:17:50.0] [PergulaLights#2] init [toggle mode][GPIO in/out:26/20] 
+[2018-04-20 23:17:50.0] [PergulaLights#1] GPIO initialize successfully
+[2018-04-20 23:17:50.0] [PergulaLights#2] GPIO initialize successfully
+[2018-04-20 23:17:53.0] [PergulaLights#1] [WatchDog] init
+[2018-04-20 23:17:54.0] [PergulaLights#2] [WatchDog] init
+[2018-04-20 23:17:54.0] [LCD Display] not present/ driver error
+[2018-04-20 23:17:57.2] [PergulaLights#1] [False --> True] pressed [code] [1] times
+[2018-04-20 23:17:57.2] [PergulaLights#1] [WatchDog] [GPIO 21] [True]
+[2018-04-20 23:18:02.2] [PergulaLights#2] [False --> True] pressed [code] [1] times
+[2018-04-20 23:18:02.2] [PergulaLights#1] [True --> False] pressed [code] [2] times
+[2018-04-20 23:18:02.2] [PergulaLights#2] [WatchDog] [GPIO 20] [True]
+[2018-04-20 23:18:02.2] [PergulaLights#1] [WatchDog] [GPIO 21] [False]
+[2018-04-20 23:18:07.2] [PergulaLights#2] [True --> False] pressed [code] [2] times
+[2018-04-20 23:18:07.3] [PergulaLights#2] [WatchDog] [GPIO 20] [False]

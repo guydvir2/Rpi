@@ -33,7 +33,7 @@ class GmailSender:
             if os.path.isfile(self.ufile) is True:
                 with open(self.ufile, 'r') as f:
                     self.sender = f.read()
-                    print(">> Sender details read from file: %s" % self.sender)
+                    #print(">> Sender details read from file: %s" % self.sender)
             else:
                 self.sender = input("Please enter a gmail sender: ")
         # case 2: not supplied details
@@ -153,7 +153,7 @@ class GmailSender:
 
         for i,key in enumerate(self.keys):
             out_dict[key]=self.values[i]
-            self.add_body('* '+str(key)+': '+str(out_dict[key]))
+            self.add_body('#-'+str(key)+': '+str(out_dict[key]))
         # return out_dict
 
 if __name__ == '__main__':
