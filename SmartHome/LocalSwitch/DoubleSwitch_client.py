@@ -11,7 +11,7 @@ from gmail_mod import GmailSender
 def load_services(log_file, dev_name):
     global file_logger, GmailDaemon
     path_define()
-    file_logger = utils_localswitch.Log2File(path+'/SmartHome/'+log_file, screen=0, name_of_master=dev_name)
+    file_logger = utils_localswitch.Log2File(home+'/Documents/'+log_file, screen=0, name_of_master=dev_name)
     GmailDaemon = GmailSender(sender_file=path+'/modules/ufile.txt', password_file=path+'/modules/pfile.txt')
 
 def load_lcd():
@@ -40,14 +40,15 @@ def tests():
     double_switch.switch0.switch_state = 1
 
 def path_define():
-    global path
+    global path, home
     os_type = sys.platform
     if os_type == 'darwin':
-        path = '/Users/guy/Documents/github/Rpi'
+        home = '/Users/guy'
     elif os_type == 'win32':
-        path = 'd:/users/guydvir/Documents/git/Rpi'
+        home = 'd:/users/guydvir'
     elif os_type == 'linux':
-        path = '/home/guy/Documents/github/Rpi'
+        home = '/home/guy'
+    path = home+'/Documents/github/Rpi'
 
 ## Program starts HERE:
 dev_name='Window'
@@ -58,7 +59,7 @@ try:
     load_HW_switches()
     load_watchdogs()
     load_lcd()
-    body_message = utils_localswitch.XTractLastLogEvent(path+'/SmartHome/'+log).xport_chopped_log()
+    body_message = utils_localswitch.XTractLastLogEvent(home+'/Documents/'+log).xport_chopped_log()
 
 except:
     body_message='Fail to load correctly'
@@ -68,29 +69,4 @@ finally:
     
 time.sleep(1)
 
-#tests()
-
-
-
-#import my_paths
-#import utils_localswitch
-#import localswitches
-#import time
-
-##Define DoubleSwitch :(Input GPIO X2,Output GPIO X2,  name=text, ext_log=None)
-##Create a file logger to log outputs of switches
-
-#file_logger = utils_localswitch.Log2File('double_switch.log', screen=0)
-#double_switch = localswitches.DoubleSwitch(26, 19, 21, 20, name='DubSwitch')
-
-## Disp on LCD
-#utils_localswitch.Output2LCD([double_switch.switch0, double_switch.switch1])#, ext_log=file_logger)
-#time.sleep(1)
-
-## Make switch by code
-#time.sleep(2)
-#double_switch.switch0.switch_state = 1
-#time.sleep(2)
-#double_switch.switch1.switch_state = 1
-#time.sleep(0.7)
-#double_switch.switch0.switch_state = 1
+tests()

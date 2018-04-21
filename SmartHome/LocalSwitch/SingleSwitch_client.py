@@ -11,7 +11,7 @@ from gmail_mod import GmailSender
 def load_services(log_file, dev_name):
     global file_logger, GmailDaemon
     path_define()
-    file_logger = utils_localswitch.Log2File(path+'/SmartHome/'+log_file, screen=0, name_of_master=dev_name)
+    file_logger = utils_localswitch.Log2File(home+'/Documents/'+log_file, screen=0, name_of_master=dev_name)
     GmailDaemon = GmailSender(sender_file=path+'/modules/ufile.txt', password_file=path+'/modules/pfile.txt')
 
 def load_lcd():
@@ -38,14 +38,15 @@ def tests():
     time.sleep(1)
 
 def path_define():
-    global path
+    global path, home
     os_type = sys.platform
     if os_type == 'darwin':
-        path = '/Users/guy/Documents/github/Rpi'
+        home = '/Users/guy'
     elif os_type == 'win32':
-        path = 'd:/users/guydvir/Documents/git/Rpi'
+        home = 'd:/users/guydvir'
     elif os_type == 'linux':
-        path = '/home/guy/Documents/github/Rpi'
+        home = '/home/guy'
+    path = home+'/Documents/github/Rpi'
 
 ## Program starts HERE:
 dev_name='RoomLight'
@@ -56,7 +57,7 @@ try:
     load_HW_switches()
     load_watchdogs()
     load_lcd()
-    body_message = utils_localswitch.XTractLastLogEvent(path+'/SmartHome/'+log).xport_chopped_log()
+    body_message = utils_localswitch.XTractLastLogEvent(home+'/Documents/'+log).xport_chopped_log()
 
 except:
     body_message='Fail to load correctly'
