@@ -60,7 +60,7 @@ class XWin:
         but_cancel = ttk.Button(frame1, text="Cancel", command=self.toplevel1.quit)
         but_cancel.grid(row=2, column=1, sticky=tkinter.W)
 
-        
+
     def exec_command(self):
         task = subprocess.call ("echo %s | sudo -S %s "%(self.ent.get(), self.exec_comm),shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         #output, error = task.communicate()
@@ -76,7 +76,7 @@ class XWin:
         ypad = 5
         width = '300'
         height = '80'
-        
+
         frame = tkinter.Frame()
         self.toplevel2 = tkinter.Toplevel(frame, bg=self.bg)
         self.toplevel2.title(self.SF_name+ title)
@@ -98,6 +98,6 @@ class XWin:
         
 
 
-#root = tkinter.Tk()
-#XWin(root, 'pigpiod', 'SchedualerPlus - ','kupelu9e')
-#root.mainloop()
+root = tkinter.Tk()
+XWin(root, 'pigpiod', 'SchedualerPlus - ','kupelu9e')
+root.mainloop()
