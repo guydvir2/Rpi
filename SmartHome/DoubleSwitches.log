@@ -1,0 +1,31 @@
+[2018-04-21 14:38:38.1] >>Log file /home/guy/Documents/github/Rpi/SmartHome/DoubleSwitches.log was created successfully
+
+log start @rpi2, IP:192.168.2.114, OS:linux, Name:Window
+*********************************************************
+[2018-04-21 14:38:42.3] [Window /UP] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-21 14:38:42.6] [Window /DOWN] init [toggle mode][GPIO in/out:19/20] 
+[2018-04-21 14:38:42.7] [Window /UP] GPIO initialize successfully
+[2018-04-21 14:38:42.7] [Window /DOWN] GPIO initialize successfully
+[2018-04-21 14:38:45.6] [Window /UP] [WatchDog] init
+[2018-04-21 14:38:46.6] [Window /DOWN] [WatchDog] init
+[LCD Display] detected and loaded OK
+
+log start @rpi2, IP:192.168.2.114, OS:linux, Name:Window
+*********************************************************
+[2018-04-21 17:09:51.7] [Window /UP] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-21 17:09:51.7] [Window /DOWN] init [toggle mode][GPIO in/out:19/20] 
+[2018-04-21 17:09:51.8] [Window /UP] GPIO initialize successfully
+[2018-04-21 17:09:51.8] [Window /DOWN] GPIO initialize successfully
+[2018-04-21 17:09:54.8] [Window /UP] [WatchDog] init
+[2018-04-21 17:09:55.8] [Window /DOWN] [WatchDog] init
+[LCD Display] detected and loaded OK
+
+log start @rpi2, IP:192.168.2.114, OS:linux, Name:Window
+*********************************************************
+[2018-04-21 17:11:59.4] [Window /UP] init [toggle mode][GPIO in/out:26/21] 
+[2018-04-21 17:11:59.5] [Window /DOWN] init [toggle mode][GPIO in/out:19/20] 
+[2018-04-21 17:11:59.6] [Window /UP] GPIO initialize successfully
+[2018-04-21 17:11:59.7] [Window /DOWN] GPIO initialize successfully
+[2018-04-21 17:12:02.5] [Window /UP] [WatchDog] init
+[2018-04-21 17:13:45.8] [Window /DOWN] [WatchDog] init
+[LCD Display] detected and loaded OK

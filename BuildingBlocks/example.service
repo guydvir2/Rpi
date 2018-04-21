@@ -1,8 +1,8 @@
 [Unit]
-Description=Run my Py script
+Description=HomePi 2SingleSwitch
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /home/guy/Documents/github/Rpi/SmartHome/show_time.py
+ExecStart=/usr/bin/python3 /home/guy/Documents/github/Rpi/SmartHome/DoubleSwitch_client.py
 [Install]
 WantedBy=multi-user.target
