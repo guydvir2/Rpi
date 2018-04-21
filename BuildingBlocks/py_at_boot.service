@@ -1,0 +1,8 @@
+[Unit]
+Description=Run my Py script
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/guy/Documents/github/Rpi/SmartHome/show_time.py
+[Install]
+WantedBy=multi-user.target
