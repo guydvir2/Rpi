@@ -7,28 +7,19 @@ import datetime
 
 class Time2Start:
     def __init__(self):
-        self.cbit = cbit.CBit(500)
+        self.tasks_status, self.tasks = [], []
         self.clock_format = '%H:%M:%S'
         self.date_format = '%Y-%m-%d'
-        task1 = {'start_days': [4, 3], 'start_time': '21:30:00', 'end_days': [5, 3], 'end_time': '22:00:00'}
-        self.cbit.append_process(self.weekly_time_to_task, wtask=task1)
+        self.cbit = cbit.CBit(500)
+        # self.cbit.append_process(self.weekly_tasks_schedule, wtask=task1)
         self.cbit.init_thread()
 
-    def create_date_from_string(self, date, clock):
-        c = datetime.datetime.strptime(clock, self.clock_format)
-        d = datetime.datetime.strptime(date, self.date_format)
-        full_date = datetime.datetime.combine(d.date(), c.time())
-        return full_date
-
-    def time_now(self):
-        return datetime.datetime.now()
-
-    def calc_remain_time(self, t1, t2):
-        return (t1 - t2)
-
-    def weekly_time_to_task(self, wtask):
+    def weekly_tasks_schedule(self, wtask):
         # for loop for multiple days in task
+        self.tasks_status.append([])
         for i, day_task_start in enumerate(wtask['start_days']):
+            status_dict = {}
+            self.tasks_status[-1].append([])
             day_task_end = wtask['end_days'][i]
             timenow = self.time_now()
             delta_time_start = datetime.datetime.combine(timenow.date(),
@@ -50,7 +41,39 @@ class Time2Start:
                 delta_days_end += 7
             time_to_end = datetime.timedelta(days=delta_days_end) + delta_time_end + time_to_start
 
-            print(time_to_start, time_to_end)
+            status_dict['start'] = time_to_start
+            status_dict["end"] = time_to_end
+            if time_to_start.total_seconds() < 0:
+                if time_to_end.total_seconds() > 0:
+                    status_dict['state'] = 1
+            else:
+                status_dict['state'] = 0
+            self.tasks_status[-1][i] = status_dict
+        return self.tasks_status
+
+    def time_now(self):
+        return datetime.datetime.now()
+
+    def add_task(self, new_task):
+        self.tasks.append(new_task)
+
+    def run_tasks(self):
+        b = list(map(self.weekly_tasks_schedule, self.tasks))[0]
+        # pr = lambda status: status
+        # print(list(map(pr, b[0][0])))
+        print(b[1][0]['start'])
+        # print(b[0][0])  # [1][0]['start'])
+        # for i, task in enumerate(self.tasks):
+        #     self.weekly_tasks_schedule(wtask=task)
+
+    # def create_date_from_string(self, date, clock):
+    #     c = datetime.datetime.strptime(clock, self.clock_format)
+    #     d = datetime.datetime.strptime(date, self.date_format)
+    #     full_date = datetime.datetime.combine(d.date(), c.time())
+    #     return full_date
+
+    # def calc_remain_time(self, t1, t2):
+    #     return (t1 - t2)
 
 
 class WifiControl:
@@ -98,3 +121,7 @@ class WifiControl:
 # a.wifi_on()
 
 b = Time2Start()
+b.add_task(new_task={'start_days': [4, 3], 'start_time': '21:30:00', 'end_days': [5, 3], 'end_time': '22:00:00'})
+b.add_task(new_task={'start_days': [7], 'start_time': '07:30:00', 'end_days': [7], 'end_time': '22:35:00'})
+#
+b.run_tasks()
