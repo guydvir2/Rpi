@@ -7,19 +7,17 @@ import datetime
 
 class Time2Start:
     def __init__(self):
-        self.tasks_status, self.tasks = [], []
+        self.tasks_status, self.weekly_tasks_list = [], []
         self.clock_format = '%H:%M:%S'
         self.date_format = '%Y-%m-%d'
         self.cbit = cbit.CBit(500)
-        # self.cbit.append_process(self.weekly_tasks_schedule, wtask=task1)
-        self.cbit.init_thread()
 
-    def weekly_tasks_schedule(self, wtask):
+    def swipe_weekly_schedule(self, wtask):
+        task_output_result = []
         # for loop for multiple days in task
-        self.tasks_status.append([])
         for i, day_task_start in enumerate(wtask['start_days']):
             status_dict = {}
-            self.tasks_status[-1].append([])
+            # self.tasks_status[-1].append([])
             day_task_end = wtask['end_days'][i]
             timenow = self.time_now()
             delta_time_start = datetime.datetime.combine(timenow.date(),
@@ -48,32 +46,51 @@ class Time2Start:
                     status_dict['state'] = 1
             else:
                 status_dict['state'] = 0
-            self.tasks_status[-1][i] = status_dict
-        return self.tasks_status
+            task_output_result.append(status_dict)
+
+        return task_output_result
+
+    def exec_tasks_run(self):
+        self.tasks_status = [[] for i in range(len(self.weekly_tasks_list))]
+
+        def is_any_task_on():
+            result = []
+            for m, task in enumerate(self.tasks_status):
+                for n, sub_task in enumerate(task):
+                    if sub_task['state'] == 1:
+                        result.append([m, n])
+            if result == []:
+                result.append(0)
+            return result
+
+        def inject_tasks_to_schedule():
+            self.tasks_status = list(map(self.swipe_weekly_schedule, self.weekly_tasks_list))
+            print(is_any_task_on())
+            # print_task_status = lambda status, i=0: print(
+            #     'Task:%d, Start:%s, Stop:%s, Status:%s, duration:%s' % (i, str(status[i]['start'])[:-7],
+            #                                                             str(status[i]['end'])[:-7],
+            #                                                             status[i]['state'],
+            #                                                             (status[i]['end'] - status[i]['start'])))
+            # list(map(print_task_status, self.tasks_status))
+
+            # print(self.tasks_status)
+            # for i, task in enumerate(self.weekly_tasks_list):
+            #     self.tasks_status[i] = self.swipe_weekly_schedule(task)
+
+        self.cbit.append_process(inject_tasks_to_schedule)
+        self.cbit.init_thread()
 
     def time_now(self):
         return datetime.datetime.now()
 
-    def add_task(self, new_task):
-        self.tasks.append(new_task)
-
-    def run_tasks(self):
-        b = list(map(self.weekly_tasks_schedule, self.tasks))[0]
-        # pr = lambda status: status
-        # print(list(map(pr, b[0][0])))
-        print(b[1][0]['start'])
-        # print(b[0][0])  # [1][0]['start'])
-        # for i, task in enumerate(self.tasks):
-        #     self.weekly_tasks_schedule(wtask=task)
+    def add_weekly_task(self, new_task):
+        self.weekly_tasks_list.append(new_task)
 
     # def create_date_from_string(self, date, clock):
     #     c = datetime.datetime.strptime(clock, self.clock_format)
     #     d = datetime.datetime.strptime(date, self.date_format)
     #     full_date = datetime.datetime.combine(d.date(), c.time())
     #     return full_date
-
-    # def calc_remain_time(self, t1, t2):
-    #     return (t1 - t2)
 
 
 class WifiControl:
@@ -121,7 +138,7 @@ class WifiControl:
 # a.wifi_on()
 
 b = Time2Start()
-b.add_task(new_task={'start_days': [4, 3], 'start_time': '21:30:00', 'end_days': [5, 3], 'end_time': '22:00:00'})
-b.add_task(new_task={'start_days': [7], 'start_time': '07:30:00', 'end_days': [7], 'end_time': '22:35:00'})
+b.add_weekly_task(new_task={'start_days': [1, 3], 'start_time': '11:30:00', 'end_days': [5, 3], 'end_time': '22:00:00'})
+b.add_weekly_task(new_task={'start_days': [7], 'start_time': '07:30:00', 'end_days': [7], 'end_time': '22:35:00'})
 #
-b.run_tasks()
+b.exec_tasks_run()
