@@ -11,6 +11,7 @@ class Time2Start:
         self.clock_format = '%H:%M:%S'
         self.date_format = '%Y-%m-%d'
         self.cbit = cbit.CBit(500)
+        self.engage_task = []
 
     def swipe_weekly_schedule(self, wtask):
         task_output_result = []
@@ -54,18 +55,31 @@ class Time2Start:
         self.tasks_status = [[] for i in range(len(self.weekly_tasks_list))]
 
         def is_any_task_on():
-            result = []
+            result = [None]
             for m, task in enumerate(self.tasks_status):
                 for n, sub_task in enumerate(task):
                     if sub_task['state'] == 1:
-                        result.append([m, n])
-            if result == []:
-                result.append(0)
+                        if result == [None]:
+                            result = [[m, n]]
+                        else:
+                            result.append([m, n])
+            print(result)
+            return result
+
+        def is_task_engaged_and_on():
+            on_tasks = is_any_task_on()
+            result = []
+            for on_task in on_tasks:
+                if self.tasks_status[on_task[0]][on_task[1]]['state'] == 1:
+                    result.append(on_task)
             return result
 
         def inject_tasks_to_schedule():
             self.tasks_status = list(map(self.swipe_weekly_schedule, self.weekly_tasks_list))
-            print(is_any_task_on())
+            print(self.tasks_status)
+            is_any_task_on()
+            # print(is_task_engaged_and_on())
+
             # print_task_status = lambda status, i=0: print(
             #     'Task:%d, Start:%s, Stop:%s, Status:%s, duration:%s' % (i, str(status[i]['start'])[:-7],
             #                                                             str(status[i]['end'])[:-7],
@@ -85,6 +99,8 @@ class Time2Start:
 
     def add_weekly_task(self, new_task):
         self.weekly_tasks_list.append(new_task)
+        # method indicates if start an active schedule
+        self.engage_task.append([1] * len(new_task['start_days']))
 
     # def create_date_from_string(self, date, clock):
     #     c = datetime.datetime.strptime(clock, self.clock_format)
@@ -138,7 +154,7 @@ class WifiControl:
 # a.wifi_on()
 
 b = Time2Start()
-b.add_weekly_task(new_task={'start_days': [1, 3], 'start_time': '11:30:00', 'end_days': [5, 3], 'end_time': '22:00:00'})
-b.add_weekly_task(new_task={'start_days': [7], 'start_time': '07:30:00', 'end_days': [7], 'end_time': '22:35:00'})
+b.add_weekly_task(new_task={'start_days': [1, 4], 'start_time': '11:30:00', 'end_days': [5, 3], 'end_time': '22:00:00'})
+# b.add_weekly_task(new_task={'start_days': [3], 'start_time': '07:30:00', 'end_days': [7], 'end_time': '22:35:00'})
 #
 b.exec_tasks_run()
