@@ -5,7 +5,11 @@ from sys import platform
 import datetime
 
 
-class WeekTimeInterval:
+class WeeklyIntervals:
+    """Class creates a datetime tuples for a recurring weekly tasks.
+    Inputs: start day and time, end date and time
+    Outputs: start and end datetime tuples for current week"""
+
     def __init__(self, day_start, hour_start, day_end, hour_end):
         self.day_start = day_start
         self.day_end = day_end
@@ -55,64 +59,36 @@ class WeekTimeInterval:
 
 
 class Time2Start:
+    """Class gets a weekly schedule (day and time on/ off ) and in return it submits
+    a status: which task is on/off and when it starts/ ends.
+    inputs: lists of schedule -
+    new_task={'start_days': [1, 4], 'start_time': '15:30:00', 'end_days': [5, 6], 'end_time': '22:00:00'}
+    outputs: variations of on/ off status"""
+
     def __init__(self):
         self.tasks_status, self.weekly_tasks_list = [], []
-        self.clock_format = '%H:%M:%S'
-        self.date_format = '%Y-%m-%d'
         self.cbit = cbit.CBit(500)
+        """Engage flag gives the ability to enable or disable on/off regardless"""
         self.engage_task = []
 
     def swipe_weekly_schedule(self, wtask):
         task_output_result = []
-        # for loop for multiple days in task
-
+        # for loop in case of multiple days in task
         for i, day_task_start in enumerate(wtask['start_days']):
             status_dict = {}
             day_task_end = wtask['end_days'][i]
-            status_dict['start'], status_dict['end'] = WeekTimeInterval(day_start=day_task_start,
-                                                                        hour_start=wtask['start_time'],
-                                                                        day_end=day_task_end,
-                                                                        hour_end=wtask['end_time']).get_datetimes()
+            status_dict['start'], status_dict['end'] = WeeklyIntervals(day_start=day_task_start,
+                                                                       hour_start=wtask['start_time'],
+                                                                       day_end=day_task_end,
+                                                                       hour_end=wtask['end_time']).get_datetimes()
             if status_dict['start'] <= datetime.datetime.now() <= status_dict['end']:
                 status_dict['state'] = 1
-
             else:
                 status_dict['state'] = 0
-
-            #     timenow = self.time_now()
-            #     delta_time_start = datetime.datetime.combine(timenow.date(),
-            #                                                  datetime.datetime.strptime(wtask['start_time'],
-            #                                                                             self.clock_format).time()) - timenow
-            #     delta_time_end = datetime.datetime.combine(timenow.date(),
-            #                                                datetime.datetime.strptime(wtask['end_time'],
-            #                                                                           self.clock_format).time()) - datetime.datetime.combine(
-            #         timenow.date(),
-            #         datetime.datetime.strptime(wtask['start_time'], self.clock_format).time())
-            #
-            #     delta_days_start = day_task_start - timenow.isoweekday()
-            #     if delta_days_start < 0:
-            #         delta_days_start += 7
-            #     time_to_start = datetime.timedelta(days=delta_days_start) + delta_time_start
-            #
-            #     delta_days_end = day_task_end - day_task_start
-            #     if delta_days_end < 0:
-            #         delta_days_end += 7
-            #     time_to_end = datetime.timedelta(days=delta_days_end) + delta_time_end + time_to_start
-            #
-            #     status_dict['start'] = time_to_start
-            #     status_dict["end"] = time_to_end
-            #     if time_to_start.total_seconds() < 0:
-            #         if time_to_end.total_seconds() > 0:
-            #             status_dict['state'] = 1
-            #     else:
-            #         status_dict['state'] = 0
-            #     task_output_result.append(status_dict)
-            #
-            # return task_output_result
             task_output_result.append(status_dict)
-            print(task_output_result)
+        return task_output_result
 
-    def exec_tasks_run(self):
+    def exec_tasks_run(self): # runs on cbit
         self.tasks_status = [[] for i in range(len(self.weekly_tasks_list))]
 
         def is_any_task_on():
@@ -124,7 +100,6 @@ class Time2Start:
                             result = [[m, n]]
                         else:
                             result.append([m, n])
-            print(result)
             return result
 
         def is_task_engaged_and_on():
@@ -137,20 +112,17 @@ class Time2Start:
 
         def inject_tasks_to_schedule():
             self.tasks_status = list(map(self.swipe_weekly_schedule, self.weekly_tasks_list))
-            print(self.tasks_status)
-            # is_any_task_on()
-            # print(is_task_engaged_and_on())
+            get_on_tasks()
 
-            # print_task_status = lambda status, i=0: print(
-            #     'Task:%d, Start:%s, Stop:%s, Status:%s, duration:%s' % (i, str(status[i]['start'])[:-7],
-            #                                                             str(status[i]['end'])[:-7],
-            #                                                             status[i]['state'],
-            #                                                             (status[i]['end'] - status[i]['start'])))
-            # list(map(print_task_status, self.tasks_status))
-
-            # print(self.tasks_status)
-            # for i, task in enumerate(self.weekly_tasks_list):
-            #     self.tasks_status[i] = self.swipe_weekly_schedule(task)
+        def get_on_tasks():
+            # two conditions to flag "ON" state: 1) inside time window on/off. 2)engage flag is "ON"
+            on_and_engaged = is_task_engaged_and_on()
+            self.on_tasks = list(map(lambda list_1: self.tasks_status[list_1[0]][list_1[1]], on_and_engaged))
+            print(self.on_tasks)
+            # get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
+            # get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
+            # get_durations = list(map(lambda list_1: list_1['end'] - list_1['start'], self.on_tasks))
+            # print(get_start_times[0], get_off_times[0], get_durations[0])
 
         self.cbit.append_process(inject_tasks_to_schedule)
         self.cbit.init_thread()
@@ -162,12 +134,6 @@ class Time2Start:
         self.weekly_tasks_list.append(new_task)
         # method indicates if start an active schedule
         self.engage_task.append([1] * len(new_task['start_days']))
-
-    # def create_date_from_string(self, date, clock):
-    #     c = datetime.datetime.strptime(clock, self.clock_format)
-    #     d = datetime.datetime.strptime(date, self.date_format)
-    #     full_date = datetime.datetime.combine(d.date(), c.time())
-    #     return full_date
 
 
 class WifiControl:
@@ -215,7 +181,6 @@ class WifiControl:
 # a.wifi_on()
 
 b = Time2Start()
-b.add_weekly_task(new_task={'start_days': [1, 4], 'start_time': '11:30:00', 'end_days': [5, 6], 'end_time': '22:00:00'})
-b.add_weekly_task(new_task={'start_days': [3], 'start_time': '07:30:00', 'end_days': [3], 'end_time': '22:35:00'})
-#
+b.add_weekly_task(new_task={'start_days': [1, 4], 'start_time': '15:30:00', 'end_days': [5, 6], 'end_time': '22:00:00'})
+b.add_weekly_task(new_task={'start_days': [3], 'start_time': '07:30:00', 'end_days': [4], 'end_time': '22:35:00'})
 b.exec_tasks_run()
