@@ -39,7 +39,7 @@ class WeeklyIntervals:
             day = None
         return day
 
-    def h2iso_convert_day(self, ay):
+    def h2iso_convert_day(self, day):
         if 2 <= day <= 7:
             iso_day = day - 1
         elif day == 1:
@@ -53,25 +53,31 @@ class WeeklyIntervals:
         else:
             end_datetime = self.shift_from_toady_time_tuple(self.day_end + 7, self.hour_end)
 
-        if start_datetime > end_datetime:
-            end_datetime += datetime.timedelta(days=7)
+        # if start_datetime > end_datetime:
+        #     end_datetime += datetime.timedelta(days=7)
         return start_datetime, end_datetime
 
 
-class Time2Start:
+class RunWeeklySchedule:
     """Class gets a weekly schedule (day and time on/ off ) and in return it submits
     a status: which task is on/off and when it starts/ ends.
     inputs: lists of schedule -
     new_task={'start_days': [1, 4], 'start_time': '15:30:00', 'end_days': [5, 6], 'end_time': '22:00:00'}
     outputs: variations of on/ off status"""
 
-    def __init__(self):
+    def __init__(self, func2run):
         self.tasks_status, self.weekly_tasks_list = [], []
+        self.engage_task, self.on_tasks = [], None
+        self.func2run = func2run
         self.cbit = cbit.CBit(500)
         """Engage flag gives the ability to enable or disable on/off regardless"""
-        self.engage_task = []
 
-    def swipe_weekly_schedule(self, wtask):
+    def add_weekly_task(self, new_task):
+        self.weekly_tasks_list.append(new_task)
+        # method indicates if start an active schedule
+        self.engage_task.append([1] * len(new_task['start_days']))
+
+    def run_once_week_sched(self, wtask):
         task_output_result = []
         # for loop in case of multiple days in task
         for i, day_task_start in enumerate(wtask['start_days']):
@@ -88,7 +94,7 @@ class Time2Start:
             task_output_result.append(status_dict)
         return task_output_result
 
-    def exec_tasks_run(self): # runs on cbit
+    def run_schedule(self):  # runs on cbit
         self.tasks_status = [[] for i in range(len(self.weekly_tasks_list))]
 
         def is_any_task_on():
@@ -106,19 +112,24 @@ class Time2Start:
             on_tasks = is_any_task_on()
             result = []
             for on_task in on_tasks:
-                if self.tasks_status[on_task[0]][on_task[1]]['state'] == 1:
-                    result.append(on_task)
+                try:
+                    if self.tasks_status[on_task[0]][on_task[1]]['state'] == 1:
+                        result.append(on_task)
+                except TypeError:
+                    # No Active tasks
+                    pass
             return result
 
         def inject_tasks_to_schedule():
-            self.tasks_status = list(map(self.swipe_weekly_schedule, self.weekly_tasks_list))
+            self.tasks_status = list(map(self.run_once_week_sched, self.weekly_tasks_list))
             get_on_tasks()
 
         def get_on_tasks():
             # two conditions to flag "ON" state: 1) inside time window on/off. 2)engage flag is "ON"
             on_and_engaged = is_task_engaged_and_on()
             self.on_tasks = list(map(lambda list_1: self.tasks_status[list_1[0]][list_1[1]], on_and_engaged))
-            print(self.on_tasks)
+            # self.run_func()
+            self.get_all_tasks_report()
             # get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
             # get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
             # get_durations = list(map(lambda list_1: list_1['end'] - list_1['start'], self.on_tasks))
@@ -127,13 +138,30 @@ class Time2Start:
         self.cbit.append_process(inject_tasks_to_schedule)
         self.cbit.init_thread()
 
-    def time_now(self):
-        return datetime.datetime.now()
+    def run_func(self):
+        for i, on_task in enumerate(self.on_tasks):
+            now = datetime.datetime.now()
+            get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
+            get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
+            print('[' + str(now)[:-5] + ']',
+                  "task #%d start:%s, left:%s" % (i, get_start_times[i], get_off_times[i] - now))
 
-    def add_weekly_task(self, new_task):
-        self.weekly_tasks_list.append(new_task)
-        # method indicates if start an active schedule
-        self.engage_task.append([1] * len(new_task['start_days']))
+    def get_all_tasks_report(self):
+        now = datetime.datetime.now()
+        for i, task in enumerate(self.tasks_status):
+            for m, sub_task in enumerate(task):
+                if sub_task['end'] >= now >= sub_task['start']:
+                    print('Task #%d/%d:[ON:%s], start:[%s], end:[%s]' % (
+                        i, m, str(now - sub_task['start'])[:-7], sub_task['start'], sub_task['end']))
+                elif now <= sub_task['start'] or (now > sub_task['start'] and sub_task['end']):
+                    print('Task #%d/%d:[OFF: %s], start:[%s], end:[%s]' % (
+                        i, m, str(now - sub_task['end'])[:-7], sub_task['start'], sub_task['end']))
+
+    def get_on_tasks(self):
+        return self.on_tasks
+
+    def get_raw_status(self):
+        return self.tasks_status
 
 
 class WifiControl:
@@ -176,11 +204,17 @@ class WifiControl:
         print(getip.get_ip())
 
 
-# a = WifiControl()
-# a.read_pwd_fromfile()
-# a.wifi_on()
+if __name__ == '__main__':
+    def my_func():
+        print('Im On')
 
-b = Time2Start()
-b.add_weekly_task(new_task={'start_days': [1, 4], 'start_time': '15:30:00', 'end_days': [5, 6], 'end_time': '22:00:00'})
-b.add_weekly_task(new_task={'start_days': [3], 'start_time': '07:30:00', 'end_days': [4], 'end_time': '22:35:00'})
-b.exec_tasks_run()
+
+    # a = WifiControl()
+    # a.read_pwd_fromfile()
+    # a.wifi_on()
+
+    b = RunWeeklySchedule(func2run=my_func)
+    b.add_weekly_task(
+        new_task={'start_days': [1, 2], 'start_time': '15:30:00', 'end_days': [1, 5], 'end_time': '21:25:27'})
+    b.add_weekly_task(new_task={'start_days': [3], 'start_time': '07:30:00', 'end_days': [6], 'end_time': '22:35:00'})
+    b.run_schedule()

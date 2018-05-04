@@ -49,6 +49,7 @@ class WeekTimeInterval:
             end_datetime += datetime.timedelta(days=7)
         return start_datetime, end_datetime
 
+
 if __name__ == "__main__":
     a = WeekTimeInterval(5, "14:00:00", 4, "12:00:00").get_datetimes()
     print(a)
