@@ -128,8 +128,8 @@ class RunWeeklySchedule:
             # two conditions to flag "ON" state: 1) inside time window on/off. 2)engage flag is "ON"
             on_and_engaged = is_task_engaged_and_on()
             self.on_tasks = list(map(lambda list_1: self.tasks_status[list_1[0]][list_1[1]], on_and_engaged))
-            # self.run_func()
-            self.get_all_tasks_report()
+            self.run_func()
+            # self.get_all_tasks_report()
             # get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
             # get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
             # get_durations = list(map(lambda list_1: list_1['end'] - list_1['start'], self.on_tasks))
@@ -141,6 +141,7 @@ class RunWeeklySchedule:
     def run_func(self):
         for i, on_task in enumerate(self.on_tasks):
             now = datetime.datetime.now()
+            self.func2run()
             get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
             get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
             print('[' + str(now)[:-5] + ']',
@@ -215,6 +216,6 @@ if __name__ == '__main__':
 
     b = RunWeeklySchedule(func2run=my_func)
     b.add_weekly_task(
-        new_task={'start_days': [1, 2], 'start_time': '15:30:00', 'end_days': [1, 5], 'end_time': '21:25:27'})
-    b.add_weekly_task(new_task={'start_days': [3], 'start_time': '07:30:00', 'end_days': [6], 'end_time': '22:35:00'})
+        new_task={'start_days': [1, 2], 'start_time': '15:30:00', 'end_days': [1, 3], 'end_time': '20:01:27'})
+    b.add_weekly_task(new_task={'start_days': [3], 'start_time': '20:02:00', 'end_days': [3], 'end_time': '20:03:00'})
     b.run_schedule()
