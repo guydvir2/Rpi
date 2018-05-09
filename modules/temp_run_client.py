@@ -1,4 +1,4 @@
 import mysockets
 
-cleint=mysockets.Client(port=4000)
-cleint.send_msg('FGFGFG')
+a = mysockets.Client()
+a.send_msg("Hello there")
