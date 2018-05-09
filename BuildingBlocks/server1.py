@@ -10,17 +10,17 @@ def Main():
     mySocket.listen(2)
     conn, addr = mySocket.accept()
     print ("Connection from: " + str(addr))
-    varz=["var1","var2","var3"]
+    # varz=["var1","var2","var3"]
     while True:
             data = conn.recv(1024).decode()
-            if data in varz[0] :
-               print("YES!")
-            print(data.split(' '))
+            # if data in varz[0] :
+            #    print("YES!")
+            # print(data.split(' '))
             if not data:
                     break
             print ("from connected  user: " + str(data))
              
-            data = str(data[0:2]).upper()
+            data = str(data).upper()
             print ("sending: " + str(data))
             conn.send(data.encode())
              

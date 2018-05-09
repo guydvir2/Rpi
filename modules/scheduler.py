@@ -67,7 +67,7 @@ class RunWeeklySchedule:
 
     def __init__(self, func2run):
         self.tasks_status, self.weekly_tasks_list = [], []
-        self.engage_task, self.on_tasks = [], None
+        self.engage_task, self.on_tasks, self.on_status, self.off_status = [], None, None, None
         self.func2run = func2run
         self.cbit = cbit.CBit(500)
         """Engage flag gives the ability to enable or disable on/off regardless"""
@@ -145,7 +145,7 @@ class RunWeeklySchedule:
             get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
             get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
             print('[' + str(now)[:-5] + ']',
-                  "task #%d start:%s, left:%s" % (i, get_start_times[i], get_off_times[i] - now))
+                  "task #%d start:%s, left:%s" % (i, get_start_times[i], str(get_off_times[i] - now)[:-5]))
 
     def get_all_tasks_report(self):
         now = datetime.datetime.now()
@@ -217,5 +217,5 @@ if __name__ == '__main__':
     b = RunWeeklySchedule(func2run=my_func)
     b.add_weekly_task(
         new_task={'start_days': [1, 2], 'start_time': '15:30:00', 'end_days': [1, 3], 'end_time': '20:01:27'})
-    b.add_weekly_task(new_task={'start_days': [3], 'start_time': '20:02:00', 'end_days': [3], 'end_time': '20:03:00'})
+    b.add_weekly_task(new_task={'start_days': [3], 'start_time': '20:02:00', 'end_days': [3], 'end_time': '23:03:00'})
     b.run_schedule()
