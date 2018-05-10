@@ -1,42 +1,46 @@
 import socket
+import threading
 
 
 class Server:
 
-    def __init__(self, host="127.0.0.1", port=5000):
+    def __init__(self, host="127.0.0.1", port=4001):
         self.host, self.port = host, port
         self.mySocket = socket.socket()
-        self.mySocket.bind((self.host, self.port))
+        # self.mySocket.bind((self.host, self.port))
+        self.mySocket.bind(('', self.port))
+        self.t = threading.Thread(name='mysockets.Server', target=self.run_connection_server())
+        self.t.start()
 
-        self.start_listening()
+    def run_connection_server(self):
+        while True:
+            self.wait_for_conn()
 
-    def start_listening(self):
+    def wait_for_conn(self):
         self.mySocket.listen(1)
         self.conn, self.addr = self.mySocket.accept()
-
-        print("Connection from: " + str(self.addr))
-        while True:
-            data = self.conn.recv(1024).decode()
-            if not data:
-                break
-            print("from connected user: " + str(data))
-
-            data = str(data).upper()
-            print("sending: " + str(data))
-            self.conn.send(data.encode())
-
+        recv_data = self.conn.recv(1024).decode()
+        send_data = self.transfer_data(recv_data)
+        self.conn.send(send_data.encode())
         self.conn.close()
+
+    def transfer_data(self, recv_data):
+        if recv_data == '1':
+            return "KUKU"
+        elif recv_data == '2':
+            return ["BUBU",'sdfsdfsdf']
+        else:
+            return '0'
 
 
 class Client:
-    def __init__(self, host='127.0.0.1', port=5000):
+    def __init__(self, host='127.0.0.1', port=4001):
         self.host, self.port = host, port
         self.mySocket = socket.socket()
         self.mySocket.connect((self.host, self.port))
 
     def send_msg(self, message):
-        # while message != 'q':
-        # while True:
+        message = str(message)
         self.mySocket.send(message.encode())
         data = self.mySocket.recv(1024).decode()
         print('Received from server: ' + data)
