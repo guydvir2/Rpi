@@ -17,12 +17,16 @@ class Server:
             self.wait_for_conn()
 
     def wait_for_conn(self):
-        self.mySocket.listen(1)
-        self.conn, self.addr = self.mySocket.accept()
-        recv_data = self.conn.recv(1024).decode()
-        send_data = self.transfer_data(recv_data)
-        self.conn.send(send_data.encode())
-        self.conn.close()
+        try:
+            self.mySocket.listen(1)
+            self.conn, self.addr = self.mySocket.accept()
+            recv_data = self.conn.recv(1024).decode()
+            send_data = self.transfer_data(recv_data)
+            self.conn.send(send_data.encode())
+            self.conn.close()
+        except KeyboardInterrupt:
+            print("keyboard")
+
 
     def transfer_data(self, recv_data):
         if recv_data == '1':

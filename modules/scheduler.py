@@ -66,8 +66,8 @@ class RunWeeklySchedule:
     outputs: variations of on/ off status"""
 
     def __init__(self, func2run):
-        self.tasks_status, self.weekly_tasks_list = [], []
-        self.engage_task, self.on_tasks, self.on_status, self.off_status = [], None, None, None
+        self.tasks_status, self.previous_task_status, self.weekly_tasks_list = [], [], []
+        self.engage_task, self.on_tasks, self.change_task = [], None, []
         self.func2run = func2run
         self.cbit = cbit.CBit(500)
         """Engage flag gives the ability to enable or disable on/off regardless"""
@@ -75,7 +75,10 @@ class RunWeeklySchedule:
     def add_weekly_task(self, new_task):
         self.weekly_tasks_list.append(new_task)
         # method indicates if start an active schedule
-        self.engage_task.append([1] * len(new_task['start_days']))
+        days = len(new_task['start_days'])
+        self.engage_task.append([0] * days)
+        self.previous_task_status.append([{'state': 0}] * days)
+        self.tasks_status.append([] * days)
 
     def run_once_week_sched(self, wtask):
         task_output_result = []
@@ -87,6 +90,7 @@ class RunWeeklySchedule:
                                                                        hour_start=wtask['start_time'],
                                                                        day_end=day_task_end,
                                                                        hour_end=wtask['end_time']).get_datetimes()
+
             if status_dict['start'] <= datetime.datetime.now() <= status_dict['end']:
                 status_dict['state'] = 1
             else:
@@ -94,18 +98,21 @@ class RunWeeklySchedule:
             task_output_result.append(status_dict)
         return task_output_result
 
-    def run_schedule(self):  # runs on cbit
-        self.tasks_status = [[] for i in range(len(self.weekly_tasks_list))]
+    def run_schedule(self):  # constant run on cbit
+
+        def change_detected(changed_task):
+            print("change", self.tasks_status[changed_task[0]][changed_task[1]])
+            self.change_task.append(changed_task)
 
         def is_any_task_on():
-            result = [None]
+            result = []
             for m, task in enumerate(self.tasks_status):
                 for n, sub_task in enumerate(task):
                     if sub_task['state'] == 1:
-                        if result == [None]:
-                            result = [[m, n]]
-                        else:
-                            result.append([m, n])
+                        result.append([m, n])
+                    if sub_task['state'] != self.previous_task_status[m][n]['state']:
+                        change_detected([m, n])
+            self.previous_task_status = self.tasks_status
             return result
 
         def is_task_engaged_and_on():
@@ -113,7 +120,8 @@ class RunWeeklySchedule:
             result = []
             for on_task in on_tasks:
                 try:
-                    if self.tasks_status[on_task[0]][on_task[1]]['state'] == 1:
+                    if self.tasks_status[on_task[0]][on_task[1]]['state'] == 1 and self.engage_task[on_task[0]][
+                        on_task[1]] == 1:
                         result.append(on_task)
                 except TypeError:
                     # No Active tasks
@@ -121,12 +129,17 @@ class RunWeeklySchedule:
             return result
 
         def inject_tasks_to_schedule():
+            """ update tasks using cbit """
             self.tasks_status = list(map(self.run_once_week_sched, self.weekly_tasks_list))
             get_on_tasks()
 
         def get_on_tasks():
             # two conditions to flag "ON" state: 1) inside time window on/off. 2)engage flag is "ON"
             on_and_engaged = is_task_engaged_and_on()
+            # print(self.change_task, on_and_engaged)
+            # if on_and_engaged in self.change_task:
+            #     print('Change detected', self.change_task)
+            # print(on_and_engaged)
             self.on_tasks = list(map(lambda list_1: self.tasks_status[list_1[0]][list_1[1]], on_and_engaged))
             self.run_func()
             # self.get_all_tasks_report()
@@ -142,10 +155,10 @@ class RunWeeklySchedule:
         for i, on_task in enumerate(self.on_tasks):
             now = datetime.datetime.now()
             self.func2run()
-            get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
-            get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
-            print('[' + str(now)[:-5] + ']',
-                  "task #%d start:%s, left:%s" % (i, get_start_times[i], str(get_off_times[i] - now)[:-5]))
+            # get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
+            # get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
+            # print('[' + str(now)[:-5] + ']',
+            #       "task #%d start:%s, left:%s" % (i, get_start_times[i], str(get_off_times[i] - now)[:-5]))
 
     def get_all_tasks_report(self):
         now = datetime.datetime.now()
@@ -216,6 +229,7 @@ if __name__ == '__main__':
 
     b = RunWeeklySchedule(func2run=my_func)
     b.add_weekly_task(
-        new_task={'start_days': [1, 2], 'start_time': '15:30:00', 'end_days': [1, 3], 'end_time': '20:01:27'})
-    b.add_weekly_task(new_task={'start_days': [3], 'start_time': '20:02:00', 'end_days': [3], 'end_time': '23:03:00'})
+        new_task={'start_days': [1, 6], 'start_time': '06:10:30', 'end_days': [1, 6], 'end_time': '08:20:33'})
+    b.add_weekly_task(new_task={'start_days': [3], 'start_time': '20:02:00', 'end_days': [3], 'end_time': '20:03:00'})
+
     b.run_schedule()
