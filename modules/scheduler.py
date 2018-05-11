@@ -3,6 +3,8 @@ import subprocess
 import getip
 from sys import platform
 import datetime
+import os
+import csv
 
 
 class WeeklyIntervals:
@@ -65,10 +67,11 @@ class RunWeeklySchedule:
     new_task={'start_days': [1, 4], 'start_time': '15:30:00', 'end_days': [5, 6], 'end_time': '22:00:00'}
     outputs: variations of on/ off status"""
 
-    def __init__(self, func2run):
+    def __init__(self, on_func, off_func, ext_cond=None):
         self.tasks_status, self.previous_task_status, self.weekly_tasks_list = [], [], []
-        self.engage_task, self.on_tasks, self.change_task = [], None, []
-        self.func2run = func2run
+        self.engage_task, self.tasks_dates, self.on_tasks = [], [], []
+        self.on_func, self.off_func, self.ext_cond = on_func, off_func, ext_cond
+        self.filename = '/home/guy/Documents/github/Rpi/modules/sched1.txt'
         self.cbit = cbit.CBit(500)
         """Engage flag gives the ability to enable or disable on/off regardless"""
 
@@ -76,106 +79,127 @@ class RunWeeklySchedule:
         self.weekly_tasks_list.append(new_task)
         # method indicates if start an active schedule
         days = len(new_task['start_days'])
-        self.engage_task.append([0] * days)
+        self.engage_task.append([1] * days)
         self.previous_task_status.append([{'state': 0}] * days)
-        self.tasks_status.append([] * days)
 
-    def run_once_week_sched(self, wtask):
-        task_output_result = []
-        # for loop in case of multiple days in task
-        for i, day_task_start in enumerate(wtask['start_days']):
-            status_dict = {}
-            day_task_end = wtask['end_days'][i]
-            status_dict['start'], status_dict['end'] = WeeklyIntervals(day_start=day_task_start,
-                                                                       hour_start=wtask['start_time'],
-                                                                       day_end=day_task_end,
-                                                                       hour_end=wtask['end_time']).get_datetimes()
+    def read_sched_file(self, file_in=''):
+        if file_in == '':
+            file_in = self.filename
+        if os.path.isfile(file_in) is True:
+            with open(file_in, 'r') as f:
+                reader = csv.reader(f)
+                self.data_from_file = list(reader)
+        else:
+            print('Schedule file was not found on specified location', file_in)
 
-            if status_dict['start'] <= datetime.datetime.now() <= status_dict['end']:
-                status_dict['state'] = 1
-            else:
-                status_dict['state'] = 0
-            task_output_result.append(status_dict)
-        return task_output_result
+    def convert_data_file(self):
+        dict = []
+        a1 = lambda a: a.split(',')
+        for i, task in enumerate(self.data_from_file):
+            dict.append([])
+            for n, col in enumerate(task):
+                print(col)
+                # dict[i][n]['start_days'] = list(map(lambda x: int(x), a1(col)))
+                # print(dict)
+
+    # : [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '20:08:00'})
+
+    def start(self):
+        if self.weekly_tasks_list != []:
+            self.convert_weekly_tasks_to_dates()
+            self.run_schedule()
+            # self.get_task_report()
+            self.tasks_descriptive()
+            self.read_sched_file()
+            self.convert_data_file()
+
+    def convert_weekly_tasks_to_dates(self):
+        self.tasks_dates = []
+        for n, task in enumerate(self.weekly_tasks_list):
+            self.tasks_dates.append([])
+            for i, day_task_start in enumerate(task['start_days']):
+                self.tasks_dates[-1].append([])
+                status_dict = {}
+                day_task_end = task['end_days'][i]
+                status_dict['start'], status_dict['end'] = WeeklyIntervals(day_start=day_task_start,
+                                                                           hour_start=task['start_time'],
+                                                                           day_end=day_task_end,
+                                                                           hour_end=task['end_time']).get_datetimes()
+                self.tasks_dates[n][i] = status_dict
+
+    def update_tasks_times(self):
+        self.tasks_status = []
+        for m, task in enumerate(self.tasks_dates):
+            self.tasks_status.append([])
+            for n, current_day in enumerate(task):
+                self.tasks_status[m].append([])
+                self.tasks_status[m][n] = current_day.copy()
+                if current_day['start'] <= datetime.datetime.now() <= current_day['end']:
+                    self.tasks_status[m][n]['state'] = 1
+                else:
+                    self.tasks_status[m][n]['state'] = 0
 
     def run_schedule(self):  # constant run on cbit
 
-        def change_detected(changed_task):
-            print("change", self.tasks_status[changed_task[0]][changed_task[1]])
-            self.change_task.append(changed_task)
+        def act_on_change(changed_task):
+            if self.tasks_status[changed_task[0]][changed_task[1]]['state'] == 1:
+                self.on_func()
+            elif self.tasks_status[changed_task[0]][changed_task[1]]['state'] == 0:
+                self.off_func()
+                self.convert_weekly_tasks_to_dates()
+            self.get_task_report(changed_task)
 
-        def is_any_task_on():
+        def check_conditions_to_switch():
             result = []
             for m, task in enumerate(self.tasks_status):
                 for n, sub_task in enumerate(task):
-                    if sub_task['state'] == 1:
+                    if sub_task['state'] == 1 and self.engage_task[m][n] == 1:
                         result.append([m, n])
                     if sub_task['state'] != self.previous_task_status[m][n]['state']:
-                        change_detected([m, n])
-            self.previous_task_status = self.tasks_status
-            return result
-
-        def is_task_engaged_and_on():
-            on_tasks = is_any_task_on()
-            result = []
-            for on_task in on_tasks:
-                try:
-                    if self.tasks_status[on_task[0]][on_task[1]]['state'] == 1 and self.engage_task[on_task[0]][
-                        on_task[1]] == 1:
-                        result.append(on_task)
-                except TypeError:
-                    # No Active tasks
-                    pass
-            return result
+                        act_on_change([m, n])
+                    # case of external condition to be verified
+                    if sub_task['state'] == self.engage_task[m][n] and self.engage_task[m][
+                        n] != self.ext_cond and self.ext_cond != None:
+                        act_on_change([m, n])
+            self.on_tasks = result
+            self.previous_task_status = self.tasks_status.copy()
 
         def inject_tasks_to_schedule():
             """ update tasks using cbit """
-            self.tasks_status = list(map(self.run_once_week_sched, self.weekly_tasks_list))
-            get_on_tasks()
-
-        def get_on_tasks():
-            # two conditions to flag "ON" state: 1) inside time window on/off. 2)engage flag is "ON"
-            on_and_engaged = is_task_engaged_and_on()
-            # print(self.change_task, on_and_engaged)
-            # if on_and_engaged in self.change_task:
-            #     print('Change detected', self.change_task)
-            # print(on_and_engaged)
-            self.on_tasks = list(map(lambda list_1: self.tasks_status[list_1[0]][list_1[1]], on_and_engaged))
-            self.run_func()
-            # self.get_all_tasks_report()
-            # get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
-            # get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
-            # get_durations = list(map(lambda list_1: list_1['end'] - list_1['start'], self.on_tasks))
-            # print(get_start_times[0], get_off_times[0], get_durations[0])
+            self.update_tasks_times()
+            check_conditions_to_switch()
 
         self.cbit.append_process(inject_tasks_to_schedule)
         self.cbit.init_thread()
 
-    def run_func(self):
-        for i, on_task in enumerate(self.on_tasks):
-            now = datetime.datetime.now()
-            self.func2run()
-            # get_start_times = list(map(lambda list_1: list_1['start'], self.on_tasks))
-            # get_off_times = list(map(lambda list_1: list_1['end'], self.on_tasks))
-            # print('[' + str(now)[:-5] + ']',
-            #       "task #%d start:%s, left:%s" % (i, get_start_times[i], str(get_off_times[i] - now)[:-5]))
+    def tasks_descriptive(self):
+        for m, task in enumerate(self.tasks_dates):
+            for n, day in enumerate(task):
+                t = [datetime.datetime.strftime(day['start'], 'Start-[%A, %H:%m:%S]'),
+                     datetime.datetime.strftime(day['end'], 'End- [%A, %H:%m:%S]')]
+                print('Task #%d/#%d: %s %s' % (m, n, t[0], t[1]))
 
-    def get_all_tasks_report(self):
+    def get_task_report(self, task=None):
         now = datetime.datetime.now()
-        for i, task in enumerate(self.tasks_status):
-            for m, sub_task in enumerate(task):
-                if sub_task['end'] >= now >= sub_task['start']:
-                    print('Task #%d/%d:[ON:%s], start:[%s], end:[%s]' % (
-                        i, m, str(now - sub_task['start'])[:-7], sub_task['start'], sub_task['end']))
-                elif now <= sub_task['start'] or (now > sub_task['start'] and sub_task['end']):
-                    print('Task #%d/%d:[OFF: %s], start:[%s], end:[%s]' % (
-                        i, m, str(now - sub_task['end'])[:-7], sub_task['start'], sub_task['end']))
 
-    def get_on_tasks(self):
-        return self.on_tasks
+        def print_report(state):
+            print('Task #%d/%d:[%s:%s], start:[%s], end:[%s]' % (
+                i, m, state, str(now - sub_task['start'])[:-7], sub_task['start'], sub_task['end']))
 
-    def get_raw_status(self):
-        return self.tasks_status
+        if task is None:
+            for i, task in enumerate(self.tasks_status):
+                for m, sub_task in enumerate(task):
+                    if sub_task['end'] >= now >= sub_task['start']:
+                        print_report('ON')
+                    elif now <= sub_task['start'] or (now > sub_task['start'] and sub_task['end']):
+                        print_report('OFF')
+        else:
+            sub_task = self.tasks_status[task[0]][task[1]]
+            i, m = task[0], task[1]
+            if sub_task['end'] >= now >= sub_task['start']:
+                print_report('ON')
+            elif now <= sub_task['start'] or (now > sub_task['start'] and sub_task['end']):
+                print_report('OFF')
 
 
 class WifiControl:
@@ -219,17 +243,21 @@ class WifiControl:
 
 
 if __name__ == '__main__':
-    def my_func():
-        print('Im On')
+    def on_func():
+        print('On function')
+
+
+    def off_func():
+        print('off function')
 
 
     # a = WifiControl()
     # a.read_pwd_fromfile()
     # a.wifi_on()
 
-    b = RunWeeklySchedule(func2run=my_func)
+    b = RunWeeklySchedule(on_func=on_func, off_func=off_func)
+    b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '20:08:00'})
     b.add_weekly_task(
-        new_task={'start_days': [1, 6], 'start_time': '06:10:30', 'end_days': [1, 6], 'end_time': '08:20:33'})
-    b.add_weekly_task(new_task={'start_days': [3], 'start_time': '20:02:00', 'end_days': [3], 'end_time': '20:03:00'})
+        new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
 
-    b.run_schedule()
+    b.start()
