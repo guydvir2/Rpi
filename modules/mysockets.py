@@ -11,6 +11,9 @@ class Server:
         self.mySocket.bind(('', self.port))
         self.t = threading.Thread(name='mysockets.Server', target=self.run_connection_server())
         self.t.start()
+        self.p1='100'
+        self.p2=200
+        self.p3="GUYDVIR"
 
     def run_connection_server(self):
         while True:

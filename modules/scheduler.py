@@ -67,11 +67,11 @@ class RunWeeklySchedule:
     new_task={'start_days': [1, 4], 'start_time': '15:30:00', 'end_days': [5, 6], 'end_time': '22:00:00'}
     outputs: variations of on/ off status"""
 
-    def __init__(self, on_func, off_func, ext_cond=None):
+    def __init__(self, on_func, off_func, sched_file=None, ext_cond=None):
         self.tasks_status, self.previous_task_status, self.weekly_tasks_list = [], [], []
         self.engage_task, self.tasks_dates, self.on_tasks = [], [], []
         self.on_func, self.off_func, self.ext_cond = on_func, off_func, ext_cond
-        self.filename = '/home/guy/Documents/github/Rpi/modules/sched1.txt'
+        self.filename = sched_file #'sched1.txt'
         self.cbit = cbit.CBit(500)
         """Engage flag gives the ability to enable or disable on/off regardless"""
 
@@ -96,22 +96,27 @@ class RunWeeklySchedule:
         dict = []
         a1 = lambda a: a.split(',')
         for i, task in enumerate(self.data_from_file):
-            dict.append([])
-            for n, col in enumerate(task):
-                print(col)
-                # dict[i][n]['start_days'] = list(map(lambda x: int(x), a1(col)))
-                # print(dict)
-
-    # : [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '20:08:00'})
+            dict.append({})
+            dict[i]['start_days'] = list(map(lambda x: int(x), a1(task[0])))
+            dict[i]['start_time'] = task[1]
+            dict[i]['end_days'] = list(map(lambda x: int(x), a1(task[2])))
+            dict[i]['end_time'] = task[3]
+        return dict
 
     def start(self):
-        if self.weekly_tasks_list != []:
-            self.convert_weekly_tasks_to_dates()
-            self.run_schedule()
-            # self.get_task_report()
-            self.tasks_descriptive()
+        if not self.weekly_tasks_list and self.filename is not None:
             self.read_sched_file()
-            self.convert_data_file()
+            print('Schedule file read successfully')
+            for task in self.convert_data_file():
+                self.add_weekly_task(task)
+        elif self.weekly_tasks_list:
+            print('Schedule read as code arguments')
+        else:
+            print('Schedule was not read. Abort!')
+            quit()
+        self.convert_weekly_tasks_to_dates()
+        self.run_schedule()
+        self.tasks_descriptive()
 
     def convert_weekly_tasks_to_dates(self):
         self.tasks_dates = []
@@ -175,8 +180,8 @@ class RunWeeklySchedule:
     def tasks_descriptive(self):
         for m, task in enumerate(self.tasks_dates):
             for n, day in enumerate(task):
-                t = [datetime.datetime.strftime(day['start'], 'Start-[%A, %H:%m:%S]'),
-                     datetime.datetime.strftime(day['end'], 'End- [%A, %H:%m:%S]')]
+                t = [datetime.datetime.strftime(day['start'], 'Start-[%A, %H:%M:%S]'),
+                     datetime.datetime.strftime(day['end'], 'End- [%A, %H:%M:%S]')]
                 print('Task #%d/#%d: %s %s' % (m, n, t[0], t[1]))
 
     def get_task_report(self, task=None):
@@ -255,9 +260,9 @@ if __name__ == '__main__':
     # a.read_pwd_fromfile()
     # a.wifi_on()
 
-    b = RunWeeklySchedule(on_func=on_func, off_func=off_func)
-    b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '20:08:00'})
-    b.add_weekly_task(
-        new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
+    b = RunWeeklySchedule(on_func=on_func, off_func=off_func,sched_file='sched1.txt')
+    # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+    # b.add_weekly_task(
+    #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
 
     b.start()

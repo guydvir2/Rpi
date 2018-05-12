@@ -14,13 +14,17 @@ def load_services(log_file, dev_name):
     global file_logger, GmailDaemon
     path_define()
     file_logger = utils_localswitch.Log2File(home + '/Documents/' + log_file, screen=0, name_of_master=dev_name)
-    GmailDaemon = GmailSender(sender_file=path + '/modules/ufile.txt', password_file=path + '/modules/pfile.txt')
-    
+    # GmailDaemon = GmailSender(sender_file=path + '/modules/ufile.txt', password_file=path + '/modules/pfile.txt')
+
 
 def execute_command():
-    sw1.switch_state=1
+    sw1.switch_state = 1
     time.sleep(0.1)
-    sw1.switch_state=0
+    sw1.switch_state = 0
+
+def switch(state):
+    if state in [0,1]:
+        sw1.switch_state=state
 
 
 def load_lcd():
@@ -69,13 +73,14 @@ log = 'SingleSwitch_Sched.log'
 try:
     load_services(log, dev_name)
     load_HW_switches()
-    #load_watchdogs()
-    #load_lcd()
-    #time.sleep(2)
-    
-    scheduler = scheduler.RunWeeklySchedule(func2run=execute_command)
-    scheduler.add_weekly_task(new_task={'start_days':[3],'start_time':'18:00:00','end_days':[3],'end_time':'20:33:10'})
-    scheduler.run_schedule()
+    load_watchdogs()
+    # load_lcd()
+    # time.sleep(2)
+
+    scheduler = scheduler.RunWeeklySchedule(func_on=switch(1), func_off=switch(0))
+    scheduler.add_weekly_task(
+        new_task={'start_days': [3], 'start_time': '18:00:00', 'end_days': [3], 'end_time': '20:33:10'})
+    scheduler.start()
 
     body_message = utils_localswitch.XTractLastLogEvent(home + '/Documents/' + log).xport_chopped_log()
 
@@ -84,9 +89,9 @@ except:
 
 finally:
     pass
-    #GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification ' + dev_name,
+    # GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification ' + dev_name,
     #                         body=body_message)
 
 time.sleep(1)
 
-#tests()
+# tests()
