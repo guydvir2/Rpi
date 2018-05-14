@@ -247,6 +247,13 @@ class WifiControl:
                                   universal_newlines=True)
             a1.communicate(self.pwd + '\n')[1]
 
+    def wifi_connect(self,ssid):
+        #if state.upper() in ['ON', 'OFF']:
+        updated_command = 'nmcli device wifi connect Xiaomi_D6C8'.split()
+        a1 = subprocess.Popen(['sudo', '-S'] + updated_command, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  universal_newlines=True)
+        a1.communicate(self.pwd + '\n')[1]
+
     def read_pwd_fromfile(self):
         filename = '/home/guy/Documents/github/Rpi/modules/p.txt'
         with open(filename, 'r')as f:
@@ -261,9 +268,10 @@ class WifiControl:
         self.wifi_change_state('off')
         self.get_status()
 
-    def wifi_on(self):
+    def wifi_on(self,ssid):
         try:
             self.wifi_change_state('on')
+            self.wifi_connect(ssid)
             self.get_status()
         except OSError:
             print('NO NETWORK')
@@ -282,13 +290,15 @@ if __name__ == '__main__':
         print('off function')
 
 
-    # a = WifiControl()
-    # a.read_pwd_fromfile()
-    # a.wifi_on()
+    a = WifiControl()
+    a.read_pwd_fromfile()
+    a.wifi_on('HomeNetwork_2.4G')
+    # a.wifi_off()
 
-    b = RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
-    # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
-    # b.add_weekly_task(
-    #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
-
-    b.start()
+    #
+    # b = RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
+    # # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+    # # b.add_weekly_task(
+    # #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
+    #
+    # b.start()
