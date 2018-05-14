@@ -71,7 +71,7 @@ class RunWeeklySchedule:
         self.tasks_status, self.previous_task_status, self.weekly_tasks_list = [], [], []
         self.engage_task, self.tasks_dates, self.on_tasks = [], [], []
         self.on_func, self.off_func, self.ext_cond = on_func, off_func, ext_cond
-        self.filename = sched_file #'sched1.txt'
+        self.filename = sched_file
         self.cbit = cbit.CBit(500)
         """Engage flag gives the ability to enable or disable on/off regardless"""
 
@@ -92,6 +92,26 @@ class RunWeeklySchedule:
         else:
             print('Schedule file was not found on specified location', file_in)
 
+    def validate_schedule(self):
+        # Check if schedule inputs and valid
+        time_format = "%H:%M:%S"
+
+        for i, task in enumerate(self.weekly_tasks_list):
+            try:
+                datetime.datetime.strptime(task['start_time'], time_format)
+                datetime.datetime.strptime(task['end_time'], time_format)
+            except ValueError:
+                print('bad time format: ', task)
+                del self.weekly_tasks_list[i]
+                break
+
+            cond1 = all(list(map(lambda x: 0 < int(x) < 8, task['start_days'])))
+            cond2 = all(list(map(lambda x: 0 < int(x) < 8, task['end_days'])))
+            if not cond1 or not cond2:
+                print('bad day format: ', task)
+                del self.weekly_tasks_list[i]
+                break
+
     def convert_data_file(self):
         dict = []
         a1 = lambda a: a.split(',')
@@ -104,16 +124,21 @@ class RunWeeklySchedule:
         return dict
 
     def start(self):
+        # Case of reading schedule from file
         if not self.weekly_tasks_list and self.filename is not None:
             self.read_sched_file()
             print('Schedule file read successfully')
             for task in self.convert_data_file():
                 self.add_weekly_task(task)
+        # Case of getting schedule in code
         elif self.weekly_tasks_list:
             print('Schedule read as code arguments')
+        # Neither
         else:
-            print('Schedule was not read. Abort!')
+            print('Schedule not read properly. Abort!')
             quit()
+
+        self.validate_schedule()
         self.convert_weekly_tasks_to_dates()
         self.run_schedule()
         self.tasks_descriptive()
@@ -133,6 +158,7 @@ class RunWeeklySchedule:
                 self.tasks_dates[n][i] = status_dict
 
     def update_tasks_times(self):
+        # Decide if "ON" or "OFF" state
         self.tasks_status = []
         for m, task in enumerate(self.tasks_dates):
             self.tasks_status.append([])
@@ -260,7 +286,7 @@ if __name__ == '__main__':
     # a.read_pwd_fromfile()
     # a.wifi_on()
 
-    b = RunWeeklySchedule(on_func=on_func, off_func=off_func,sched_file='sched1.txt')
+    b = RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
     # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
     # b.add_weekly_task(
     #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
