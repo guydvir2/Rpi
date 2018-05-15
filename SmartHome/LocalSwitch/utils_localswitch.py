@@ -96,7 +96,7 @@ class Log2File:
         self.name_of_master = name_of_master
         self.output2screen = screen
         self.time_stamp_in_log = time_in_log
-        self.filename = self.path + filename
+        self.filename = filename #self.path + filename
         self.check_logfile_valid()
         self.first_boot_entry()
 
