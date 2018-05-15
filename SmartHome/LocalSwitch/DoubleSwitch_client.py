@@ -27,8 +27,7 @@ def load_lcd():
 
 def load_HW_switches():
     global double_switch, dev_name
-    double_switch = localswitches.DoubleSwitch(26, 19, 21, 20, name=dev_name, ext_log=file_logger, sw0_name=' /UP',
-                                               sw1_name=' /DOWN')
+    double_switch = localswitches.DoubleSwitch(26, 16, 21, 20, name=dev_name, ext_log=file_logger, sw0_name=' /UP',sw1_name=' /DOWN',mode='toggle')
     ##Timeout is a must
     time.sleep(2)
 
@@ -72,8 +71,9 @@ except:
     body_message = 'Fail to load correctly'
 
 finally:
-    GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification ' + dev_name,
-                             body=body_message)
+    pass
+    #GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification ' + dev_name,
+     #                        body=body_message)
 
 time.sleep(1)
 

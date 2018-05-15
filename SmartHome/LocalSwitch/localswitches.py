@@ -50,9 +50,10 @@ class SingleSwitch:
             self.relay = gpiozero.OutputDevice(self.relay_pin)
 
             if self.mode == 'toggle':
+                pass
                 self.button.when_pressed = self.toggle_switch
             elif self.mode == 'press':
-                self.relay.source = self.button.values
+                #self.relay.source = self.button.values
                 self.button.when_pressed = self.press_switch
                 self.button.when_released = self.release_switch
             self.log_record('GPIO initialize successfully')
@@ -63,6 +64,13 @@ class SingleSwitch:
             quit()
 
     def press_switch(self, add=''):
+        """ Press state only"""
+
+        # Case of DoubleSwitch
+        self.off_other_switch()
+        #
+        
+        self.relay.on()
         if add == '':
             add = 'button'
         self.press_counter += 1
@@ -70,39 +78,57 @@ class SingleSwitch:
         self.log_record(msg)
 
     def release_switch(self, add=''):
+        """ Press state only"""
+        
+        # Case of DoubleSwitch
+        self.off_other_switch()
+        #
+        
+        self.relay.off()
         if add == '':
             add = 'button'
         msg = ('[released] [%s]' % (add))
         self.log_record(msg)
 
-    def toggle_switch(self, add=''):
-        if add == '':
-            add = 'button'
+    def toggle_switch(self, pressed_by='', state=None):
+        """ Toggle State only"""
+        text=pressed_by
         self.last_state = self.relay.value
-
         # in case of DoubleSwitch
         self.off_other_switch()
         #
-
-        self.relay.toggle()
+        if pressed_by == '':
+            self.relay.toggle()
+        elif pressed_by == 'code':
+            if state == 0:
+                self.relay.off()
+            elif state == 1:
+                self.relay.on()
+                
         self.current_state = self.relay.value
         self.press_counter += 1
         msg = ('[%s --> %s] pressed [%s] [%d] times' % (self.last_state,
-                                                        self.current_state, add, self.press_counter))
+                                                        self.current_state, text, self.press_counter))
         self.log_record(msg)
 
     @property
     def switch_state(self):
         return [self.relay.value, self.button.value]
 
+    """ Using for code change state- allways as toggle"""
     @switch_state.setter
     def switch_state(self, value):
+
         if value == 0:
             if self.relay.value is True:
-                self.toggle_switch(add='code')
+                self.toggle_switch(pressed_by='code', state=value)
+                #self.off_other_switch()
+                #self.relay.off()
         elif value == 1:
             if self.relay.value is False:
-                self.toggle_switch(add='code')
+                self.toggle_switch(pressed_by='code', state=value)
+                #self.off_other_switch()
+                #self.relay.on()
         else:
             msg = '[%s] must be [0,1]' % self.name
             self.log_record(msg)

@@ -24,7 +24,7 @@ def load_lcd():
 
 def load_HW_switches():
     global sw1, dev_name
-    sw1 = localswitches.SingleSwitch(19, 21, name=dev_name, mode='toggle', ext_log=file_logger)
+    sw1 = localswitches.SingleSwitch(16, 21, name=dev_name, mode='press', ext_log=file_logger)
     ##Timeout is a must
     time.sleep(2)
 
@@ -33,9 +33,8 @@ def load_watchdogs():
 
 def tests():
     sw1.switch_state = 1
-    time.sleep(1)
+    time.sleep(2)
     sw1.switch_state = 0
-    time.sleep(1)
 
 def path_define():
     global path, home
@@ -56,14 +55,15 @@ try:
     load_services(log,dev_name)
     load_HW_switches()
     load_watchdogs()
-    load_lcd()
+    #load_lcd()
     body_message = utils_localswitch.XTractLastLogEvent(home+'/Documents/'+log).xport_chopped_log()
 
 except:
     body_message='Fail to load correctly'
 
 finally:
-    GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification '+dev_name,body=body_message)
+    pass
+    #GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification '+dev_name,body=body_message)
     
 time.sleep(1)
 

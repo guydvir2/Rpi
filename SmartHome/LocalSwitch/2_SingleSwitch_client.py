@@ -4,7 +4,6 @@ import localswitches
 import time
 import sys
 from gmail_mod import GmailSender
-import wifi_shut
 
 
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
@@ -28,14 +27,10 @@ def load_lcd():
 
 def load_HW_switches():
     global sw1, sw2, dev_name
-    sw1 = localswitches.SingleSwitch(19, 21, name=dev_name + '#1', mode='toggle', ext_log=file_logger)
+    sw1 = localswitches.SingleSwitch(16, 21, name=dev_name + '#1', mode='press', ext_log=file_logger)
     sw2 = localswitches.SingleSwitch(26, 20, name=dev_name + '#2', mode='toggle', ext_log=file_logger)
     # Timeout is a must
     time.sleep(2)
-
-def load_local_timetable():
-
-
 
 
 def load_watchdogs():
@@ -73,15 +68,16 @@ try:
     load_services(log, dev_name)
     load_HW_switches()
     load_watchdogs()
-    load_lcd()
+    #load_lcd()
     body_message = utils_localswitch.XTractLastLogEvent(home + '/Documents/' + log).xport_chopped_log()
 
 except:
     body_message = 'Fail to load correctly'
 
 finally:
-    GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification ' + dev_name,
-                             body=body_message)
+    pass
+    #GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification ' + dev_name,
+     #                        body=body_message)
 
 time.sleep(1)
 
