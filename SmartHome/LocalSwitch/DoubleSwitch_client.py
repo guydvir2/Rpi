@@ -4,6 +4,7 @@ import localswitches
 import time
 import sys
 from gmail_mod import GmailSender
+import scheduler
 
 
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
@@ -55,7 +56,30 @@ def path_define():
         home = '/home/guy'
     path = home + '/Documents/github/Rpi'
 
+def load_sched():
+    global double_switch
+    def sw0_on():
+        double_switch.switch0.switch_state = 1
+    def sw0_off():
+        double_switch.switch0.switch_state = 0
+    def sw1_on():
+        double_switch.switch1.switch_state = 1
+    def sw1_off():
+        double_switch.switch1.switch_state = 0
+        
+    sched0 = scheduler.RunWeeklySchedule(on_func=sw0_on, off_func=sw0_off)
+    sched1 = scheduler.RunWeeklySchedule(on_func=sw1_on, off_func=sw1_off)
 
+    sched0.add_weekly_task(
+        new_task={'start_days': [3], 'start_time': '12:54:00', 'end_days': [3], 'end_time': '12:54:30'})
+    sched1.add_weekly_task(
+        new_task={'start_days': [3], 'start_time': '12:54:10', 'end_days': [3], 'end_time': '12:54:50'})
+
+    sched0.start()
+    sched1.start()
+
+
+    
 ## Program starts HERE:
 dev_name = 'Window'
 log = 'DoubleSwitches.log'
@@ -65,6 +89,7 @@ try:
     load_HW_switches()
     load_watchdogs()
     # load_lcd()
+    load_sched()
     body_message = utils_localswitch.XTractLastLogEvent(home + '/Documents/' + log).xport_chopped_log()
 
 except:
@@ -77,4 +102,4 @@ finally:
 
 time.sleep(1)
 
-tests()
+#tests()
