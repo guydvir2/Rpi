@@ -5,6 +5,7 @@ from sys import platform
 import datetime
 import os
 import csv
+import time
 
 
 class WeeklyIntervals:
@@ -239,20 +240,21 @@ class WifiControl:
         print('booted on %s system' % self.plat)
         self.wifi_command = 'nmcli radio wifi'.split()
         self.pwd = None
+        self.read_pwd_fromfile()
 
-    def wifi_change_state(self, state):
+    def wifi_on_off(self, state):
         if state.upper() in ['ON', 'OFF']:
             updated_command = self.wifi_command + [state.lower()]
             a1 = subprocess.Popen(['sudo', '-S'] + updated_command, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
                                   universal_newlines=True)
-            a1.communicate(self.pwd + '\n')[1]
+            # a1.communicate(self.pwd + '\n')[1]
 
-    def wifi_connect(self,ssid):
-        #if state.upper() in ['ON', 'OFF']:
-        updated_command = 'nmcli device wifi connect Xiaomi_D6C8'.split()
+    def connect_network(self, ssid):
+        updated_command = 'nmcli device wifi connect %s' % ssid
+        updated_command = updated_command.split()
         a1 = subprocess.Popen(['sudo', '-S'] + updated_command, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
-                                  universal_newlines=True)
-        a1.communicate(self.pwd + '\n')[1]
+                              universal_newlines=True)
+        # a1.communicate(self.pwd + '\n')[1]
 
     def read_pwd_fromfile(self):
         filename = '/home/guy/Documents/github/Rpi/modules/p.txt'
@@ -260,25 +262,38 @@ class WifiControl:
             self.pwd = f.read()
 
     def get_status(self):
-        a1 = subprocess.Popen(['nmcli', 'radio', 'all'], stdout=subprocess.PIPE)
-        tup_output = a1.communicate()
-        print(tup_output)
+        p = subprocess.Popen(['nmcli', 'radio', 'all'], stdout=subprocess.PIPE)
+        # tup_output = p.communicate()
+        a = []
+        # time.sleep(10)
+        for line in iter(p.stdout.readline, b''):
+            a.append(str(line)[2:-3].split(' '))
+        print(a[0][2], a[1][2])
+        p.stdout.close()
+        p.wait()
 
     def wifi_off(self):
-        self.wifi_change_state('off')
+        self.wifi_on_off('off')
+        time.sleep(2)
         self.get_status()
 
-    def wifi_on(self,ssid):
+    def wifi_on(self, ssid):
         try:
-            self.wifi_change_state('on')
-            self.wifi_connect(ssid)
+            self.wifi_on_off('on')
+            self.connect_network(ssid)
+            time.sleep(2)
             self.get_status()
         except OSError:
             print('NO NETWORK')
-        print(self.verify_ip())
+        print(self.verify_connection())
 
-    def verify_ip(self):
-        print(getip.get_ip())
+    def verify_connection(self):
+        ips = getip.get_ip()
+        # LAN & WAN reachable
+        if ips[0] and ips[1]:
+            return True
+        else:
+            return False
 
 
 if __name__ == '__main__':
@@ -291,8 +306,7 @@ if __name__ == '__main__':
 
 
     a = WifiControl()
-    a.read_pwd_fromfile()
-    a.wifi_on('HomeNetwork_2.4G')
+    # a.wifi_on('HomeNetwork_2.4G')
     # a.wifi_off()
 
     #
