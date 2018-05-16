@@ -1,15 +1,195 @@
 from signal import pause
-import threading
 from time import sleep
+from sys import platform
 import datetime
+import time
+import os
+import threading
+from socket import gethostname
 
 try:
     import gpiozero
 
-    ok_module = True
+    gpiozero_modules = True
 except ImportError:  # ModuleNotFoundError:
     print("Fail to obtain gpiozero module")
-    ok_module = False
+    gpiozero_modules = False
+
+try:
+    import my_paths
+    import getip
+    import use_lcd
+    import scheduler
+    from gmail_mod import GmailSender
+
+    my_modules = True
+
+except ImportError:
+    my_modules = False
+    print('Fail to obtain one or more RaspberryPi modules')
+    # quit()
+
+
+class Output2LCD:
+    """ This class outputs data to 2 lines of LCD matrix,
+    parameters:
+    1)switches - max of 2 lines od data
+    2) ext_log - use class Log2File to save what displayed on LCD"""
+
+    def __init__(self, switches, ext_log=None):
+        self.switches = switches
+        self.boot_success = False
+        self.log = ext_log
+        try:
+            # Case of HW err
+            self.lcd_display = use_lcd.MyLCD()
+            self.t = threading.Thread(name='thread_disp_lcd', target=self.display_status_loop)
+            self.t.start()
+            self.boot_success = True
+        except OSError:
+            msg = "LCD hardware error"
+            try:
+                self.log.append_log(msg)
+            except AttributeError:
+                pass
+            finally:
+                print(msg)
+
+    def display_status_loop(self):
+        while True:
+            self.disp_switch_status(time2show=3)
+            self.disp_time(time2show=3)
+
+    def disp_switch_status(self, time2show=2):
+        # time to display relays status on LCD
+        t1 = 0
+        t_stamp = datetime.datetime.now()
+        status = [[] for i in range(len(self.switches))]
+        last_status = [[] for i in range(len(self.switches))]
+        self.lcd_display.clear_lcd()
+
+        while t1 < time2show:
+            textonlcd = ['', '']
+            for i, current_switch in enumerate(self.switches):
+                # Detect change
+                if last_status[i] != current_switch.switch_state[0]:
+                    if current_switch.switch_state[0] is False:
+                        s = 'off'
+                    elif current_switch.switch_state[0] is True:
+                        s = 'on '
+                    status[i] = '%s :%s' % (current_switch.name, s)
+                    try:
+                        textonlcd[i] = str(status[i])
+                        self.log.append_log(status[i], time_stamp=1)
+                    except AttributeError:
+                        pass
+                    last_status[i] = current_switch.switch_state[0]
+                    self.lcd_display.center_str(textonlcd[0], textonlcd[1])
+            # take it easy :)
+            time.sleep(0.5)
+            t1 = (datetime.datetime.now() - t_stamp).total_seconds()
+
+    def disp_time(self, time2show=5):
+        t2 = 0
+        t_stamp = datetime.datetime.now()
+        self.lcd_display.clear_lcd()
+        while t2 < time2show:
+            time_now = str(datetime.datetime.now())[:-5].split(' ')
+            self.lcd_display.center_str(text1=time_now[0], text2=time_now[1])
+            t2 = (datetime.datetime.now() - t_stamp).total_seconds()
+
+
+class Log2File:
+    def __init__(self, filename, screen=0, time_in_log=0, name_of_master=''):
+        self.path = ''
+        # self.detectOS()
+        self.name_of_master = name_of_master
+        self.output2screen = screen
+        self.time_stamp_in_log = time_in_log
+        self.filename = filename  # self.path + filename
+        self.check_logfile_valid()
+        self.first_boot_entry()
+
+    def time_stamp(self):
+        t = str(datetime.datetime.now())[:-5]
+        return t
+
+    def detectOS(self):
+        os_type = platform
+        if os_type == 'darwin':
+            self.path = '/Users/guy/Documents/github/Rpi/SmartHome/'
+        elif os_type == 'win32':
+            self.path = 'd:/users/guydvir/Documents/git/Rpi/SmartHome/'
+        elif os_type == 'linux':
+            self.path = '/home/guy/Documents/github/Rpi/SmartHome/'
+
+    def first_boot_entry(self):
+        # msg = 'log start @%s' % (str(platform))
+        msg = '\nlog start @%s, IP:%s, OS:%s, Name:%s' % (
+            gethostname(), str(getip.get_ip()[0]), platform, self.name_of_master)
+        self.append_log(msg)
+        self.append_log('*' * len(msg))
+
+    def check_logfile_valid(self):
+        if os.path.isfile(self.filename) is True:
+            self.valid_logfile = True
+        else:
+            open(self.filename, 'a').close()
+            self.valid_logfile = os.path.isfile(self.filename)
+            if self.valid_logfile is True:
+                msg = '>>Log file %s was created successfully' % self.filename
+            else:
+                msg = '>>Log file %s failed to create' % self.filename
+            print(msg)
+            self.append_log(msg, time_stamp=1)
+
+    def append_log(self, log_entry='', time_stamp=-1):
+        # permanent time_stamp
+        if time_stamp is -1:
+            if self.time_stamp_in_log == 1:
+                msg = '[%s] %s' % (self.time_stamp(), log_entry)
+            else:
+                msg = '%s' % log_entry
+        # ADHOC time_stamp - over-rides permanent one
+        elif time_stamp is 1:
+            msg = '[%s] %s' % (self.time_stamp(), log_entry)
+        elif time_stamp is 0:
+            msg = '%s' % log_entry
+
+        if self.valid_logfile is True:
+            myfile = open(self.filename, 'a')
+            myfile.write(msg + '\n')
+            myfile.close()
+        else:
+            print('Log err')
+        if self.output2screen == 1:
+            print(msg)
+
+
+class XTractLastLogEvent:
+    def __init__(self, filename):
+        self.fname = filename
+        self.chopped_log = ''
+        self.read_logfile()
+
+    def read_logfile(self):
+        if os.path.isfile(self.fname) is True:
+            with open(self.fname, 'r') as f:
+                data_file = f.readlines()
+                for line in reversed(data_file):
+                    if 'log start' in line:
+                        self.chopped_log = line + self.chopped_log
+                        break
+                    else:
+                        self.chopped_log = line + self.chopped_log
+        else:
+            print('file', self.fname, ' not found')
+
+    def xport_chopped_log(self):
+        if self.chopped_log != []:
+            return self.chopped_log
+        else:
+            return ('failed action')
 
 
 class SingleSwitch:
@@ -53,7 +233,7 @@ class SingleSwitch:
                 pass
                 self.button.when_pressed = self.toggle_switch
             elif self.mode == 'press':
-                #self.relay.source = self.button.values
+                # self.relay.source = self.button.values
                 self.button.when_pressed = self.press_switch
                 self.button.when_released = self.release_switch
             self.log_record('GPIO initialize successfully')
@@ -69,7 +249,7 @@ class SingleSwitch:
         # Case of DoubleSwitch
         self.off_other_switch()
         #
-        
+
         self.relay.on()
         if add == '':
             add = 'button'
@@ -79,11 +259,11 @@ class SingleSwitch:
 
     def release_switch(self, add=''):
         """ Press state only"""
-        
+
         # Case of DoubleSwitch
         self.off_other_switch()
         #
-        
+
         self.relay.off()
         if add == '':
             add = 'button'
@@ -92,7 +272,7 @@ class SingleSwitch:
 
     def toggle_switch(self, pressed_by='', state=None):
         """ Toggle State only"""
-        text=pressed_by
+        text = pressed_by
         self.last_state = self.relay.value
         # in case of DoubleSwitch
         self.off_other_switch()
@@ -104,7 +284,7 @@ class SingleSwitch:
                 self.relay.off()
             elif state == 1:
                 self.relay.on()
-                
+
         self.current_state = self.relay.value
         self.press_counter += 1
         msg = ('[%s --> %s] pressed [%s] [%d] times' % (self.last_state,
@@ -116,44 +296,23 @@ class SingleSwitch:
         return [self.relay.value, self.button.value]
 
     """ Using for code change state- allways as toggle"""
+
     @switch_state.setter
     def switch_state(self, value):
 
         if value == 0:
             if self.relay.value is True:
                 self.toggle_switch(pressed_by='code', state=value)
-                #self.off_other_switch()
-                #self.relay.off()
+                # self.off_other_switch()
+                # self.relay.off()
         elif value == 1:
             if self.relay.value is False:
                 self.toggle_switch(pressed_by='code', state=value)
-                #self.off_other_switch()
-                #self.relay.on()
+                # self.off_other_switch()
+                # self.relay.on()
         else:
             msg = '[%s] must be [0,1]' % self.name
             self.log_record(msg)
-
-    # @switch_state.setter
-    # def switch_state(self, value):
-    #     if value == 0:
-    #         if self.mode == 'toggle':
-    #             if self.relay.value is True:
-    #                 self.toggle_switch(add='code')
-    #         elif self.mode == "press":
-    #             if self.relay.value is True:
-    #                 self.release_switch(add='code')
-    #                 self.relay.off()
-    #     elif value == 1:
-    #         if self.mode == 'toggle':
-    #             if self.relay.value is False:
-    #                 self.toggle_switch(add='code')
-    #         elif self.mode == "press":
-    #             if self.relay.value is False:
-    #                 self.press_switch(add='code')
-    #                 self.relay.on()
-    #     else:
-    #         msg = '[%s] must be [0,1]' % self.name
-    #         self.log_record(msg)
 
     def log_record(self, text1=''):
         msg = ''
@@ -206,29 +365,85 @@ class DoubleSwitch:
         self.switch1.watch_dog()
 
 
-if __name__ == "__main__":
-    if ok_module is True:
-        #### CASE A- SingleSwitch ########
+class HomePiLocalSwitch:
+    def __init__(self, switch_type, gpio_in, gpio_out, mode='press', alias='HomePi-Switch',
+                 ext_log=None):
+        self.on_func, self.off_func, self.schedule, self.email = None, None, None, None
 
-        a = SingleSwitch(26, 20, mode='press', name="LocalSwitch_SW#1")
-        # a pause due to use of thread
-        sleep(1)
-        a.watch_dog()
-        sleep(1)
-        a.switch_state = 1
-        sleep(2)
-        a.switch_state = 0
-        sleep(0.11)
+        if ext_log is not None:
+            self.logger = Log2File(ext_log, screen=0, name_of_master=alias)
 
-        a.switch_state = 1
+        if switch_type == 'single':
+            self.switch = SingleSwitch(button_pin=gpio_in, relay_pin=gpio_out, name=alias, mode=mode,
+                                       ext_log=self.logger)
+        elif switch_type == 'double':
+            self.switch = DoubleSwitch(button_pin1=gpio_in[0], button_pin2=gpio_in[1], relay_pin1=gpio_out[0],
+                                       relay_pin2=gpio_out[1], mode=mode, name='HomePi ',
+                                       sw0_name='/SW#0',
+                                       sw1_name='/SW#1', ext_log=self.logger)
 
-        b = SingleSwitch(19, 21, mode='toggle', name="LocalSwitch_SW#2")
-        sleep(1)
-        b.switch_state = 1
-        sleep(2)
-        b.switch_state = 0
-    else:
-        print("Can't run without gpiozero module")
+    def use_watch_dog(self):
+        self.switch.watch_dog()
 
-        #### CASE B - Using Double Switch#########
-        # doubleswitch = DoubleSwitch(26, 19, 21, 20, name='Room#1_Shades')
+    def weekly_schedule(self, on_func, off_func, sched_filename=None, local_schedule=None):
+        def on_func():
+            self.switch.switch_state = 1
+
+        def off_func():
+            self.switch.switch_state = 0
+
+        self.schedule = scheduler.RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file=sched_filename)
+        if local_schedule is not None and sched_filename is None:
+            self.schedule.add_weekly_task(local_schedule)
+        self.schedule.start()
+
+        # Need to finish defintion of only one case is acceptable
+
+        # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+        # b.add_weekly_task(
+        #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
+
+    def gmail(self):
+        self.email = GmailSender(self, sender=None, password=None, password_file=None, sender_file=None)
+        # sender_file=path + '/modules/ufile.txt', password_file=path + '/modules/pfile.txt')
+
+    def use_lcd(self):
+        # need to find a way to define Double or single switch
+
+        self.lcd = Output2LCD([])  # , ext_log=file_logger)
+        if self.lcd.boot_success is True:
+            self.logger.append_log(log_entry='[LCD Display] detected and loaded OK')
+        else:
+            self.logger.append_log(log_entry='[LCD Display] not present/ driver error', time_stamp=1)
+
+            pass
+
+            # if __name__ == "__main__":
+            #     if
+            # gpiozero_modules is True:
+            # #### CASE A- SingleSwitch ########
+            #
+            # a = SingleSwitch(26, 20, mode='press', name="LocalSwitch_SW#1")
+            # # a pause due to use of thread
+            # sleep(1)
+            # a.watch_dog()
+            # sleep(1)
+            # a.switch_state = 1
+            # sleep(2)
+            # a.switch_state = 0
+            # sleep(0.11)
+            #
+            # a.switch_state = 1
+            #
+            # b = SingleSwitch(19, 21, mode='toggle', name="LocalSwitch_SW#2")
+            # sleep(1)
+            # b.switch_state = 1
+            # sleep(2)
+            # b.switch_state = 0
+            # else:
+            # print("Can't run without gpiozero module")
+            #
+            # #### CASE B - Using Double Switch#########
+            # # doubleswitch = DoubleSwitch(26, 19, 21, 20, name='Room#1_Shades')
+
+a=HomePiLocalSwitch(switch_type='single',gpio_in=20, gpio_out=16,mode='press',ext_log='/home/guy/Documents/log.log')

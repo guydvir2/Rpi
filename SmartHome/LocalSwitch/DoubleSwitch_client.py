@@ -4,6 +4,7 @@ import localswitches
 import time
 import sys
 from gmail_mod import GmailSender
+import scheduler
 
 
 # Define Switch :(Output GPIO, Input GPIO, name=text, mode='toggle'/'press', ext_log=None)
@@ -25,6 +26,10 @@ def load_services(log_file, dev_name):
     GmailDaemon = GmailSender(sender_file=path + '/modules/ufile.txt', password_file=path + '/modules/pfile.txt')
 
 
+def load_watchdogs():
+    double_switch.watch_dog()
+
+
 def load_lcd():
     global lcd
     lcd = utils_localswitch.Output2LCD([double_switch.switch0, double_switch.switch1])  # , ext_log=file_logger)
@@ -34,16 +39,18 @@ def load_lcd():
         file_logger.append_log(log_entry='[LCD Display] not present/ driver error', time_stamp=1)
 
 
-def load_HW_switches():
-    global double_switch, dev_name
-    double_switch = localswitches.DoubleSwitch(21, 20, 26, 16, name=dev_name, ext_log=file_logger, sw0_name=' /UP',
-                                               sw1_name=' /DOWN', mode='press')
-    """Timeout is a must"""
-    time.sleep(2)
+def load_weekly_schedule():
+    def on_func():
+        pass
 
+    def off_func():
+        pass
 
-def load_watchdogs():
-    double_switch.watch_dog()
+    device_sched = scheduler.RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
+    device_sched.start()
+    # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+    # b.add_weekly_task(
+    #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
 
 
 def tests():
@@ -55,6 +62,14 @@ def tests():
     double_switch.switch0.switch_state = 1
     time.sleep(0.5)
     double_switch.switch0.switch_state = 0
+
+
+def load_HW_switches():
+    global double_switch, dev_name
+    double_switch = localswitches.DoubleSwitch(21, 20, 26, 16, name=dev_name, ext_log=file_logger, sw0_name=' /UP',
+                                               sw1_name=' /DOWN', mode='press')
+    """Timeout is a must"""
+    time.sleep(2)
 
 
 ## Program starts HERE:
