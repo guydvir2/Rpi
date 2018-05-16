@@ -127,8 +127,8 @@ class Log2File:
         # msg = 'log start @%s' % (str(platform))
         msg = '\nlog start @%s, IP:%s, OS:%s, Name:%s' % (
             gethostname(), str(getip.get_ip()[0]), platform, self.name_of_master)
-        self.append_log(msg)
-        self.append_log('*' * len(msg))
+        self.append_log(msg, time_stamp=0)
+        self.append_log('*' * len(msg), time_stamp=0)
 
     def check_logfile_valid(self):
         if os.path.isfile(self.filename) is True:
@@ -143,9 +143,9 @@ class Log2File:
             print(msg)
             self.append_log(msg, time_stamp=1)
 
-    def append_log(self, log_entry='', time_stamp=-1):
+    def append_log(self, log_entry='', time_stamp=None):
         # permanent time_stamp
-        if time_stamp is -1:
+        if time_stamp is None:
             if self.time_stamp_in_log == 1:
                 msg = '[%s] %s' % (self.time_stamp(), log_entry)
             else:
@@ -254,7 +254,7 @@ class SingleSwitch:
         if add == '':
             add = 'button'
         self.press_counter += 1
-        msg = ('[pressed] [%s] [%d times]' % (add, self.press_counter))
+        msg = ('[pressed ] [%s] [%d times]' % (add, self.press_counter))
         self.log_record(msg)
 
     def release_switch(self, add=''):
@@ -369,9 +369,10 @@ class HomePiLocalSwitch:
     def __init__(self, switch_type, gpio_in, gpio_out, mode='press', alias='HomePi-Switch',
                  ext_log=None):
         self.on_func, self.off_func, self.schedule, self.email = None, None, None, None
+        self.switch_type=switch_type
 
         if ext_log is not None:
-            self.logger = Log2File(ext_log, screen=0, name_of_master=alias)
+            self.logger = Log2File(ext_log, screen=0,time_in_log=0, name_of_master=alias)
 
         if switch_type == 'single':
             self.switch = SingleSwitch(button_pin=gpio_in, relay_pin=gpio_out, name=alias, mode=mode,
@@ -381,69 +382,94 @@ class HomePiLocalSwitch:
                                        relay_pin2=gpio_out[1], mode=mode, name='HomePi ',
                                        sw0_name='/SW#0',
                                        sw1_name='/SW#1', ext_log=self.logger)
+        else:
+            self.logger.append_log(log_entry='switch type parameter wrong. select:"double" or "single". Quit.',time_stamp=1)
+            quit()
+            
 
     def use_watch_dog(self):
         self.switch.watch_dog()
 
-    def weekly_schedule(self, on_func, off_func, sched_filename=None, local_schedule=None):
-        def on_func():
-            self.switch.switch_state = 1
+    def weekly_schedule(self, sched_filename_0=None, local_schedule_0=None, sched_filename_1=None, local_schedule_1=None):
+        if self.switch_type == "single":
+            def on_func_0():
+                self.switch.switch_state = 1
 
-        def off_func():
-            self.switch.switch_state = 0
+            def off_func_0():
+                self.switch.switch_state = 0
+                
+            if sched_filename_0 is not None or local_schedule_0 is not None:
+                self.schedule_0 = scheduler.RunWeeklySchedule(on_func=on_func_0, off_func=off_func_0, sched_file=sched_filename_0)
+                if local_schedule_0 is not None and sched_filename_0 is None:
+                    self.schedule_0.add_weekly_task(new_task=local_schedule_0)
+                
+                self.schedule_0.start()
+            else:
+                output='No schedule was given'
+                print(output)
+                self.logger.append_log(log_entry=output, time_stamp=1)
+            
 
-        self.schedule = scheduler.RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file=sched_filename)
-        if local_schedule is not None and sched_filename is None:
-            self.schedule.add_weekly_task(local_schedule)
-        self.schedule.start()
+        elif self.switch_type == "double":
+            def on_func_0():
+                self.switch.switch0.switch_state = 1
+
+            def off_func_0():
+                self.switch.switch0.switch_state = 0
+
+            def on_func_1():
+                self.switch.switch1.switch_state = 1
+
+            def off_func_1():
+                self.switch.switch1.switch_state = 0
+                
+            if sched_filename_0 is not None or local_schedule_0 is not None:
+                self.schedule_0 = scheduler.RunWeeklySchedule(on_func=on_func_0, off_func=off_func_0, sched_file=sched_filename_0)
+                if local_schedule_0 is not None and sched_filename_0 is None:
+                    self.schedule_0.add_weekly_task(new_task=local_schedule_0)
+
+                self.schedule_0.start()
+            else:
+                output='No schedule was given for sw0'
+                print(output)
+                self.logger.append_log(log_entry=output, time_stamp=1)
+                
+            if sched_filename_1 is not None or local_schedule_1 is not None:
+                self.schedule_1 = scheduler.RunWeeklySchedule(on_func=on_func_1, off_func=off_func_1, sched_file=sched_filename_1)
+                if local_schedule_1 is not None and sched_filename_1 is None:
+                    self.schedule_.add_weekly_task(new_task=local_schedule_1)
+
+                self.schedule_1.start()
+            else:
+                output='No schedule was given for sw1'
+                print(output)
+                self.logger.append_log(log_entry=output, time_stamp=1)
+            
+            
+            
 
         # Need to finish defintion of only one case is acceptable
 
-        # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
-        # b.add_weekly_task(
-        #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
 
-    def gmail(self):
-        self.email = GmailSender(self, sender=None, password=None, password_file=None, sender_file=None)
-        # sender_file=path + '/modules/ufile.txt', password_file=path + '/modules/pfile.txt')
+    def gmail(self, **kwargs):#sender=None, password=None, password_file=None, sender_file=None):
+        self.email = GmailSender(self, kwargs)
+        #self.email.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification ',body="BLABLA")
 
     def use_lcd(self):
-        # need to find a way to define Double or single switch
+        if self.switch_type == 'single':
+            self.lcd = Output2LCD([self.switch])  # , ext_log=file_logger)
+        elif self.switch_type == 'double':
+            self.lcd = Output2LCD([self.switch.switch0, self.switch.switch1])
 
-        self.lcd = Output2LCD([])  # , ext_log=file_logger)
         if self.lcd.boot_success is True:
-            self.logger.append_log(log_entry='[LCD Display] detected and loaded OK')
+            self.logger.append_log(log_entry='[LCD Display] detected and loaded OK', time_stamp=1)
         else:
             self.logger.append_log(log_entry='[LCD Display] not present/ driver error', time_stamp=1)
 
-            pass
 
-            # if __name__ == "__main__":
-            #     if
-            # gpiozero_modules is True:
-            # #### CASE A- SingleSwitch ########
-            #
-            # a = SingleSwitch(26, 20, mode='press', name="LocalSwitch_SW#1")
-            # # a pause due to use of thread
-            # sleep(1)
-            # a.watch_dog()
-            # sleep(1)
-            # a.switch_state = 1
-            # sleep(2)
-            # a.switch_state = 0
-            # sleep(0.11)
-            #
-            # a.switch_state = 1
-            #
-            # b = SingleSwitch(19, 21, mode='toggle', name="LocalSwitch_SW#2")
-            # sleep(1)
-            # b.switch_state = 1
-            # sleep(2)
-            # b.switch_state = 0
-            # else:
-            # print("Can't run without gpiozero module")
-            #
-            # #### CASE B - Using Double Switch#########
-            # # doubleswitch = DoubleSwitch(26, 19, 21, 20, name='Room#1_Shades')
-
-a=HomePiLocalSwitch(switch_type='single',gpio_in=20, gpio_out=16,mode='press',ext_log='/home/guy/Documents/log.log')
+#a=HomePiLocalSwitch(switch_type='single',gpio_in=20, gpio_out=16,mode='press',ext_log='/home/guy/Documents/log.log')
+a=HomePiLocalSwitch(switch_type='double',gpio_in=[20,21], gpio_out=[16,26],mode='press',ext_log='/home/guy/Documents/log.log')
+a.use_watch_dog()
+a.use_lcd()
+a.weekly_schedule(local_schedule_0={'start_days': [3], 'start_time': '19:03:00', 'end_days': [4], 'end_time': '23:08:00'}, sched_filename_1='/home/guy/Documents/github/Rpi/modules/sched1.txt')
+a.gmail(sender_file='/home/guy/Documents/github/Rpi/modules/ufile.txt', password_file='/home/guy/Documents/github/Rpi/modules/pfile.txt')

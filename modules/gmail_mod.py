@@ -33,7 +33,7 @@ class GmailSender:
             if os.path.isfile(self.ufile) is True:
                 with open(self.ufile, 'r') as f:
                     self.sender = f.read()
-                    # print(">> Sender details read from file: %s" % self.sender)
+                    print(">> Sender details read from file: %s" % self.sender)
             else:
                 self.sender = input("Please enter a gmail sender: ")
         # case 2: not supplied details
