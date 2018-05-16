@@ -236,14 +236,13 @@ class RunWeeklySchedule:
                 print_report('OFF')
 
     def log_record(self, text1=''):
-        # msg = ''
         time1 = str(datetime.datetime.now())[:-5]
         msg = '[%s] [%s] %s' % (time1, 'Weekly Schedule', text1)
         self.logbook.append(msg)
-        print(self.logbook[-1])
+        #print(self.logbook[-1])
+        msg1 = '[%s] %s' % ('Weekly Schedule', text1)
         if self.ext_log is not None:
-            self.ext_log.append_log(msg)
-        # return msg
+            self.ext_log.log_record(msg1)
 
 
 class WifiControl:
