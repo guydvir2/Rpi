@@ -33,7 +33,7 @@ class GmailSender:
             if os.path.isfile(self.ufile) is True:
                 with open(self.ufile, 'r') as f:
                     self.sender = f.read()
-                    print(">> Sender details read from file: %s" % self.sender)
+                    # print(">> Sender details read from file: %s" % self.sender)
             else:
                 self.sender = input("Please enter a gmail sender: ")
         # case 2: not supplied details
@@ -177,11 +177,12 @@ class MailBox:
 
 
 if __name__ == '__main__':
-    path = '/Users/guy/Documents/github/Rpi/modules/'
-    # GmailDaemon = GmailSender(sender_file=path + 'ufile.txt',
-    #                           password_file=path + 'pfile.txt')  # or directly (sender='send@gmail.com',password='pswd')
-    # GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], body="Python automated email",
-    #                          subject='Hi from gmail application in Python', attach=[''])
-    a = MailBox()
-    a.add_mail('this is subject', 'this is my msg', 'and this is my destiantion')
-    a.add_mail('this is subject2', 'this is my msg2', 'and this is my destiantion2')
+    path = '/home/guy/Documents/github/Rpi/modules/'
+    GmailDaemon = GmailSender(sender_file=path + 'ufile.txt',
+                              password_file=path + 'pfile.txt')  # or directly (sender='send@gmail.com',password='pswd')
+    GmailDaemon = GmailSender (sender='guydvir.tech@gmail.com', password='GdSd13100301')
+    GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], body="Python automated email",
+                             subject='Hi from gmail application in Python', attach=[''])
+    # a = MailBox()
+    # a.add_mail('this is subject', 'this is my msg', 'and this is my destiantion')
+    # a.add_mail('this is subject2', 'this is my msg2', 'and this is my destiantion2')

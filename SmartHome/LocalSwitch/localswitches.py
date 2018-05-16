@@ -17,10 +17,10 @@ except ImportError:  # ModuleNotFoundError:
 
 try:
     import my_paths
+    from gmail_mod import GmailSender
     import getip
     import use_lcd
     import scheduler
-    from gmail_mod import GmailSender
 
     my_modules = True
 
@@ -369,46 +369,49 @@ class HomePiLocalSwitch:
     def __init__(self, switch_type, gpio_in, gpio_out, mode='press', alias='HomePi-Switch',
                  ext_log=None):
         self.on_func, self.off_func, self.schedule, self.email = None, None, None, None
-        self.switch_type=switch_type
+        self.gmail_recip, self.gmail_service = None, None
+        self.switch_type = switch_type
 
         if ext_log is not None:
-            self.logger = Log2File(ext_log, screen=0,time_in_log=0, name_of_master=alias)
-
-        if switch_type == 'single':
-            self.switch = SingleSwitch(button_pin=gpio_in, relay_pin=gpio_out, name=alias, mode=mode,
-                                       ext_log=self.logger)
-        elif switch_type == 'double':
-            self.switch = DoubleSwitch(button_pin1=gpio_in[0], button_pin2=gpio_in[1], relay_pin1=gpio_out[0],
-                                       relay_pin2=gpio_out[1], mode=mode, name='HomePi ',
-                                       sw0_name='/SW#0',
-                                       sw1_name='/SW#1', ext_log=self.logger)
-        else:
-            self.logger.append_log(log_entry='switch type parameter wrong. select:"double" or "single". Quit.',time_stamp=1)
-            quit()
-            
+            self.logger = Log2File(ext_log, screen=0, time_in_log=0, name_of_master=alias)
+        """ To Be UnCommented"""
+        # if switch_type == 'single':
+        #     self.switch = SingleSwitch(button_pin=gpio_in, relay_pin=gpio_out, name=alias, mode=mode,
+        #                                ext_log=self.logger)
+        # elif switch_type == 'double':
+        #     self.switch = DoubleSwitch(button_pin1=gpio_in[0], button_pin2=gpio_in[1], relay_pin1=gpio_out[0],
+        #                                relay_pin2=gpio_out[1], mode=mode, name='HomePi ',
+        #                                sw0_name='/SW#0',
+        #                                sw1_name='/SW#1', ext_log=self.logger)
+        # else:
+        #     self.logger.append_log(log_entry='switch type parameter wrong. select:"double" or "single". Quit.',
+        #                            time_stamp=1)
+        #     quit()
+        """ Up to here"""
 
     def use_watch_dog(self):
         self.switch.watch_dog()
 
-    def weekly_schedule(self, sched_filename_0=None, local_schedule_0=None, sched_filename_1=None, local_schedule_1=None):
+    def weekly_schedule(self, sched_filename_0=None, local_schedule_0=None, sched_filename_1=None,
+                        local_schedule_1=None):
         if self.switch_type == "single":
             def on_func_0():
                 self.switch.switch_state = 1
 
             def off_func_0():
                 self.switch.switch_state = 0
-                
+
             if sched_filename_0 is not None or local_schedule_0 is not None:
-                self.schedule_0 = scheduler.RunWeeklySchedule(on_func=on_func_0, off_func=off_func_0, sched_file=sched_filename_0)
+                self.schedule_0 = scheduler.RunWeeklySchedule(on_func=on_func_0, off_func=off_func_0,
+                                                              sched_file=sched_filename_0)
                 if local_schedule_0 is not None and sched_filename_0 is None:
                     self.schedule_0.add_weekly_task(new_task=local_schedule_0)
-                
+
                 self.schedule_0.start()
             else:
-                output='No schedule was given'
+                output = 'No schedule was given'
                 print(output)
                 self.logger.append_log(log_entry=output, time_stamp=1)
-            
 
         elif self.switch_type == "double":
             def on_func_0():
@@ -422,38 +425,39 @@ class HomePiLocalSwitch:
 
             def off_func_1():
                 self.switch.switch1.switch_state = 0
-                
+
             if sched_filename_0 is not None or local_schedule_0 is not None:
-                self.schedule_0 = scheduler.RunWeeklySchedule(on_func=on_func_0, off_func=off_func_0, sched_file=sched_filename_0)
+                self.schedule_0 = scheduler.RunWeeklySchedule(on_func=on_func_0, off_func=off_func_0,
+                                                              sched_file=sched_filename_0)
                 if local_schedule_0 is not None and sched_filename_0 is None:
                     self.schedule_0.add_weekly_task(new_task=local_schedule_0)
 
                 self.schedule_0.start()
             else:
-                output='No schedule was given for sw0'
+                output = 'No schedule was given for sw0'
                 print(output)
                 self.logger.append_log(log_entry=output, time_stamp=1)
-                
+
             if sched_filename_1 is not None or local_schedule_1 is not None:
-                self.schedule_1 = scheduler.RunWeeklySchedule(on_func=on_func_1, off_func=off_func_1, sched_file=sched_filename_1)
+                self.schedule_1 = scheduler.RunWeeklySchedule(on_func=on_func_1, off_func=off_func_1,
+                                                              sched_file=sched_filename_1)
                 if local_schedule_1 is not None and sched_filename_1 is None:
-                    self.schedule_.add_weekly_task(new_task=local_schedule_1)
+                    self.schedule_1.add_weekly_task(new_task=local_schedule_1)
 
                 self.schedule_1.start()
             else:
-                output='No schedule was given for sw1'
+                output = 'No schedule was given for sw1'
                 print(output)
                 self.logger.append_log(log_entry=output, time_stamp=1)
-            
-            
-            
 
         # Need to finish defintion of only one case is acceptable
 
+    def gmail_defs(self, recipients, **kwargs):
+        self.gmail_service = GmailSender(**kwargs)
+        self.gmail_recip = recipients
 
-    def gmail(self, **kwargs):#sender=None, password=None, password_file=None, sender_file=None):
-        self.email = GmailSender(self, kwargs)
-        #self.email.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification ',body="BLABLA")
+    def notify_by_mail(self, subj, body):
+        self.gmail_service.compose_mail(recipients=self.gmail_recip, subject=subj, body=body)
 
     def use_lcd(self):
         if self.switch_type == 'single':
@@ -467,9 +471,14 @@ class HomePiLocalSwitch:
             self.logger.append_log(log_entry='[LCD Display] not present/ driver error', time_stamp=1)
 
 
-#a=HomePiLocalSwitch(switch_type='single',gpio_in=20, gpio_out=16,mode='press',ext_log='/home/guy/Documents/log.log')
-a=HomePiLocalSwitch(switch_type='double',gpio_in=[20,21], gpio_out=[16,26],mode='press',ext_log='/home/guy/Documents/log.log')
-a.use_watch_dog()
-a.use_lcd()
-a.weekly_schedule(local_schedule_0={'start_days': [3], 'start_time': '19:03:00', 'end_days': [4], 'end_time': '23:08:00'}, sched_filename_1='/home/guy/Documents/github/Rpi/modules/sched1.txt')
-a.gmail(sender_file='/home/guy/Documents/github/Rpi/modules/ufile.txt', password_file='/home/guy/Documents/github/Rpi/modules/pfile.txt')
+# a=HomePiLocalSwitch(switch_type='single',gpio_in=20, gpio_out=16,mode='press',ext_log='/home/guy/Documents/log.log')
+a = HomePiLocalSwitch(switch_type='double', gpio_in=[20, 21], gpio_out=[16, 26], mode='press',
+                      ext_log='/home/guy/Documents/log.log')
+# a.use_watch_dog()
+# a.use_lcd()
+# a.weekly_schedule(
+#     local_schedule_0={'start_days': [3], 'start_time': '19:03:00', 'end_days': [4], 'end_time': '23:08:00'},
+#     sched_filename_1='/home/guy/Documents/github/Rpi/modules/sched1.txt')
+a.gmail_defs(recipients=['guydvir.tech@gmail.com'], sender_file='/home/guy/Documents/github/Rpi/modules/ufile.txt',
+             password_file='/home/guy/Documents/github/Rpi/modules/pfile.txt')
+a.notify_by_mail(subj='Are we there Yets?', body='NO!')
