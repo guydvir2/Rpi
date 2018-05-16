@@ -375,18 +375,18 @@ class HomePiLocalSwitch:
         if ext_log is not None:
             self.logger = Log2File(ext_log, screen=0, time_in_log=0, name_of_master=alias)
         """ To Be UnCommented"""
-        # if switch_type == 'single':
-        #     self.switch = SingleSwitch(button_pin=gpio_in, relay_pin=gpio_out, name=alias, mode=mode,
-        #                                ext_log=self.logger)
-        # elif switch_type == 'double':
-        #     self.switch = DoubleSwitch(button_pin1=gpio_in[0], button_pin2=gpio_in[1], relay_pin1=gpio_out[0],
-        #                                relay_pin2=gpio_out[1], mode=mode, name='HomePi ',
-        #                                sw0_name='/SW#0',
-        #                                sw1_name='/SW#1', ext_log=self.logger)
-        # else:
-        #     self.logger.append_log(log_entry='switch type parameter wrong. select:"double" or "single". Quit.',
-        #                            time_stamp=1)
-        #     quit()
+        if switch_type == 'single':
+            self.switch = SingleSwitch(button_pin=gpio_in, relay_pin=gpio_out, name=alias, mode=mode,
+                                       ext_log=self.logger)
+        elif switch_type == 'double':
+            self.switch = DoubleSwitch(button_pin1=gpio_in[0], button_pin2=gpio_in[1], relay_pin1=gpio_out[0],
+                                       relay_pin2=gpio_out[1], mode=mode, name='HomePi ',
+                                       sw0_name='/SW#0',
+                                       sw1_name='/SW#1', ext_log=self.logger)
+        else:
+            self.logger.append_log(log_entry='switch type parameter wrong. select:"double" or "single". Quit.',
+                                   time_stamp=1)
+            quit()
         """ Up to here"""
 
     def use_watch_dog(self):
@@ -481,4 +481,4 @@ a = HomePiLocalSwitch(switch_type='double', gpio_in=[20, 21], gpio_out=[16, 26],
 #     sched_filename_1='/home/guy/Documents/github/Rpi/modules/sched1.txt')
 a.gmail_defs(recipients=['guydvir.tech@gmail.com'], sender_file='/home/guy/Documents/github/Rpi/modules/ufile.txt',
              password_file='/home/guy/Documents/github/Rpi/modules/pfile.txt')
-a.notify_by_mail(subj='Are we there Yets?', body='NO!')
+a.notify_by_mail(subj='Are we there Yet?', body='NO!')
