@@ -233,7 +233,6 @@ class SingleSwitch:
                 pass
                 self.button.when_pressed = self.toggle_switch
             elif self.mode == 'press':
-                # self.relay.source = self.button.values
                 self.button.when_pressed = self.press_switch
                 self.button.when_released = self.release_switch
             self.log_record('GPIO initialize successfully')
@@ -271,7 +270,7 @@ class SingleSwitch:
         self.log_record(msg)
 
     def toggle_switch(self, pressed_by='', state=None):
-        """ Toggle State only"""
+        """ Toggle State use in code command and Toggle mode only"""
         text = pressed_by
         self.last_state = self.relay.value
         # in case of DoubleSwitch
@@ -321,9 +320,11 @@ class SingleSwitch:
         return msg
 
     def add_other_switch(self, other_switch):
+        """DoubleSwitch only"""
         self.other_SingleSwitch = other_switch
 
     def off_other_switch(self):
+        """DoubleSwitch only"""
         if self.other_SingleSwitch is not None:
             if self.other_SingleSwitch.switch_state[0] is True:
                 self.other_SingleSwitch.switch_state = 0
@@ -378,7 +379,7 @@ class HomePiLocalSwitch:
                                        ext_log=self.logger)
         elif switch_type == 'double':
             self.switch = DoubleSwitch(button_pin1=gpio_in[0], button_pin2=gpio_in[1], relay_pin1=gpio_out[0],
-                                       relay_pin2=gpio_out[1], mode=mode, name='HomePi ',
+                                       relay_pin2=gpio_out[1], mode=mode, name=alias,
                                        sw0_name='/SW#0',
                                        sw1_name='/SW#1', ext_log=self.logger)
         else:
