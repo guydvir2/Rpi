@@ -49,15 +49,22 @@ class WeeklyIntervals:
             iso_day = 7
         return iso_day
 
-    def get_datetimes(self):
+    def get_datetimes(self, future_date=None):
         start_datetime = self.shift_from_toady_time_tuple(self.day_start, self.hour_start)
+        # case a: end day is in same week
         if self.day_end - self.day_start >= 0:
             end_datetime = self.shift_from_toady_time_tuple(self.day_end, self.hour_end)
+        # case b: end day is next week
         else:
             end_datetime = self.shift_from_toady_time_tuple(self.day_end + 7, self.hour_end)
+        now = datetime.datetime.now()
 
-        # if start_datetime > end_datetime:
-        #     end_datetime += datetime.timedelta(days=7)
+        # optional: create future dates
+        if future_date is True:
+            if now > start_datetime and now > end_datetime:
+                end_datetime = end_datetime + datetime.timedelta(days=7)
+                start_datetime = start_datetime + datetime.timedelta(days=7)
+
         return start_datetime, end_datetime
 
 
@@ -216,10 +223,11 @@ class RunWeeklySchedule:
         now = datetime.datetime.now()
 
         def print_report(state):
-            # self.log_record('Task [#%d/%d] [%s:%s] [%s] - [%s]' % (
-            #     i, m, state, str(now - sub_task['start'])[:-7], sub_task['start'], sub_task['end']))
-            self.log_record('Task [#%d/%d] is [%s] until [%s]' % (i, m, state, sub_task['end'] ))
 
+            """ SEE HOW TO UPDATE OFF TASK FOR FUTURE TIME TO ON - MOST LIKELY TO UPDATE WEEKLY INTERVALS CLASS"""
+            self.log_record('Task [#%d/%d] is [%s] until [%s]' % (i, m, state, sub_task['end']))
+
+        """AM I USING THIS FOR LOOP IN MY CODE???"""
         if task is None:
             for i, task in enumerate(self.tasks_status):
                 for m, sub_task in enumerate(task):
@@ -227,6 +235,8 @@ class RunWeeklySchedule:
                         print_report('ON')
                     elif now <= sub_task['start'] or (now > sub_task['start'] and sub_task['end']):
                         print_report('OFF')
+                        """THIS PART IS NEEDED FOR ONE KIND OF TASK TO SHOW"""
+
         else:
             sub_task = self.tasks_status[task[0]][task[1]]
             i, m = task[0], task[1]
@@ -239,7 +249,7 @@ class RunWeeklySchedule:
         time1 = str(datetime.datetime.now())[:-5]
         msg = '[%s] [%s] %s' % (time1, 'Weekly Schedule', text1)
         self.logbook.append(msg)
-        #print(self.logbook[-1])
+        # print(self.logbook[-1])
         msg1 = '[%s] %s' % ('Weekly Schedule', text1)
         if self.ext_log is not None:
             self.ext_log.log_record(msg1)
