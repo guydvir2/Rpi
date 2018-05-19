@@ -220,7 +220,6 @@ class SingleSwitch:
         if self.mode in ['toggle', 'press'] and self.verify_gpio_selection() == 1:
             self.t = threading.Thread(name='thread_gpio_' + str(self.relay_pin), target=self.start_gpio_hw)
             self.t.start()
-            #self.start_gpio_hw()
             self.log_record('init [%s mode][GPIO in/out:%s/%s] ' % (self.mode, self.button_pin, self.relay_pin))
         else:
             self.log_record('err- modes can be "toggle" or "press" only')
@@ -271,7 +270,7 @@ class SingleSwitch:
         self.log_record(msg)
 
     def toggle_switch(self, pressed_by='', state=None):
-        """ Toggle State only"""
+        """ Toggle State use in code command and Toggle mode only"""
         text = pressed_by
         self.last_state = self.relay.value
         # in case of DoubleSwitch
@@ -321,9 +320,11 @@ class SingleSwitch:
         return msg
 
     def add_other_switch(self, other_switch):
+        """DoubleSwitch only"""
         self.other_SingleSwitch = other_switch
 
     def off_other_switch(self):
+        """DoubleSwitch only"""
         if self.other_SingleSwitch is not None:
             if self.other_SingleSwitch.switch_state[0] is True:
                 self.other_SingleSwitch.switch_state = 0
