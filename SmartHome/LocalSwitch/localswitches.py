@@ -220,6 +220,7 @@ class SingleSwitch:
         if self.mode in ['toggle', 'press'] and self.verify_gpio_selection() == 1:
             self.t = threading.Thread(name='thread_gpio_' + str(self.relay_pin), target=self.start_gpio_hw)
             self.t.start()
+            #self.start_gpio_hw()
             self.log_record('init [%s mode][GPIO in/out:%s/%s] ' % (self.mode, self.button_pin, self.relay_pin))
         else:
             self.log_record('err- modes can be "toggle" or "press" only')
@@ -233,7 +234,6 @@ class SingleSwitch:
                 pass
                 self.button.when_pressed = self.toggle_switch
             elif self.mode == 'press':
-                # self.relay.source = self.button.values
                 self.button.when_pressed = self.press_switch
                 self.button.when_released = self.release_switch
             self.log_record('GPIO initialize successfully')
@@ -378,7 +378,7 @@ class HomePiLocalSwitch:
                                        ext_log=self.logger)
         elif switch_type == 'double':
             self.switch = DoubleSwitch(button_pin1=gpio_in[0], button_pin2=gpio_in[1], relay_pin1=gpio_out[0],
-                                       relay_pin2=gpio_out[1], mode=mode, name='HomePi ',
+                                       relay_pin2=gpio_out[1], mode=mode, name=alias,
                                        sw0_name='/SW#0',
                                        sw1_name='/SW#1', ext_log=self.logger)
         else:
