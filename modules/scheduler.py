@@ -163,7 +163,8 @@ class RunWeeklySchedule:
                 status_dict['start'], status_dict['end'] = WeeklyIntervals(day_start=day_task_start,
                                                                            hour_start=task['start_time'],
                                                                            day_end=day_task_end,
-                                                                           hour_end=task['end_time']).get_datetimes()
+                                                                           hour_end=task['end_time']).get_datetimes(
+                    future_date=True)
                 self.tasks_dates[n][i] = status_dict
 
     def update_tasks_times(self):
@@ -187,6 +188,7 @@ class RunWeeklySchedule:
             elif self.tasks_status[changed_task[0]][changed_task[1]]['state'] == 0:
                 self.off_func()
                 self.convert_weekly_tasks_to_dates()
+                print(self.tasks_dates)
             self.get_task_report(changed_task)
 
         def check_conditions_to_switch():
@@ -332,7 +334,7 @@ if __name__ == '__main__':
 
     #
     b = RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
-    # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+    b.add_weekly_task(new_task={'start_days': [7], 'start_time': '19:03:00', 'end_days': [7], 'end_time': '20:22:40'})
     # b.add_weekly_task(
     #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
 
