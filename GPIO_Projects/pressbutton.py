@@ -2,9 +2,9 @@ import time
 
 
 class MultiPressButton:
-    def __init__(self, master):
+    def __init__(self, master, status):
         self.press_time, self.released_time = None, None
-        self.status, self.command = None, None
+        self.status, self.command, self.master = status, None, master
 
     def button_monitor(self):
         while True:
