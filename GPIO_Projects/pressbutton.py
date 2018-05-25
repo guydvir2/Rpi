@@ -2,16 +2,54 @@ import datetime
 # import gpiozero
 # from signal import pause
 import time
-import tkinter as tk
+# import tkinter as tk
 import threading
 
 
-class MultiPressButton:
+class TimeCounter:
+    def __init__(self, init_counter=0):
+        self.counter = init_counter
+        self.stat, self.break_loop = None, False
+
+    def start(self):
+        self.break_loop = False
+        self.thread = threading.Thread(target=self.run_counter)
+        self.thread.start()
+
+    def run_counter(self):
+        start_time = datetime.datetime.now()
+        end_time = start_time + datetime.timedelta(seconds=self.counter*10)
+        time_left = end_time - datetime.datetime.now()
+
+        print("Start:%s, End:%s" % (start_time, end_time))
+        while time_left.total_seconds() > 0:
+            time_left = end_time - datetime.datetime.now()
+            self.stat = True
+            if self.break_loop is True:
+                print("count force stopped:")
+                break
+        self.stat = False
+        self.counter = 0
+
+        print('Countdown ended:%s' % (datetime.datetime.now() - start_time), datetime.datetime.now())
+
+    def add_time(self, t=0):
+        self.counter = t
+
+    def stop(self):
+        self.break_loop = True
+
+    def get_state(self):
+        return self.stat
+
+
+class MultiPressButton(TimeCounter):
     def __init__(self, master=None):
         self.press_duration, self.notpressed_duration, self.end_press = datetime.timedelta(0), datetime.timedelta(
             0), datetime.timedelta(0)
         self.command, self.master = None, master
         self.counter, self.ext_press = 0, None
+        TimeCounter.__init__(self, init_counter=0)
 
         self.thread = threading.Thread(target=self.button_monitor)
         self.thread.start()
@@ -28,17 +66,19 @@ class MultiPressButton:
                     time.sleep(t_int / 2)
                     self.press_duration = t_now - start_press_time
 
-                print("press duration:", self.press_duration.total_seconds())
                 self.end_press = t_now
                 self.press_conditions()
 
             elif self.ext_press is False:
                 try:
-                    if self.notpressed_duration.total_seconds() > 3 and self.command == 2:
-                        print('reset')
-                        self.command = 0
+                    if self.notpressed_duration.total_seconds() > 4 and self.command == 2:
+                        print('exit prog mode')
+                        self.command = 1
+                        self.start()
                 except AttributeError:
                     pass
+
+            self.notpressed_duration = datetime.datetime.now() - self.end_press
 
     def press_conditions(self):
         try:
@@ -46,97 +86,89 @@ class MultiPressButton:
         except AttributeError:
             self.notpressed_duration = datetime.timedelta(seconds=0.01)
 
-        print(self.notpressed_duration.total_seconds())
+        print("button pressed for:[%f] seconds ; duration from last press:[%f] seconds " % (
+            self.press_duration.total_seconds(), self.notpressed_duration.total_seconds()))
 
-        # Reset
+        # Reset press
         if self.press_duration.total_seconds() > 4:
-            self.command = 0
-            print(self.command)
-            return self.command
+            self.command, self.counter = 0, 0
 
-        # standard press
+        # Short press
         elif self.press_duration.total_seconds() < 0.5:
+            # Add inc to counter is prog mode
             if self.command == 2 and self.notpressed_duration.total_seconds() < 3:
                 self.counter += 1
-                print("counter is:", self.counter)
                 self.notpressed_duration = datetime.timedelta(0)
-                return self.command, self.counter
+            # on/off
             else:
                 self.command, self.counter = 1, 0
-                print(self.command)
-                return self.command
 
         # Enter program Mode
         elif 1 < self.press_duration.total_seconds() < 2.7:
             self.command = 2
-            print(self.command)
-            return self.command
+
+        self.actions()
 
     def actions(self):
-        if self.command = 0:
-            pass
+        if self.command == 0:
+            print("Hard Reset")
+            self.stop()
+        elif self.command == 1:
+            print("toggle on/off")
+            self.stat = not self.stat
+        elif self.command == 2:
+            print("prog mode:", self.counter)
+            self.add_time(self.counter)
+        print(self.stat)
+
+    def sim_press(self, t1, t2=None):
+        self.ext_press = True
+        time.sleep(t1)
+        self.ext_press = False
+        if t2 is not None:
+            time.sleep(t2)
+
     def get_status(self):
         return self.command
 
 
-class TimeCounter:
-    def __init__(self, counter):
-        self.counter = counter
-
-    def start(self):
-        start_time = datetime.datetime.now()
-        end_time = start_time + datetime.timedelta(seconds=self.counter)
-        time_left = end_time - datetime.datetime.now()
-        while time_left.total_seconds() > 0:
-            time_left = end_time - datetime.datetime.now()
-            print(time_left)
-
-
-class GUIButton(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-        self.frame = tk.Frame(self)
-        self.frame.grid()
-        self.var = tk.IntVar()
-        self.button = tk.Button(self.frame, text='GUY', command=self.cb)
-        self.button.grid()
-
-    def cb(self):
-        print(self.var.get())
-
-
-class FakeInput:
-    def __init__(self):
-        self.thread = threading.Thread(target=self.run)
-        self.thread.start()
-
-    def run(self):
-        self.press(1.5, 0.5)
-        self.press(0.5, 0.5)
-        self.press(0.5, 0.5)
-        self.press(0.5, 0.5)
-        self.press(0.5, 0.5)
-        self.press(0.5, 0.5)
-
-    def press(self, t1, t2):
-        self.value = True
-        time.sleep(t1)
-        self.value = False
-        time.sleep(t2)
-
-
-def fake_press(input_func):
-    def wrapper():
-        return 'hi'
-
-    return wrapper()
+# class GUIButton(tk.Frame):
+#     def __init__(self, master):
+#         tk.Frame.__init__(self, master)
+#         self.frame = tk.Frame(self)
+#         self.frame.grid()
+#         self.var = tk.IntVar()
+#         self.button = tk.Button(self.frame, text='GUY', command=self.cb)
+#         self.button.grid()
+#
+#     def cb(self):
+#         print(self.var.get())
 
 
 # button = gpiozero.Button(20)
-# c = FakeInput()
 
 a = MultiPressButton()
-last_state = None
-a.ext_press = True
-time.sleep(2)
-a.ext_press = False
+a.sim_press(0.3, 1)
+a.sim_press(0.5, 1)
+a.sim_press(2, 0.2)
+a.sim_press(0.5, 1)
+a.sim_press(0.5, 1)
+a.sim_press(0.5, 1)
+a.sim_press(0.5, 1)
+a.sim_press(0.5, 1)
+a.sim_press(0.5, 1)
+
+# timer = TimeCounter()
+# timer.add_time(3)
+# timer.start()
+# print(timer.get_state())
+# time.sleep(1)
+# # timer.add_time(3)
+# # timer.start()
+# timer.stop()
+# time.sleep(1)
+# timer.add_time(3)
+# print(timer.get_state())
+# timer.start()
+#
+# # time.sleep(2)
