@@ -8,16 +8,19 @@ import os
 device_name='F-RoomWindow'
 switch_type='double'
 gpio_in=[20, 21]
-gpio_out=[16, 26]
+gpio_out=[19, 26]
 mode='press'
 ext_log='/home/guy/Documents/%s.log'%(device_name)
+recps=['guydvir.tech@gmail.com']
+s_file='/home/guy/Documents/github/Rpi/modules/ufile.txt'
+p_file='/home/guy/Documents/github/Rpi/modules/pfile.txt'
 #######################################################
 
 ########################  Schedule 0  #################
 # Select One
 local_schedule_0 = None
-local_schedule_0 = {'start_days': [7], 'start_time': '19:03:00', 'end_days': [7], 'end_time': '23:08:00'}
-sched_filename_0 = None
+# local_schedule_0 = {'start_days': [1,2,3,4,5,6,7], 'start_time': '18:16:00', 'end_days': [1,2,3,4,5,6,7], 'end_time': '18:16:05'}
+sched_filename_0 = '/home/guy/LocalSwitch/sched_up.txt'
 #######################################################
 
 
@@ -25,7 +28,7 @@ sched_filename_0 = None
 # Select One
 # DoubleSwitch only
 local_schedule_1 = None
-sched_filename_1 = None
+sched_filename_1 = '/home/guy/LocalSwitch/sched_down.txt'
 #######################################################
 
 
@@ -79,7 +82,7 @@ else:
     loc_double_switch.weekly_schedule(local_schedule_0=local_schedule_0, sched_filename_0=sched_filename_0, local_schedule_1=local_schedule_1, sched_filename_1=sched_filename_1)
 
     # Run Gmail defs
-    loc_double_switch.gmail_defs(recipients=['guydvir.tech@gmail.com'], sender_file='/home/guy/Documents/github/Rpi/modules/ufile.txt',password_file='/home/guy/Documents/github/Rpi/modules/pfile.txt')
+    loc_double_switch.gmail_defs(recipients=recps, sender_file=s_file, password_file=p_file)
 
     # Notify after boot
-    loc_double_switch.notify_by_mail(subj='HomePi: boot summery', body='1234')
+    loc_double_switch.notify_by_mail(subj='HomePi:%s boot summery'%device_name, body='Device loaded successfully')
