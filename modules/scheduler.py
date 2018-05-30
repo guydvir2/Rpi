@@ -49,15 +49,22 @@ class WeeklyIntervals:
             iso_day = 7
         return iso_day
 
-    def get_datetimes(self):
+    def get_datetimes(self, future_date=None):
         start_datetime = self.shift_from_toady_time_tuple(self.day_start, self.hour_start)
+        # case a: end day is in same week
         if self.day_end - self.day_start >= 0:
             end_datetime = self.shift_from_toady_time_tuple(self.day_end, self.hour_end)
+        # case b: end day is next week
         else:
             end_datetime = self.shift_from_toady_time_tuple(self.day_end + 7, self.hour_end)
+        now = datetime.datetime.now()
 
-        # if start_datetime > end_datetime:
-        #     end_datetime += datetime.timedelta(days=7)
+        # optional: create future dates
+        if future_date is True:
+            if now > start_datetime and now > end_datetime:
+                end_datetime = end_datetime + datetime.timedelta(days=7)
+                start_datetime = start_datetime + datetime.timedelta(days=7)
+
         return start_datetime, end_datetime
 
 
@@ -68,9 +75,10 @@ class RunWeeklySchedule:
     new_task={'start_days': [1, 4], 'start_time': '15:30:00', 'end_days': [5, 6], 'end_time': '22:00:00'}
     outputs: variations of on/ off status"""
 
-    def __init__(self, on_func, off_func, sched_file=None, ext_cond=None):
+    def __init__(self, on_func, off_func, sched_file=None, ext_cond=None, ext_log=None):
         self.tasks_status, self.previous_task_status, self.weekly_tasks_list = [], [], []
         self.engage_task, self.tasks_dates, self.on_tasks = [], [], []
+        self.logbook, self.ext_log = [], ext_log
         self.on_func, self.off_func, self.ext_cond = on_func, off_func, ext_cond
         self.filename = sched_file
         self.cbit = cbit.CBit(500)
@@ -91,7 +99,7 @@ class RunWeeklySchedule:
                 reader = csv.reader(f)
                 self.data_from_file = list(reader)
         else:
-            print('Schedule file was not found on specified location', file_in)
+            self.log_record('Schedule file was not found on specified location ' + str(file_in))
 
     def validate_schedule(self):
         # Check if schedule inputs and valid
@@ -102,14 +110,14 @@ class RunWeeklySchedule:
                 datetime.datetime.strptime(task['start_time'], time_format)
                 datetime.datetime.strptime(task['end_time'], time_format)
             except ValueError:
-                print('bad time format: ', task)
+                self.log_record('bad time format: ' + str(task))
                 del self.weekly_tasks_list[i]
                 break
 
             cond1 = all(list(map(lambda x: 0 < int(x) < 8, task['start_days'])))
             cond2 = all(list(map(lambda x: 0 < int(x) < 8, task['end_days'])))
             if not cond1 or not cond2:
-                print('bad day format: ', task)
+                self.log_record('bad day format: ' + str(task))
                 del self.weekly_tasks_list[i]
                 break
 
@@ -128,15 +136,15 @@ class RunWeeklySchedule:
         # Case of reading schedule from file
         if not self.weekly_tasks_list and self.filename is not None:
             self.read_sched_file()
-            print('Schedule file read successfully')
+            self.log_record('Schedule file read successfully')
             for task in self.convert_data_file():
                 self.add_weekly_task(task)
         # Case of getting schedule in code
         elif self.weekly_tasks_list:
-            print('Schedule read as code arguments')
+            self.log_record('Schedule read as code arguments')
         # Neither
         else:
-            print('Schedule not read properly. Abort!')
+            self.log_record('Schedule not read properly. Abort!')
             quit()
 
         self.validate_schedule()
@@ -191,7 +199,7 @@ class RunWeeklySchedule:
                         act_on_change([m, n])
                     # case of external condition to be verified
                     if sub_task['state'] == self.engage_task[m][n] and self.engage_task[m][
-                        n] != self.ext_cond and self.ext_cond != None:
+                        n] != self.ext_cond and self.ext_cond is not None:
                         act_on_change([m, n])
             self.on_tasks = result
             self.previous_task_status = self.tasks_status.copy()
@@ -207,17 +215,19 @@ class RunWeeklySchedule:
     def tasks_descriptive(self):
         for m, task in enumerate(self.tasks_dates):
             for n, day in enumerate(task):
-                t = [datetime.datetime.strftime(day['start'], 'Start-[%A, %H:%M:%S]'),
-                     datetime.datetime.strftime(day['end'], 'End- [%A, %H:%M:%S]')]
-                print('Task #%d/#%d: %s %s' % (m, n, t[0], t[1]))
+                t = [datetime.datetime.strftime(day['start'], '[%A, %H:%M:%S]'),
+                     datetime.datetime.strftime(day['end'], ' - [%A, %H:%M:%S]')]
+                self.log_record('Task details [#%d/%d] %s %s' % (m, n, t[0], t[1]))
 
     def get_task_report(self, task=None):
         now = datetime.datetime.now()
 
         def print_report(state):
-            print('Task #%d/%d:[%s:%s], start:[%s], end:[%s]' % (
-                i, m, state, str(now - sub_task['start'])[:-7], sub_task['start'], sub_task['end']))
 
+            """ SEE HOW TO UPDATE OFF TASK FOR FUTURE TIME TO ON - MOST LIKELY TO UPDATE WEEKLY INTERVALS CLASS"""
+            self.log_record('Task [#%d/%d] is [%s] until [%s]' % (i, m, state, sub_task['end']))
+
+        """AM I USING THIS FOR LOOP IN MY CODE???"""
         if task is None:
             for i, task in enumerate(self.tasks_status):
                 for m, sub_task in enumerate(task):
@@ -225,6 +235,8 @@ class RunWeeklySchedule:
                         print_report('ON')
                     elif now <= sub_task['start'] or (now > sub_task['start'] and sub_task['end']):
                         print_report('OFF')
+                        """THIS PART IS NEEDED FOR ONE KIND OF TASK TO SHOW"""
+
         else:
             sub_task = self.tasks_status[task[0]][task[1]]
             i, m = task[0], task[1]
@@ -232,6 +244,15 @@ class RunWeeklySchedule:
                 print_report('ON')
             elif now <= sub_task['start'] or (now > sub_task['start'] and sub_task['end']):
                 print_report('OFF')
+
+    def log_record(self, text1=''):
+        time1 = str(datetime.datetime.now())[:-5]
+        msg = '[%s] [%s] %s' % (time1, 'Weekly Schedule', text1)
+        self.logbook.append(msg)
+        # print(self.logbook[-1])
+        msg1 = '[%s] %s' % ('Weekly Schedule', text1)
+        if self.ext_log is not None:
+            self.ext_log.log_record(msg1)
 
 
 class WifiControl:
@@ -305,14 +326,14 @@ if __name__ == '__main__':
         print('off function')
 
 
-    a = WifiControl()
+    # a = WifiControl()
     # a.wifi_on('HomeNetwork_2.4G')
     # a.wifi_off()
 
     #
-    # b = RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
-    # # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
-    # # b.add_weekly_task(
-    # #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
-    #
-    # b.start()
+    b = RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
+    # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+    # b.add_weekly_task(
+    #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
+
+    b.start()

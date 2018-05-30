@@ -10,7 +10,7 @@ class CBit:
         self.processes = []
         self.kwargs = []
         self.thread = Thread(name='CBit_thread', target=self.runProcesses)
-        print('CBit at %d milli-second' % self.clock_rate)
+        #print('CBit at %d milli-second' % self.clock_rate)
 
     def runProcesses(self):
         while True:

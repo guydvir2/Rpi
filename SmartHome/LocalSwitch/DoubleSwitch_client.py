@@ -26,6 +26,10 @@ def load_services(log_file, dev_name):
     GmailDaemon = GmailSender(sender_file=path + '/modules/ufile.txt', password_file=path + '/modules/pfile.txt')
 
 
+def load_watchdogs():
+    double_switch.watch_dog()
+
+
 def load_lcd():
     global lcd
     lcd = utils_localswitch.Output2LCD([double_switch.switch0, double_switch.switch1])  # , ext_log=file_logger)
@@ -35,16 +39,18 @@ def load_lcd():
         file_logger.append_log(log_entry='[LCD Display] not present/ driver error', time_stamp=1)
 
 
-def load_HW_switches():
-    global double_switch, dev_name
-    double_switch = localswitches.DoubleSwitch(21, 20, 26, 16, name=dev_name, ext_log=file_logger, sw0_name=' /UP',
-                                               sw1_name=' /DOWN', mode='press')
-    """Timeout is a must"""
-    time.sleep(2)
+def load_weekly_schedule():
+    def on_func():
+        pass
 
+    def off_func():
+        pass
 
-def load_watchdogs():
-    double_switch.watch_dog()
+    device_sched = scheduler.RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
+    device_sched.start()
+    # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+    # b.add_weekly_task(
+    #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
 
 
 def tests():
@@ -56,34 +62,6 @@ def tests():
     double_switch.switch0.switch_state = 1
     time.sleep(0.5)
     double_switch.switch0.switch_state = 0
-
-def load_sched():
-    global double_switch
-    def sw0_on():
-        double_switch.switch0.switch_state = 1
-    def sw0_off():
-        double_switch.switch0.switch_state = 0
-    def sw1_on():
-        double_switch.switch1.switch_state = 1
-    def sw1_off():
-        double_switch.switch1.switch_state = 0
-        
-    sched0 = scheduler.RunWeeklySchedule(on_func=sw0_on, off_func=sw0_off)
-    sched1 = scheduler.RunWeeklySchedule(on_func=sw1_on, off_func=sw1_off)
-
-    sched0.add_weekly_task(
-        new_task={'start_days': [3], 'start_time': '12:54:00', 'end_days': [3], 'end_time': '12:54:30'})
-    sched1.add_weekly_task(
-        new_task={'start_days': [3], 'start_time': '12:54:10', 'end_days': [3], 'end_time': '12:54:50'})
-
-    sched0.start()
-    sched1.start()
-
-
-    
-## Program starts HERE:
-dev_name = 'Window'
-log = 'DoubleSwitches.log'
 
 try:
     load_services(log, dev_name)
@@ -97,12 +75,5 @@ except:
     body_message = 'Fail to load correctly'
 
 finally:
-    pass
-<<<<<<< HEAD
-    #GmailDaemon.compose_mail(recipients=['guydvir2@gmail.com'], subject='HomePi-Boot notification ' + dev_name,
-     #                        body=body_message)
 
-time.sleep(1)
-
-#tests()
 
