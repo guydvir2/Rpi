@@ -23,7 +23,7 @@ class GmailSender:
         self.sender, self.password, self.recipients = sender, password, None
         self.subject, self.attachments = None, ''
         self.values, self.keys = [], []
-        self.send_result = None
+        self.send_result, self.success_load = None,None
 
         self.get_account_credits()
 
