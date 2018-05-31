@@ -364,7 +364,7 @@ class DoubleSwitch:
 
 class HomePiLocalSwitch:
     def __init__(self, switch_type, gpio_in, gpio_out, mode='press', alias='HomePi-Switch',
-                 ext_log=None):
+                 ext_log=None, sw0_name='/SW#0', sw1_name='/SW#1'):
         self.on_func, self.off_func, self.schedule, self.email = None, None, None, None
         self.gmail_recip, self.gmail_service = None, None
         self.switch_type = switch_type
@@ -380,8 +380,7 @@ class HomePiLocalSwitch:
         elif switch_type == 'double':
             self.switch = DoubleSwitch(button_pin1=gpio_in[0], button_pin2=gpio_in[1], relay_pin1=gpio_out[0],
                                        relay_pin2=gpio_out[1], mode=mode, name=alias,
-                                       sw0_name='/SW#0',
-                                       sw1_name='/SW#1', ext_log=self.logger)
+                                       sw0_name=sw0_name, sw1_name=sw1_name, ext_log=self.logger)
         else:
             self.logger.append_log(log_entry='switch type parameter wrong. select:"double" or "single". Quit.',
                                    time_stamp=1)

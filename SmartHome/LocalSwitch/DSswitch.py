@@ -14,12 +14,13 @@ ext_log='/home/guy/Documents/%s.log'%(device_name)
 recps=['guydvir.tech@gmail.com']
 s_file='/home/guy/Documents/github/Rpi/modules/ufile.txt'
 p_file='/home/guy/Documents/github/Rpi/modules/pfile.txt'
+sw0_name='/Up'
+sw1_name='/Down'
 #######################################################
 
 ########################  Schedule 0  #################
 # Select One
 local_schedule_0 = None
-# local_schedule_0 = {'start_days': [1,2,3,4,5,6,7], 'start_time': '18:16:00', 'end_days': [1,2,3,4,5,6,7], 'end_time': '18:16:05'}
 sched_filename_0 = '/home/guy/LocalSwitch/sched_up.txt'
 #######################################################
 
@@ -73,7 +74,9 @@ if len(argv)>0:
 
 else:
     # Run Switch
-    loc_double_switch = HomePiLocalSwitch(switch_type=switch_type, gpio_in=gpio_in, gpio_out=gpio_out, mode=mode,ext_log=ext_log, alias=device_name)
+    loc_double_switch = HomePiLocalSwitch(switch_type=switch_type, gpio_in=gpio_in, 
+            gpio_out=gpio_out, mode=mode,ext_log=ext_log, alias=device_name, 
+            sw0_name=sw0_name, sw1_name=sw1_name)
 
     # Run Watch_dog service
     loc_double_switch.use_watch_dog()
@@ -86,3 +89,15 @@ else:
 
     # Notify after boot
     loc_double_switch.notify_by_mail(subj='HomePi:%s boot summery'%device_name, body='Device loaded successfully')
+
+    # Boot test
+    if switch_type=='double':
+        loc_double_switch.switch.switch0.switch_state = 1
+        sleep(0.5)
+        loc_double_switch.switch.switch0.switch_state = 0
+        sleep(0.5)
+        loc_double_switch.switch.switch1.switch_state = 1
+        sleep(0.5)
+        loc_double_switch.switch.switch1.switch_state = 0
+
+
