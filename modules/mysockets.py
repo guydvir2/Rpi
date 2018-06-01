@@ -5,43 +5,39 @@ import time
 
 class Server:
 
-    def __init__(self, host="127.0.0.1", port=4001):
+    def __init__(self, host='localhost', port=4001):
         self.host, self.port = host, port
+        self.conn, self.addr, self.out_data = None, None, ''
         self.mySocket = socket.socket()
-        # self.mySocket.bind((self.host, self.port))
         self.mySocket.bind(('', self.port))
         self.t = threading.Thread(name='mysockets.Server', target=self.wait_for_conn)
         self.t.start()
-        self.p1='100'
-        self.p2=200
-        self.p3="GUYDVIR"
-
-    def run_connection_server(self):
-        print('Start Listening')
-        while True:
-            self.wait_for_conn()
 
     def wait_for_conn(self):
         while True:
-            # self.wait_for_conn()
             try:
                 self.mySocket.listen(1)
                 self.conn, self.addr = self.mySocket.accept()
-                recv_data = self.conn.recv(1024).decode()
-                print("Recieved from client:", recv_data)
-                for data in self.transfer_data(recv_data):
-                    self.conn.send(data.encode())
-                    print("Sent to client:", data)
+                input_from_client = self.conn.recv(1024).decode()
+                data_to_return = self.query_server(input_from_client)
+
+                if type(data_to_return) == list:
+                    for data in data_to_return:
+                        self.out_data = self.out_data + ';' + str(data)
+                elif type(data_to_return) != list:
+                    print("not_list")
+                    self.out_data = str(data_to_return)
+
+                self.conn.send(self.out_data.encode())
                 self.conn.close()
+
             except KeyboardInterrupt:
-                print("keyboard")
+                print("Abort by user")
+                quit()
 
-
-    def transfer_data(self, recv_data):
-        if recv_data == '1':
-            return "KUKU"
-        elif recv_data == '2':
-            return ("BUBU\n",'sdfsdfsdf')
+    def query_server(self, input_from_client=None):
+        if input_from_client is None:
+            return "Ask Nothing- get Nothing"
         else:
             return '0'
 
@@ -68,4 +64,3 @@ if __name__ == "__main__":
             time.sleep(1)
     except KeyboardInterrupt:
         s.mySocket.close()
-
