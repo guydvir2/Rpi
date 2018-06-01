@@ -2,8 +2,10 @@ from tkinter import *
 
 root = Tk()
 
+
 def callback(event):
-    print ("clicked at", event.x, event.y)
+    print("clicked at", event.x, event.y)
+
 
 frame = Frame(root, width=100, height=100)
 frame.bind("<Button-1>", callback)
@@ -13,8 +15,10 @@ root.mainloop()
 
 from tkinter import *
 
+
 def callback():
-    print ("called the callback!")
+    print("called the callback!")
+
 
 root = Tk()
 
