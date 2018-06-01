@@ -1,4 +1,4 @@
 import mysockets
 
 a = mysockets.Client()
-a.send_msg(2)
+a.send_msg('2')
