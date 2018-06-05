@@ -1,8 +1,7 @@
 import datetime
-# import gpiozero
-# from signal import pause
+import gpiozero
 import time
-# import tkinter as tk
+import tkinter as tk
 import threading
 
 
@@ -22,6 +21,7 @@ class TimeCounter:
         time_left = end_time - datetime.datetime.now()
 
         print("Start:%s, End:%s" % (start_time, end_time))
+        self.dev.on()
         while time_left.total_seconds() > 0:
             time_left = end_time - datetime.datetime.now()
             self.stat = True
@@ -29,6 +29,7 @@ class TimeCounter:
                 print("count force stopped:")
                 break
         self.stat = False
+        self.dev.off()
         self.counter = 0
 
         print('Countdown ended:%s' % (datetime.datetime.now() - start_time), datetime.datetime.now())
@@ -44,11 +45,11 @@ class TimeCounter:
 
 
 class MultiPressButton(TimeCounter):
-    def __init__(self, master=None):
+    def __init__(self, master=None, ext_press=None, dev=None):
         self.press_duration, self.notpressed_duration, self.end_press = datetime.timedelta(0), datetime.timedelta(
             0), datetime.timedelta(0)
-        self.command, self.master = None, master
-        self.counter, self.ext_press = 0, None
+        self.command, self.master , self.dev= None, master, dev
+        self.counter, self.ext_press = 0, ext_press
         TimeCounter.__init__(self, init_counter=0)
 
         self.thread = threading.Thread(target=self.button_monitor)
@@ -59,17 +60,20 @@ class MultiPressButton(TimeCounter):
 
         while True:
             self.notpressed_duration = datetime.datetime.now() - self.end_press
-            if self.ext_press is True:
+            #print(self.ext_press)
+            if self.ext_press.value is True:
                 start_press_time = datetime.datetime.now()
-                while self.ext_press is True:
+                #self.dev.on()
+                while self.ext_press.value is True:
                     t_now = datetime.datetime.now()
                     time.sleep(t_int / 2)
                     self.press_duration = t_now - start_press_time
 
                 self.end_press = t_now
                 self.press_conditions()
+                #self.dev.off()
 
-            elif self.ext_press is False:
+            elif self.ext_press.value is False:
                 try:
                     if self.notpressed_duration.total_seconds() > 4 and self.command == 2:
                         print('exit prog mode')
@@ -115,6 +119,7 @@ class MultiPressButton(TimeCounter):
             self.stop()
         elif self.command == 1:
             print("toggle on/off")
+            self.dev.toggle()
             self.stat = not self.stat
         elif self.command == 2:
             print("prog mode:", self.counter)
@@ -144,19 +149,19 @@ class MultiPressButton(TimeCounter):
 #     def cb(self):
 #         print(self.var.get())
 
+button = gpiozero.Button(20)
+device = gpiozero.OutputDevice(26)
 
-# button = gpiozero.Button(20)
-
-a = MultiPressButton()
-a.sim_press(0.3, 1)
-a.sim_press(0.5, 1)
-a.sim_press(2, 0.2)
-a.sim_press(0.5, 1)
-a.sim_press(0.5, 1)
-a.sim_press(0.5, 1)
-a.sim_press(0.5, 1)
-a.sim_press(0.5, 1)
-a.sim_press(0.5, 1)
+a = MultiPressButton(ext_press=button, dev=device)
+#a.sim_press(0.3, 1)
+#a.sim_press(0.5, 1)
+#a.sim_press(2, 0.2)
+#a.sim_press(0.5, 1)
+#a.sim_press(0.5, 1)
+#a.sim_press(0.5, 1)
+#a.sim_press(0.5, 1)
+#a.sim_press(0.5, 1)
+#a.sim_press(0.5, 1)
 
 # timer = TimeCounter()
 # timer.add_time(3)

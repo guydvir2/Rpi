@@ -248,7 +248,7 @@ class SplashWindow(Toplevel):
 
 
 class ContorlGPIOWindow:
-    def __init__(self,master,bg, ip='', output_pins=[13,17,6,26],input_pins = [21,4,5,27],with_sf_bt=0 , with_hw_bt=0,with_hw_st=1, switch_names=[]):
+    def __init__(self,master,bg, ip='', output_pins=[13,17,6,26],input_pins = [21,20,5,27],with_sf_bt=0 , with_hw_bt=0,with_hw_st=1, switch_names=[]):
 
         self.master = master
         if ip == '':
