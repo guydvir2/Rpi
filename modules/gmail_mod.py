@@ -24,6 +24,7 @@ class GmailSender:
         self.subject, self.attachments = None, ''
         self.values, self.keys = [], []
         self.send_result, self.success_load = None,None
+        self.temp_body = ''
 
         self.get_account_credits()
 
@@ -84,7 +85,10 @@ class GmailSender:
         self.send()
 
     def add_body(self, msg):
-        body = MIMEText('\n' + msg)  # convert the body to a MIME compatible string
+        self.temp_body = self.temp_body+'\n'+msg
+        
+    def finalize_body(self, msg):
+        body = MIMEText(msg)  # convert the body to a MIME compatible string
         self.outer.attach(body)  # attach it to your main message
         self.outer.preamble = 'You will not see this in a MIME-aware mail reader.\n'
 
@@ -114,17 +118,21 @@ class GmailSender:
                     if ask.upper() == 'N':
                         print("quit!")
                         quit()
-                self.add_body(('file #%d/%d: %s' % (i + 1, len(self.attachments), prefix + file)))
+                self.add_body(('file #%d/%d: %s' % (i + 1, len(self.attachments), 
+                                                    prefix + file)))
             self.add_body('~~~~~~~~~~~~~~~')
 
         else:
-            self.add_body('No attached files')
+            pass
+            #self.add_body('No attached files')
 
-    def send(self):
+    def send(self, summ=False):
         # Send the email
-        self.sum_of_send()
-        self.add_body('\n\n*** end of e-mail ***')
-
+        if summ is True:
+            self.sum_of_send()
+                        
+        self.add_body('\n*** end of e-mail ***')
+        self.finalize_body(self.temp_body)
         self.composed = self.outer.as_string()
         try:
             with smtplib.SMTP('smtp.gmail.com', 587) as s:
@@ -140,7 +148,9 @@ class GmailSender:
             print("Unable to send the email. Error: ", sys.exc_info()[0])
             self.send_result = False
         finally:
-            self.sum_of_send()
+            self.body, self.temp_body = '',  ''
+            pass
+            #self.sum_of_send()
 
     def time_stamp(self):
         a = str(datetime.datetime.now())[:-5]
@@ -154,7 +164,7 @@ class GmailSender:
 
         for i, key in enumerate(self.keys):
             out_dict[key] = self.values[i]
-            self.add_body('#-' + str(key) + ': ' + str(out_dict[key]))
+            self.add_body('~' + str(key) + ': ' + str(out_dict[key]))
         # return out_dict
 
 
@@ -179,8 +189,8 @@ class MailBox:
 if __name__ == '__main__':
     path = '/home/guy/Documents/github/Rpi/modules/'
     GmailDaemon = GmailSender(sender_file=path + 'ufile.txt',
-                              password_file=path + 'pfile.txt')  # or directly (sender='send@gmail.com',password='pswd')
-    GmailDaemon = GmailSender (sender='guydvir.tech@gmail.com', password='GdSd13100301')
+                              password_file=path + 'pfile.txt')
+    #GmailDaemon = GmailSender (sender='guydvir.tech@gmail.com', password='G345345')
     GmailDaemon.compose_mail(recipients=['dr.guydvir@gmail.com'], body="Python automated email",
                              subject='Hi from gmail application in Python', attach=[''])
     # a = MailBox()

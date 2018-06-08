@@ -10,15 +10,14 @@ import gpiozero
 
 class A:
     def __init__(self):
-        factory112 = PiGPIOFactory(host='192.168.2.113')
-        factory113 = PiGPIOFactory(host='192.168.2.113')
+        local_factory = PiGPIOFactory(host='192.168.2.113')
 
-        self.Relay= OutputDevice(13, pin_factory=factory113,initial_value=False)
-        #self.button= InputDevice(21, pin_factory=factory)
+        #self.Relay= OutputDevice(13, pin_factory=local_factory,initial_value=False)
+        self.button= Button(21,pin_factory=local_factory)
 
-        self.led = LED(17)
-        self.button = Button(21, pin_factory=factory112)
-        self.led.source = self.button.values
+        #self.led = LED(17)
+        #self.button = Button(21, pin_factory=factory112)
+        #self.led.source = self.button.values
         self.button.when_released = self.switchoff
         self.button.when_pressed = self.switchon
         #print(self.button.when_pressed)
@@ -26,11 +25,11 @@ class A:
         
     def switchon(self):
         print('on')
-        self.Relay.on()
+        #self.Relay.on()
 
     def switchoff(self):
         print('off')
-        self.Relay.off()
+        #self.Relay.off()
         
         
 Rel = A()

@@ -147,23 +147,23 @@ class Log2File:
         # permanent time_stamp
         if time_stamp is None:
             if self.time_stamp_in_log == 1:
-                msg = '[%s] %s' % (self.time_stamp(), log_entry)
+                self.msg = '[%s] %s' % (self.time_stamp(), log_entry)
             else:
-                msg = '%s' % log_entry
+                self.msg = '%s' % log_entry
         # ADHOC time_stamp - over-rides permanent one
         elif time_stamp is 1:
-            msg = '[%s] %s' % (self.time_stamp(), log_entry)
+            self.msg = '[%s] %s' % (self.time_stamp(), log_entry)
         elif time_stamp is 0:
-            msg = '%s' % log_entry
+            self.msg = '%s' % log_entry
 
         if self.valid_logfile is True:
             myfile = open(self.filename, 'a')
-            myfile.write(msg + '\n')
+            myfile.write(self.msg + '\n')
             myfile.close()
         else:
             print('Log err')
         if self.output2screen == 1:
-            print(msg)
+            print(self.msg)
 
 
 class XTractLastLogEvent:
