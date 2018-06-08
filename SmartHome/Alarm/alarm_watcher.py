@@ -73,5 +73,5 @@ import gmail_mod
 from localswitches import Log2File
 from localswitches import XTractLastLogEvent
  
-GPIOMonitor(21,'192.168.2.113','Alarm Monitor')
+GPIOMonitor(21,'192.168.2.115','Alarm Monitor')
 pause()

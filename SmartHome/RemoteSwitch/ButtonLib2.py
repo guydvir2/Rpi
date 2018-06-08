@@ -922,7 +922,7 @@ if __name__ == "__main__":
                                                            #[[4], "18:42:00", "23:50:10"]])
     #e.grid(row=0, column=0, sticky=tk.S)
 
-    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.114', hw_out=[26,16],    sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 5], "08:56:00", "11:50:10"]])
+    f = UpDownButton(root, nickname='RoomWindow', ip_out='192.168.2.114', hw_out=[26,19],    sched_vector2=[[[1], "22:24:30", "23:12:10"], [[7, 4], "08:56:00", "11:50:10"]])
     # sched_vector=[[[6], "1:24:30", "23:12:10"]])
     f.grid(row=0, column=1, sticky=tk.S)
 
