@@ -19,7 +19,7 @@ try:
     import my_paths
     from gmail_mod import GmailSender
     import getip
-    import use_lcd
+    # import use_lcd
     import scheduler
 
     my_modules = True
