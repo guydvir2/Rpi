@@ -1,6 +1,6 @@
-# from gpiozero import Button
-# from signal import pause
-# from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero import Button
+from signal import pause
+from gpiozero.pins.pigpio import PiGPIOFactory
 from sys import platform, path
 import datetime
 import tkinter as tk
@@ -9,8 +9,8 @@ from time import sleep
 
 
 class GPIOMonitor:
-    def __init__(self, pin, pin_factory=None, alias='gpio_monitor',
-                 trigger_pins=[17, 21], listen_pins=[16, 26]):
+    def __init__(self, pin_factory=None, alias='gpio_monitor',
+                 trigger_pins=[21,20], listen_pins=[16, 26]):
 
         if pin_factory is None:
             self.factory = PiGPIOFactory(host='localhost')
@@ -25,9 +25,9 @@ class GPIOMonitor:
 
         self.logger = Log2File('/home/guy/Documents/AlarmMonitor.log',
                                name_of_master=self.alias, time_in_log=1, screen=1)
-        self.cbit = CBit()
+        #self.cbit = CBit()
         self.run_gmail_service()
-        self.check_state_on_boot(pin, pin_factory)
+        self.check_state_on_boot(pin_factory)
 
     def create_gpios(self):
         self.trigger_vector, self.listen_vector = [], []
@@ -41,25 +41,26 @@ class GPIOMonitor:
 
     def change_state_notifications(self):
         # Triggers        
-        msgs = ['Full-mode alarm switched OFF', 'Full-mode alarm switched ON', 'Home-mode alarm switched OFF',
-                'Home-mode alarm switched ON']
+        msgs = [['Full-mode alarm switched OFF', 'Full-mode alarm switched ON'], 
+                ['Home-mode alarm switched OFF','Home-mode alarm switched ON']]
         for i, trig in enumerate(self.trigger_vector):
-            trig.when_released = lambda: self.notify(msgs[i])
-            trig.when_pressed = lambda: self.notify(msgs[i + 1])
+            trig.when_released = lambda: self.notify(msgs[i][1])
+            trig.when_pressed = lambda: self.notify(msgs[i][1])
 
         # Indications 
-        msgs = ['Alarm Stopped', 'Alarm is ON', 'System Armed''System Disarmed']
-        for i, listen in enumerate(self.listen_vector):
-            listen.when_released = lambda: self.notify(msgs[i])
-            listen.when_pressed = lambda: self.notify(msgs[i + 1])
+        msgss = [['Alarm Stopped', 'Alarm is ON'],
+                 ['System Armed','System Disarmed']]
+        for n, listen in enumerate(self.listen_vector):
+            listen.when_released = lambda: self.notify(msgss[n][0])
+            listen.when_pressed = lambda: self.notify(msgss[n][1])
 
-    def check_state_on_boot(self, pin, pin_factory):
-        boot_msg = "%s start, monitoring GPIO [%d] of IP [%s]" % (self.alias, pin, pin_factory)
+    def check_state_on_boot(self, pin_factory):
+        boot_msg = "%s start, monitoring GPIO [d] of IP [%s]" % (self.alias, pin_factory)
         # check triggers at boot
         if any(self.trigger_vector):
-            al_stat = 'System Armed'
+            al_stat = '@BOOT- System Armed'
         else:
-            al_stat = 'System Unarmed'
+            al_stat = '@Boot -System Unarmed'
 
     def run_gmail_service(self):
         path = main_path + 'modules/'
@@ -75,7 +76,7 @@ class GPIOMonitor:
         # self.email_notify(msg=self.logger.msg, sbj='HomePi: %s' % (self.alias))
 
 
-class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
+class AlarmControlGUI(ttk.Frame , GPIOMonitor):
     def __init__(self, master=None):
         self.log_stack = []
         self.arm_value = tk.IntVar()
@@ -86,7 +87,7 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         self.alert_ent_value = tk.StringVar()
 
         ttk.Frame.__init__(self)
-        # GPIOMonitor.__init__(self, 21, '192.168.2.113', 'Alarm Monitor')
+        GPIOMonitor.__init__(self, '192.168.2.113', 'Alarm Monitor')
         # Frames
         self.mainframe = tk.Frame(master, bg='seashell3',padx=5)
         self.mainframe.grid()
@@ -101,10 +102,11 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
 
         self.create_buttons()
         self.create_indicators()
-        # self.constant_chk_gpio()
+        self.constant_chk_gpio()
 
-        # self.cbit.append_process(self.constant_chk_gpio)
-        # self.cbit.init_thread()
+        #self.cbit.append_process(self.constant_chk_gpio)
+        #self.cbit.init_thread()
+
         self.log_window()
         self.write2log("BOOT")
         self.status_bar()
@@ -133,7 +135,7 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
 
         self.setoff_alarm_label = ttk.Label(self.indicators_frame, text='Alarming: ')
         self.setoff_alarm_label.grid(row=0, column=2, padx=pdx, pady=pdy)
-        self.setoff_alarm_ent = ttk.Entry(self.indicators_frame, width=3, textvariable=self.alert_ent_value)
+        self.setoff_alarm_ent = tk.Entry(self.indicators_frame, width=3, textvariable=self.alert_ent_value)
         self.setoff_alarm_ent.grid(row=0, column=3, padx=pdx, pady=pdy)
 
     def constant_chk_gpio(self):
@@ -147,8 +149,10 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
             self.alert_ent_value.set('On')
         else:
             self.alert_ent_value.set('Off')
+            self.setoff_alarm_ent["bg"]='red'
+        root.after(500, self.constant_chk_gpio)
 
-        # print(self.listen_vector[0].is_pressed, self.listen_vector[1].is_pressed)
+        #print(self.listen_vector[0].is_pressed, self.listen_vector[1].is_pressed)
 
     def arm_buttons(self, but_num):
         # Full Arm was pressed
@@ -246,10 +250,13 @@ path.append(main_path + 'SmartHome/LocalSwitch')
 path.append(main_path + 'modules')
 import gmail_mod
 import getip
-# from localswitches import Log2File
+from localswitches import Log2File
 from cbit import CBit
 
-root = tk.Tk()
-AlarmControlGUI(root)
+#root = tk.Tk()
+#AlarmControlGUI(root)#, pin_factory='192.168.2.115')
+#
+#root.mainloop()
 
-root.mainloop()
+GPIOMonitor()
+pause()
