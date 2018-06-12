@@ -331,8 +331,8 @@ if __name__ == '__main__':
     # a.wifi_off()
 
     #
-    b = RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
-    # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+    b = RunWeeklySchedule(on_func=on_func, off_func=off_func)#, sched_file='sched1.txt')
+    b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
     # b.add_weekly_task(
     #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
 
