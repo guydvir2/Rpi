@@ -13,16 +13,17 @@ class WeeklyIntervals:
     Inputs: start day and time, end date and time
     Outputs: start and end datetime tuples for current week"""
 
-    def __init__(self, day_start, hour_start, day_end, hour_end):
+    def __init__(self, day_start, time_start, day_end, time_end):
         self.day_start = day_start
         self.day_end = day_end
-        self.hour_start = hour_start
-        self.hour_end = hour_end
+        self.time_start = time_start
+        self.time_end = time_end
 
-    def day_shift_time_tuple(self, delta_days, time):
+    @staticmethod
+    def day_shift_time_tuple(delta_days, time1):
         """create a datetime tuple of shifted day- days and clock"""
         clock_format = '%H:%M:%S'
-        clock = datetime.datetime.strptime(time, clock_format)
+        clock = datetime.datetime.strptime(time1, clock_format)
 
         shifted_datetime = datetime.datetime.combine(
             datetime.datetime.now().date() + datetime.timedelta(days=delta_days), clock.time())
@@ -33,7 +34,9 @@ class WeeklyIntervals:
                                                      hour)
         return shifted_datetime
 
-    def iso2h_day_convert(self, iso_day):
+    @staticmethod
+    def iso2h_day_convert(iso_day):
+        """ convert ISO day convention to sunday=1, satureday=7"""
         if 1 <= iso_day <= 6:
             day = iso_day + 1
         elif iso_day == 7:
@@ -42,25 +45,29 @@ class WeeklyIntervals:
             day = None
         return day
 
-    def h2iso_convert_day(self, day):
+    @staticmethod
+    def h2iso_convert_day(day):
+        """convert to ISO from human day numbering"""
         if 2 <= day <= 7:
             iso_day = day - 1
         elif day == 1:
             iso_day = 7
-        return iso_day
+        return iso2h_day_convert
 
     def get_datetimes(self, future_date=None):
-        start_datetime = self.shift_from_toady_time_tuple(self.day_start, self.hour_start)
+        start_datetime = self.shift_from_toady_time_tuple(self.day_start, self.time_start)
         # case a: end day is in same week
         if self.day_end - self.day_start >= 0:
-            end_datetime = self.shift_from_toady_time_tuple(self.day_end, self.hour_end)
+            end_datetime = self.shift_from_toady_time_tuple(self.day_end, self.time_end)
         # case b: end day is next week
         else:
-            end_datetime = self.shift_from_toady_time_tuple(self.day_end + 7, self.hour_end)
+            end_datetime = self.shift_from_toady_time_tuple(self.day_end + 7, self.time_end)
         now = datetime.datetime.now()
 
         # optional: create future dates
         if future_date is True:
+            """ when start time and end_time occured in the past:
+            create future time tuple"""
             if now > start_datetime and now > end_datetime:
                 end_datetime = end_datetime + datetime.timedelta(days=7)
                 start_datetime = start_datetime + datetime.timedelta(days=7)
@@ -101,8 +108,8 @@ class RunWeeklySchedule:
         else:
             self.log_record('Schedule file was not found on specified location ' + str(file_in))
 
-    def validate_schedule(self):
-        # Check if schedule inputs and valid
+    def ver_tasks_descrp(self):
+        # Check if schedule inputs are valid
         time_format = "%H:%M:%S"
 
         for i, task in enumerate(self.weekly_tasks_list):
@@ -139,74 +146,143 @@ class RunWeeklySchedule:
             self.log_record('Schedule file read successfully')
             for task in self.convert_data_file():
                 self.add_weekly_task(task)
+
         # Case of getting schedule in code
         elif self.weekly_tasks_list:
             self.log_record('Schedule read as code arguments')
+
         # Neither
         else:
             self.log_record('Schedule not read properly. Abort!')
             quit()
 
-        self.validate_schedule()
+        self.ver_tasks_descrp()
         self.convert_weekly_tasks_to_dates()
-        self.run_schedule()
-        self.tasks_descriptive()
 
-    def convert_weekly_tasks_to_dates(self):
-        self.tasks_dates = []
+        # runs on CBit
+        self.run_schedule()
+        # self.tasks_descriptive()
+
+    # def convert_weekly_tasks_to_dates(self, **kwargs):
+    #     """ converts time schedule tasks  given by user to time tuples"""
+    #     self.tasks_dates = []
+    #     for n, task in enumerate(self.weekly_tasks_list):
+    #         self.tasks_dates.append([])
+    #         for i, day_task_start in enumerate(task['start_days']):
+    #             self.tasks_dates[-1].append([])
+    #             status_dict = {}
+    #             day_task_end = task['end_days'][i]
+    #             status_dict['start'], status_dict['end'] = WeeklyIntervals(day_start=day_task_start,
+    #                                                                        time_start=task['start_time'],
+    #                                                                        day_end=day_task_end,
+    #                                                                        time_end=task['end_time']).get_datetimes(
+    #                 True)
+    #             status_dict['state'] = 0
+    #             self.tasks_dates[n][i] = status_dict
+    #     # print(self.tasks_dates)
+
+    def convert_weekly_tasks_to_dates(self, **kwargs):
+        """ converts time schedule tasks  given by user to time tuples"""
+        self.tasks_status = []
         for n, task in enumerate(self.weekly_tasks_list):
-            self.tasks_dates.append([])
+            self.tasks_status.append([])
             for i, day_task_start in enumerate(task['start_days']):
-                self.tasks_dates[-1].append([])
+                self.tasks_status[-1].append([])
                 status_dict = {}
                 day_task_end = task['end_days'][i]
                 status_dict['start'], status_dict['end'] = WeeklyIntervals(day_start=day_task_start,
-                                                                           hour_start=task['start_time'],
+                                                                           time_start=task['start_time'],
                                                                            day_end=day_task_end,
-                                                                           hour_end=task['end_time']).get_datetimes()
-                self.tasks_dates[n][i] = status_dict
+                                                                           time_end=task['end_time']).get_datetimes(
+                    True)
+                status_dict['state'] = False
+                self.tasks_status[n][i] = status_dict.copy()
+        # print(self.tasks_dates)
 
-    def update_tasks_times(self):
-        # Decide if "ON" or "OFF" state
-        self.tasks_status = []
-        for m, task in enumerate(self.tasks_dates):
-            self.tasks_status.append([])
+    # def task_on_decision(self):
+    #     # Run constant on CBit
+    #     # Decide if task is "ON" or "OFF"
+    #     self.tasks_status = []
+    #     for m, task in enumerate(self.tasks_dates):
+    #         self.tasks_status.append([])
+    #         for n, current_day in enumerate(task):
+    #             self.tasks_status[m].append([])
+    #             self.tasks_status[m][n] = current_day.copy()
+    #             if current_day['start'] <= datetime.datetime.now() <= current_day['end']:
+    #                 self.tasks_status[m][n]['state'] = 1
+    #             else:
+    #                 self.tasks_status[m][n]['state'] = 0
+    #     print(self.tasks_status)
+    #     print(self.previous_task_status)
+    #     print(self.tasks_dates)
+
+    def task_on_decision(self):
+        # Run constant on CBit
+        # Decide if task is "ON" or "OFF"
+        # self.tasks_status = []
+        print('0', self.tasks_status)
+        print('0*', self.previous_task_status)
+        for m, task in enumerate(self.tasks_status):
+            # self.tasks_status.append([])
             for n, current_day in enumerate(task):
-                self.tasks_status[m].append([])
-                self.tasks_status[m][n] = current_day.copy()
+                # self.tasks_status[m].append([])
+                # self.tasks_status[m][n] = current_day.copy()
                 if current_day['start'] <= datetime.datetime.now() <= current_day['end']:
                     self.tasks_status[m][n]['state'] = 1
                 else:
                     self.tasks_status[m][n]['state'] = 0
+        print('1',self.tasks_status)
+        print('1*',self.previous_task_status)
 
     def run_schedule(self):  # constant run on cbit
 
         def act_on_change(changed_task):
-            if self.tasks_status[changed_task[0]][changed_task[1]]['state'] == 1:
+            m, n = changed_task[0], changed_task[1]
+            print("ASK TO CHaNGE")
+            if self.tasks_status[m][n]['state'] == 1:
+                print('Start Task[%d/%d]: Start %s, End %s' % (
+                    m, n, self.tasks_status[m][n]['start'], self.tasks_status[m][n]['end']))
                 self.on_func()
-            elif self.tasks_status[changed_task[0]][changed_task[1]]['state'] == 0:
+            elif self.tasks_status[m][n]['state'] == 0:
                 self.off_func()
-                self.convert_weekly_tasks_to_dates()
-            self.get_task_report(changed_task)
+                print('End Task[%d/%d]: Start %s, End %s' % (
+                    m, n, self.tasks_status[m][n]['start'], self.tasks_status[m][n]['end']))
+                self.convert_weekly_tasks_to_dates(future_date=True)
+                time.sleep(3)
+                print('Task [%d/%d] updated: Start %s, End %s' % (
+                    m, n, self.tasks_status[m][n]['start'], self.tasks_status[m][n]['end']))
+            # self.get_task_report(changed_task)
 
         def check_conditions_to_switch():
             result = []
             for m, task in enumerate(self.tasks_status):
                 for n, sub_task in enumerate(task):
+                    print('[', m, n, ']', self.tasks_status[m][n]['state'])
+                    # task is still on
                     if sub_task['state'] == 1 and self.engage_task[m][n] == 1:
                         result.append([m, n])
+
+                    # detect change from last cycle of check
                     if sub_task['state'] != self.previous_task_status[m][n]['state']:
+                        print("FGHFGH")
                         act_on_change([m, n])
-                    # case of external condition to be verified
-                    if sub_task['state'] == self.engage_task[m][n] and self.engage_task[m][
-                        n] != self.ext_cond and self.ext_cond is not None:
-                        act_on_change([m, n])
+
+                    # # case of external condition to be verified
+                    # if sub_task['state'] == self.engage_task[m][n] and self.engage_task[m][
+                    #     n] != self.ext_cond and self.ext_cond is not None:
+                    #     act_on_change([m, n])
             self.on_tasks = result
-            self.previous_task_status = self.tasks_status.copy()
+            # self.previous_task_status == self.tasks_status.copy())
+            print(self.tasks_status.copy())
+            # print(self.previous_task_status == self.tasks_status)
+            self.tasks_status[0][0]['state']=3
+            # print(self.previous_task_status[0][0]['state'], self.tasks_status[0][0]['state'])
+
+
 
         def inject_tasks_to_schedule():
             """ update tasks using cbit """
-            self.update_tasks_times()
+            self.task_on_decision()
             check_conditions_to_switch()
 
         self.cbit.append_process(inject_tasks_to_schedule)
@@ -332,8 +408,13 @@ if __name__ == '__main__':
 
     #
     b = RunWeeklySchedule(on_func=on_func, off_func=off_func, sched_file='sched1.txt')
-    # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+    # # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
+    b.add_weekly_task(
+        new_task={'start_days': [3], 'start_time': '09:03:30', 'end_days': [3], 'end_time': '16:25:30'})
     # b.add_weekly_task(
-    #     new_task={'start_days': [1, 6], 'start_time': '19:03:30', 'end_days': [1, 6], 'end_time': '19:03:40'})
+    #     new_task={'start_days': [4], 'start_time': '09:03:30', 'end_days': [1], 'end_time': '14:35:00'})
 
     b.start()
+
+    # a = WeeklyIntervals(day_start=1, time_start='15:00:00', day_end=3, time_end='12:00:00')
+    # print(a.get_datetimes(future_date=True))
