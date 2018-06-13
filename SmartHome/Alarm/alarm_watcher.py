@@ -1,6 +1,6 @@
-from gpiozero import Button
+# from gpiozero import Button
 from signal import pause
-from gpiozero.pins.pigpio import PiGPIOFactory
+# from gpiozero.pins.pigpio import PiGPIOFactory
 from sys import platform, path
 import datetime
 import tkinter as tk
@@ -10,7 +10,7 @@ from time import sleep
 
 class GPIOMonitor:
     def __init__(self, pin_factory=None, alias='gpio_monitor',
-                 trigger_pins=[21,20], listen_pins=[16, 26]):
+                 trigger_pins=[21, 20], listen_pins=[16, 26]):
 
         if pin_factory is None:
             self.factory = PiGPIOFactory(host='localhost')
@@ -25,7 +25,7 @@ class GPIOMonitor:
 
         self.logger = Log2File('/home/guy/Documents/AlarmMonitor.log',
                                name_of_master=self.alias, time_in_log=1, screen=1)
-        #self.cbit = CBit()
+        # self.cbit = CBit()
         self.run_gmail_service()
         self.check_state_on_boot(pin_factory)
 
@@ -41,15 +41,15 @@ class GPIOMonitor:
 
     def change_state_notifications(self):
         # Triggers        
-        msgs = [['Full-mode alarm switched OFF', 'Full-mode alarm switched ON'], 
-                ['Home-mode alarm switched OFF','Home-mode alarm switched ON']]
+        msgs = [['Full-mode alarm switched OFF', 'Full-mode alarm switched ON'],
+                ['Home-mode alarm switched OFF', 'Home-mode alarm switched ON']]
         for i, trig in enumerate(self.trigger_vector):
             trig.when_released = lambda: self.notify(msgs[i][1])
             trig.when_pressed = lambda: self.notify(msgs[i][1])
 
         # Indications 
         msgss = [['Alarm Stopped', 'Alarm is ON'],
-                 ['System Armed','System Disarmed']]
+                 ['System Armed', 'System Disarmed']]
         for n, listen in enumerate(self.listen_vector):
             listen.when_released = lambda: self.notify(msgss[n][0])
             listen.when_pressed = lambda: self.notify(msgss[n][1])
@@ -76,7 +76,7 @@ class GPIOMonitor:
         # self.email_notify(msg=self.logger.msg, sbj='HomePi: %s' % (self.alias))
 
 
-class AlarmControlGUI(ttk.Frame , GPIOMonitor):
+class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
     def __init__(self, master=None):
         self.log_stack = []
         self.arm_value = tk.IntVar()
@@ -87,44 +87,48 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
         self.alert_ent_value = tk.StringVar()
 
         ttk.Frame.__init__(self)
-        GPIOMonitor.__init__(self, '192.168.2.113', 'Alarm Monitor')
+        # GPIOMonitor.__init__(self, '192.168.2.113', 'Alarm Monitor')
+
         # Frames
-        self.mainframe = tk.Frame(master, bg='seashell3',padx=5)
+        self.mainframe = tk.Frame(master, padx=5)
         self.mainframe.grid()
-        self.dashboard_frame = tk.LabelFrame(self.mainframe, text="System Arm modes", bg='ivory2')
-        self.dashboard_frame.grid(row=1, column=0, pady=5, sticky=tk.E)
-        self.indicators_frame = tk.LabelFrame(self.mainframe, text="System Indicators", bg='seashell3')
-        self.indicators_frame.grid(row=1, column=1, sticky=tk.W)
-        self.activity_log_frame = tk.LabelFrame(self.mainframe, text='History', bg='seashell3')
-        self.activity_log_frame.grid(row=0, column=0, columnspan=3)
-        self.status_frame = ttk.Label(self.mainframe)
-        self.status_frame.grid(row=2, column=0, columnspan=3)
+        self.controls_frame = tk.Frame(master, bg='green')
+        self.controls_frame.grid(row=1, column=0, columnspan=2, sticky=tk.E + tk.W)
 
-        self.create_buttons()
+        self.but_frame = tk.LabelFrame(self.controls_frame, text="System Arm modes")  # , bg='ivory2')
+        self.but_frame.grid(row=0, column=0, pady=5)  # , sticky=tk.W)
+        self.indicators_frame = tk.LabelFrame(self.controls_frame, text="System Indicators")  # , bg='seashell2')
+        self.indicators_frame.grid(row=0, column=1)  # , sticky=tk.W)
+
+        self.arm_buttons()
         self.create_indicators()
-        self.constant_chk_gpio()
-
-        #self.cbit.append_process(self.constant_chk_gpio)
-        #self.cbit.init_thread()
+        self.oper_buttons()
+        # self.constant_chk_gpio()
 
         self.log_window()
-        self.write2log("BOOT")
+        # self.selfwrite2log("BOOT")
         self.status_bar()
+        # self.read_file()
+        # tk.Text(self.mainframe,width=3).grid(row=0, column=1)
 
-    def create_buttons(self):
-        # Buttons
-        pdx, pdy = 4, 4
+    def arm_buttons(self):
+        pdx, pdy = 4, 6
 
-        self.full_arm_button = tk.Checkbutton(self.dashboard_frame, text="Full", width=9, variable=self.arm_full_value,
-                                              indicatoron=0, height=1, command=lambda: self.arm_buttons(0))
+        self.full_arm_button = tk.Checkbutton(self.but_frame, text="Full", width=9, variable=self.arm_full_value,
+                                              indicatoron=0, height=1, command=lambda: self.arm_buttons_cb(0))
         self.full_arm_button.grid(row=0, column=0, padx=pdx, pady=pdy)
 
-        self.home_arm_button = tk.Checkbutton(self.dashboard_frame, text="Home", width=9, variable=self.arm_home_value,
-                                              indicatoron=0, height=1, command=lambda: self.arm_buttons(1))
+        self.home_arm_button = tk.Checkbutton(self.but_frame, text="Home", width=9, variable=self.arm_home_value,
+                                              indicatoron=0, height=1, command=lambda: self.arm_buttons_cb(1))
         self.home_arm_button.grid(row=0, column=1, padx=pdx, pady=pdy)
 
-        self.exit_button = ttk.Button(self.mainframe, text="EXIT", command=self.exit_button_cb)
-        self.exit_button.grid(row=1, column=2, padx=pdx, pady=pdy)
+    def oper_buttons(self):
+        pdx, pdy = 4, 4
+
+        self.exit_button = ttk.Button(self.controls_frame, text="Exit", command=self.exit_button_cb)
+        self.exit_button.grid(row=0, column=3, padx=pdx, pady=pdy, sticky=tk.E)
+        self.save_button = ttk.Button(self.controls_frame, text="Save", command=self.exit_button_cb)
+        self.save_button.grid(row=0, column=2, padx=pdx, pady=pdy, sticky=tk.W)
 
     def create_indicators(self):
         pdx, pdy = 4, 4
@@ -149,12 +153,12 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
             self.alert_ent_value.set('On')
         else:
             self.alert_ent_value.set('Off')
-            self.setoff_alarm_ent["bg"]='red'
+            self.setoff_alarm_ent["bg"] = 'red'
         root.after(500, self.constant_chk_gpio)
 
-        #print(self.listen_vector[0].is_pressed, self.listen_vector[1].is_pressed)
+        # print(self.listen_vector[0].is_pressed, self.listen_vector[1].is_pressed)
 
-    def arm_buttons(self, but_num):
+    def arm_buttons_cb(self, but_num):
         # Full Arm was pressed
         if but_num == 0:
             if self.arm_home_value.get() == 1:
@@ -183,13 +187,17 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
 
     def log_window(self):
         # Create log window
-        self.log_text = tk.Text(self.activity_log_frame, bg='white', wrap=tk.NONE, height=10)
+        self.activity_log_frame = tk.LabelFrame(self.mainframe, text='History')  # , bg='seashell1')
+        self.activity_log_frame.grid(row=0, column=0, sticky=tk.W + tk.E)
+        # self.activity_log_frame.grid_columnconfigure(0, weight=1)
+
+        self.log_text = tk.Text(self.activity_log_frame, height=15, wrap=tk.NONE, bd=1, relief=tk.RAISED)
         self.log_text.grid(row=0, column=0, sticky=tk.E + tk.W)
         scrollbar_y = ttk.Scrollbar(self.activity_log_frame, orient=tk.VERTICAL)
         scrollbar_y.grid(row=0, column=1, sticky=tk.N + tk.S)
         scrollbar_y.config(command=self.log_text.yview)
         scrollbar_x = ttk.Scrollbar(self.activity_log_frame, orient=tk.HORIZONTAL)
-        scrollbar_x.grid(row=0, column=0, sticky=tk.E + tk.W + tk.S)
+        scrollbar_x.grid(row=1, column=0, sticky=tk.E + tk.W + tk.S, columnspan=2)
         scrollbar_x.config(command=self.log_text.xview)
 
         self.log_text.config(yscrollcommand=scrollbar_y.set)
@@ -214,17 +222,19 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
             self.log_stack.append('[' + str(time2log) + '] ' + text_in + '\n')
 
     def status_bar(self):
+        self.status_frame = ttk.Label(self.mainframe)
+        self.status_frame.grid(row=2, column=0, columnspan=2)
         ttk.Separator(self.mainframe, orient=tk.HORIZONTAL).grid(row=2, column=0, columnspan=3,
                                                                  sticky=tk.E + tk.W + tk.N)
 
-        ttk.Label(self.status_frame, text='Console IP:%s ,Remote IP:%s ,Start Time:%s' % (
-            self.get_ip(), '1:23:45', str(datetime.datetime.now())[:-5])).grid(row=0, column=0, columnspan=2,
-                                                                               sticky=tk.E + tk.W, padx=5)
+        # ttk.Label(self.status_frame, text='Console IP:%s ,Remote IP:%s ,Start Time:%s' % (
+        #     self.get_ip(), '1:23:45', str(datetime.datetime.now())[:-5])).grid(row=0, column=0, columnspan=2,
+        #                                                                        sticky=tk.E + tk.W, padx=5)
 
-        self.clock()
+        # self.clock()
 
     def clock(self):
-        clock_label = tk.Label(self.status_frame)
+        clock_label = tk.Label(self.status_frame, bg='RoyalBlue1')
         clock_label.grid(row=0, column=2, sticky=tk.W, padx=5)
         time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         clock_label.config(text=time)
@@ -235,6 +245,12 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
 
     def exit_button_cb(self):
         quit()
+
+    def read_file(self):
+        with open("alarm_watcher.py", "r") as f:
+            data = f.readlines()
+            for line in data:
+                self.write2log(line)
 
 
 os_type = platform
@@ -250,13 +266,14 @@ path.append(main_path + 'SmartHome/LocalSwitch')
 path.append(main_path + 'modules')
 import gmail_mod
 import getip
-from localswitches import Log2File
-from cbit import CBit
 
-#root = tk.Tk()
-#AlarmControlGUI(root)#, pin_factory='192.168.2.115')
-#
-#root.mainloop()
+# from localswitches import Log2File
+# from cbit import CBit
 
-GPIOMonitor()
-pause()
+root = tk.Tk()
+AlarmControlGUI(root)  # , pin_factory='192.168.2.115')
+
+root.mainloop()
+
+# GPIOMonitor()
+# pause()
