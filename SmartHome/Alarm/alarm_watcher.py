@@ -79,26 +79,30 @@ class GPIOMonitor:
 class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
     def __init__(self, master=None):
         self.log_stack = []
-        self.arm_value = tk.IntVar()
-        self.alarm_on_value = tk.IntVar()
+        self.arm_value = tk.StringVar()
+        self.alarm_on_value = tk.StringVar()
         self.arm_home_value = tk.IntVar()
         self.arm_full_value = tk.IntVar()
-        self.armed_ent_value = tk.StringVar()
-        self.alert_ent_value = tk.StringVar()
+        # self.armed_ent_value = tk.StringVar()
+        # self.alert_ent_value = tk.StringVar()
+
+        self.alarm_on_value.set('Alarm Off')
+        self.arm_value.set('Not Armed')
 
         ttk.Frame.__init__(self)
         # GPIOMonitor.__init__(self, '192.168.2.113', 'Alarm Monitor')
 
         # Frames
-        self.mainframe = tk.Frame(master, padx=5)
+        self.mainframe = tk.Frame(master, padx=5, pady=5, bg='grey35')
         self.mainframe.grid()
-        self.controls_frame = tk.Frame(master, bg='green')
-        self.controls_frame.grid(row=1, column=0, columnspan=2, sticky=tk.E + tk.W)
+        self.activity_log_frame = tk.LabelFrame(self.mainframe, text='History')
+        self.activity_log_frame.grid_columnconfigure(0, weight=2)
+        self.activity_log_frame.grid(row=1, column=0, sticky=tk.W + tk.E)
 
-        self.but_frame = tk.LabelFrame(self.controls_frame, text="System Arm modes")  # , bg='ivory2')
-        self.but_frame.grid(row=0, column=0, pady=5)  # , sticky=tk.W)
-        self.indicators_frame = tk.LabelFrame(self.controls_frame, text="System Indicators")  # , bg='seashell2')
-        self.indicators_frame.grid(row=0, column=1)  # , sticky=tk.W)
+        self.controls_frame = tk.Frame(self.mainframe, bg='grey35')
+        self.controls_frame.grid(row=0, column=0, columnspan=2, sticky=tk.E + tk.W)
+        self.status_frame = tk.Frame(self.mainframe)
+        self.status_frame.grid(row=2, column=0)
 
         self.arm_buttons()
         self.create_indicators()
@@ -106,41 +110,47 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         # self.constant_chk_gpio()
 
         self.log_window()
-        # self.selfwrite2log("BOOT")
+        self.write2log("BOOT")
+        self.write2log("tOOT")
+
         self.status_bar()
         # self.read_file()
-        # tk.Text(self.mainframe,width=3).grid(row=0, column=1)
 
     def arm_buttons(self):
-        pdx, pdy = 4, 6
+        pdx, pdy = 4, 4
+        # self.but_frame = tk.LabelFrame(self.controls_frame, text="System Arm modes")  # , bg='ivory2')
+        # self.but_frame.grid(row=0, column=0, pady=5)  # , sticky=tk.W)
 
-        self.full_arm_button = tk.Checkbutton(self.but_frame, text="Full", width=9, variable=self.arm_full_value,
+        self.full_arm_button = tk.Checkbutton(self.controls_frame, text="Full", width=9, variable=self.arm_full_value,
                                               indicatoron=0, height=1, command=lambda: self.arm_buttons_cb(0))
         self.full_arm_button.grid(row=0, column=0, padx=pdx, pady=pdy)
 
-        self.home_arm_button = tk.Checkbutton(self.but_frame, text="Home", width=9, variable=self.arm_home_value,
+        self.home_arm_button = tk.Checkbutton(self.controls_frame, text="Home", width=9, variable=self.arm_home_value,
                                               indicatoron=0, height=1, command=lambda: self.arm_buttons_cb(1))
         self.home_arm_button.grid(row=0, column=1, padx=pdx, pady=pdy)
 
     def oper_buttons(self):
-        pdx, pdy = 4, 4
+        pdx, pdy = 40, 4
 
-        self.exit_button = ttk.Button(self.controls_frame, text="Exit", command=self.exit_button_cb)
-        self.exit_button.grid(row=0, column=3, padx=pdx, pady=pdy, sticky=tk.E)
-        self.save_button = ttk.Button(self.controls_frame, text="Save", command=self.exit_button_cb)
-        self.save_button.grid(row=0, column=2, padx=pdx, pady=pdy, sticky=tk.W)
+        self.exit_button = tk.Button(self.controls_frame, text="Exit", command=self.exit_button_cb)
+        self.exit_button.grid(row=0, column=5, padx=pdx, pady=pdy)
+        self.save_button = tk.Button(self.controls_frame, text="Save", command=self.exit_button_cb)
+        self.save_button.grid(row=0, column=4, padx=pdx, pady=pdy)
 
     def create_indicators(self):
         pdx, pdy = 4, 4
-        system_armed_label = tk.Label(self.indicators_frame, text='Armed: ', height=1)
-        system_armed_label.grid(row=0, column=0, padx=pdx, pady=pdy)
-        self.system_armed_ent = ttk.Entry(self.indicators_frame, width=3, textvariable=self.armed_ent_value)
-        self.system_armed_ent.grid(row=0, column=1, padx=pdx, pady=pdy, sticky=tk.W)
+        # self.indicators_frame = tk.LabelFrame(self.controls_frame, text="System Indicators")  # , bg='seashell2')
+        # self.indicators_frame.grid(row=0, column=1)  # , sticky=tk.W)
 
-        self.setoff_alarm_label = ttk.Label(self.indicators_frame, text='Alarming: ')
-        self.setoff_alarm_label.grid(row=0, column=2, padx=pdx, pady=pdy)
-        self.setoff_alarm_ent = tk.Entry(self.indicators_frame, width=3, textvariable=self.alert_ent_value)
-        self.setoff_alarm_ent.grid(row=0, column=3, padx=pdx, pady=pdy)
+        system_armed_label = tk.Label(self.controls_frame, textvariable=self.arm_value, relief=tk.RIDGE, bd=2)
+        system_armed_label.grid(row=0, column=2, padx=pdx, pady=pdy)
+        self.setoff_alarm_label = tk.Label(self.controls_frame, textvariable=self.alarm_on_value, relief=tk.RIDGE, bd=2)
+        self.setoff_alarm_label.grid(row=0, column=3, padx=pdx, pady=pdy)
+
+        # self.system_armed_ent = ttk.Entry(self.indicators_frame, width=3, textvariable=self.armed_ent_value)
+        # self.system_armed_ent.grid(row=0, column=1, padx=pdx, pady=pdy, sticky=tk.W)
+        # self.setoff_alarm_ent = tk.Entry(self.indicators_frame, width=3, textvariable=self.alert_ent_value)
+        # self.setoff_alarm_ent.grid(row=0, column=3, padx=pdx, pady=pdy)
 
     def constant_chk_gpio(self):
         # arm ind
@@ -187,9 +197,6 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
 
     def log_window(self):
         # Create log window
-        self.activity_log_frame = tk.LabelFrame(self.mainframe, text='History')  # , bg='seashell1')
-        self.activity_log_frame.grid(row=0, column=0, sticky=tk.W + tk.E)
-        # self.activity_log_frame.grid_columnconfigure(0, weight=1)
 
         self.log_text = tk.Text(self.activity_log_frame, height=15, wrap=tk.NONE, bd=1, relief=tk.RAISED)
         self.log_text.grid(row=0, column=0, sticky=tk.E + tk.W)
@@ -222,16 +229,12 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
             self.log_stack.append('[' + str(time2log) + '] ' + text_in + '\n')
 
     def status_bar(self):
-        self.status_frame = ttk.Label(self.mainframe)
-        self.status_frame.grid(row=2, column=0, columnspan=2)
         ttk.Separator(self.mainframe, orient=tk.HORIZONTAL).grid(row=2, column=0, columnspan=3,
                                                                  sticky=tk.E + tk.W + tk.N)
+        ttk.Label(self.status_frame, text='Console IP:%s ,Remote IP:%s ,Start Time:%s' % (
+            self.get_ip(), '1:23:45', str(datetime.datetime.now())[:-5])).grid(row=0, column=0, columnspan=2)
 
-        # ttk.Label(self.status_frame, text='Console IP:%s ,Remote IP:%s ,Start Time:%s' % (
-        #     self.get_ip(), '1:23:45', str(datetime.datetime.now())[:-5])).grid(row=0, column=0, columnspan=2,
-        #                                                                        sticky=tk.E + tk.W, padx=5)
-
-        # self.clock()
+        self.clock()
 
     def clock(self):
         clock_label = tk.Label(self.status_frame, bg='RoyalBlue1')
