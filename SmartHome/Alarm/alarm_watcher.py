@@ -96,20 +96,19 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         self.mainframe.grid()
         self.activity_log_frame = tk.LabelFrame(self.mainframe, text='History', bg=self.common_bg, fg='white', padx=3,
                                                 pady=3)
-        self.activity_log_frame.grid_columnconfigure(0, weight=2)
-        self.activity_log_frame.grid(row=1, column=0, sticky=tk.W + tk.E, pady=(0, 5))
+        self.activity_log_frame.grid(row=1, column=0, sticky=tk.W + tk.E, pady=(0, 5), columnspan=3)
+        self.activity_log_frame.grid_columnconfigure(0, weight=1)
 
         self.controls_frame = tk.Frame(self.mainframe, bg=self.common_bg)
-        self.controls_frame.grid(row=0, column=0, sticky=tk.E + tk.W)
-        self.controls_frame.grid_columnconfigure(1, weight=1)
+        self.controls_frame.grid(row=0, column=0, columnspan=3, sticky=tk.E + tk.W)
+        self.controls_frame.grid_columnconfigure(1, weight=2)
 
         self.status_frame = tk.Frame(self.mainframe, bg=self.common_bg)
         self.status_frame.grid(row=2, column=0, columnspan=3, sticky=tk.E + tk.W)
         self.status_frame.grid_columnconfigure(2, weight=1)
         ###################################################
+
         self.run_modules()
-
-
 
     def run_modules(self):
         self.log_window()
@@ -122,9 +121,6 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         self.set_arm_ind(0)
         self.alarm_setoff_ind(0)
         self.blink_status = 1
-        # self.cbit = CBit()
-        # self.cbit.append_process(self.blink_tx)
-        # self.cbit.init_thread()
         self.blink_tx()
 
     def arm_buttons(self):
@@ -370,7 +366,6 @@ path.append(main_path + 'SmartHome/LocalSwitch')
 path.append(main_path + 'modules')
 import gmail_mod
 import getip
-
 
 # from localswitches import Log2File
 from cbit import CBit
