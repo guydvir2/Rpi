@@ -109,8 +109,6 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         ###################################################
         self.run_modules()
 
-
-
     def run_modules(self):
         self.log_window()
         self.write2log("BOOT")
@@ -121,10 +119,8 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         self.status_bar()
         self.set_arm_ind(0)
         self.alarm_setoff_ind(0)
+
         self.blink_status = 1
-        # self.cbit = CBit()
-        # self.cbit.append_process(self.blink_tx)
-        # self.cbit.init_thread()
         self.blink_tx()
 
     def arm_buttons(self):
@@ -173,9 +169,9 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         else:
             self.alert_ent_value.set('Off')
             self.setoff_alarm_ent["bg"] = 'red'
+
         root.after(500, self.constant_chk_gpio)
 
-        # print(self.listen_vector[0].is_pressed, self.listen_vector[1].is_pressed)
 
     def set_arm_ind(self, value):
         if value == 1:
@@ -288,18 +284,19 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
 
     def passwd_window(self):
 
-        bg = 'yellow'
+        bg = self.common_bg  # 'yellow2'#'RoyalBlue4'
         self.pwd_toplevel = tk.Toplevel(bg=bg, pady=5, padx=5)
         self.pwd_toplevel.grid()
-        self.pwd_toplevel.title('Enter Alarm Code')
+        self.pwd_toplevel.title('Enter Disarm Code')
         self.pwd_button_value = tk.IntVar()
 
         self.pwd_window_frame = tk.Frame(self.pwd_toplevel, bg=bg)
         self.pwd_window_frame.grid()
-        tk.Label(self.pwd_window_frame, text='Enter Paswword to disarm:', pady=5, bg=bg).grid(row=0, column=0,
-                                                                                              columnspan=2)
+        tk.Label(self.pwd_window_frame, text='Enter Password to disarm:', pady=5, bg=bg, fg='white').grid(row=0,
+                                                                                                          column=0,
+                                                                                                          columnspan=2)
         self.pwd_ent_value = tk.StringVar()
-        self.pwd_entry = tk.Entry(self.pwd_window_frame, textvariable=self.pwd_ent_value, show="$")
+        self.pwd_entry = tk.Entry(self.pwd_window_frame, textvariable=self.pwd_ent_value, show="*")
         self.pwd_entry.grid(row=1, column=0)
         self.pwd_ok_button = tk.Button(self.pwd_window_frame, text='Send', width=5,
                                        command=lambda: self.pwd_button_value.set(1))
@@ -338,23 +335,23 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         pass
 
     def blink_tx(self):
-        if self.blink_status == 1:
-            self.tx_label["bg"] = 'green'
-            self.tx_value.set('Tx')
-            sleep(1)
-            self.tx_label["bg"] = 'blue'
-            sleep(1)
-        elif self.blink_status == 0:
-            self.tx_label["bg"] = 'red'
-            self.tx_value.set('*')
-            sleep(2)
-            self.tx_label["bg"] = 'orange'
-        else:
-            self.tx_label["bg"] = 'red'
-            self.tx_value.set('x')
-            sleep(2)
+        def blink_1(color1, color2, txt):
+            self.tx_label["bg"] = color1
+            self.tx_value.set(txt)
+            self.after(t_blink, blink_2, color2)
 
-        self.after(3500, self.blink_tx)
+        def blink_2(color):
+            self.tx_label["bg"] = color
+            self.after(t_blink, self.blink_tx)
+
+        t_blink = 2500
+        if self.blink_status == 1:
+            blink_1('green', 'orange', 'Tx')
+        elif self.blink_status == 0:
+            blink_1('red', 'yellow', '*')
+        else:
+            blink_1('red', 'red', 'X')
+
 
 
 os_type = platform
@@ -370,7 +367,6 @@ path.append(main_path + 'SmartHome/LocalSwitch')
 path.append(main_path + 'modules')
 import gmail_mod
 import getip
-
 
 # from localswitches import Log2File
 from cbit import CBit
