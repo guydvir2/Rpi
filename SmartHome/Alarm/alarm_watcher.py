@@ -7,6 +7,7 @@ import datetime
 import tkinter as tk
 from tkinter import ttk
 from time import sleep
+from signal import pause
 
 
 class GPIOMonitor:
@@ -28,7 +29,13 @@ class GPIOMonitor:
                                name_of_master=self.alias, time_in_log=1, screen=0)
         self.run_gmail_service()
         self.check_state_on_boot(trigger_pins, listen_pins)
+        
 
+    #def run_status(self):
+        #self.cbit = CBit(500)
+        #self.cbit.append_process(self.run_status)
+        #self.cbit.init_thread()
+        #print(self.get_gpio_status())
 
     def create_gpios(self):
         for pin in self.trigger_pins:
@@ -38,10 +45,10 @@ class GPIOMonitor:
 
     def get_gpio_status(self):
         trig_s, listen_s = [], []
-        for pin in self.trigger_pins:
-            trig_s.append(self.trigger_vector[-1].is_pressed)
-        for pin1 in self.listen_pins:
-            listen_s.append(self.listen_vector[-1].is_pressed)
+        for pin in self.trigger_vector:
+            trig_s.append(pin.is_pressed)
+        for pin1 in self.listen_vector:
+            listen_s.append(pin1.is_pressed)
 
         return trig_s, listen_s
         
@@ -50,18 +57,17 @@ class GPIOMonitor:
         msgs = [['Full-mode alarm switched OFF', 'Full-mode alarm switched ON'],
                 ['Home-mode alarm switched OFF', 'Home-mode alarm switched ON']]
         for i, trig in enumerate(self.trigger_vector):
-            trig.when_released = lambda: self.notify(msgs[i][0])
-            trig.when_pressed = lambda: self.notify(msgs[i][1])
+            trig.when_released = lambda arg=i: self.notify(msgs[arg][0])
+            trig.when_pressed = lambda arg=i: self.notify(msgs[arg][1])
 
         # Indications 
         msgss = [['Alarm Stopped', 'Alarm is ON'],
                  ['System Armed', 'System Disarmed']]
         for n, listen in enumerate(self.listen_vector):
-            listen.when_released = lambda: self.notify(msgss[n][0])
-            listen.when_pressed = lambda: self.notify(msgss[n][1])
+            listen.when_released = lambda arg=n: self.notify(msgss[arg][1])
+            listen.when_pressed = lambda arg=n: self.notify(msgss[arg][0])
 
     def check_state_on_boot(self, trigger_pins, listen_pins):
-        boot_msg = "%s start, monitoring GPIO [d] of IP [%s]" % (self.alias, self.ip_pi)
         # check triggers at boot
         self.notify("%s start" % self.alias)
         self.notify("IP [%s]" % self.ip_pi)
@@ -73,7 +79,6 @@ class GPIOMonitor:
         else:
             al_stat = '@Boot -System Unarmed'
 
-        self.notify(boot_msg)
         self.notify(al_stat)
 
     def run_gmail_service(self):
@@ -87,7 +92,10 @@ class GPIOMonitor:
 
     def notify(self, msg):
         self.logger.append_log(msg)
-        self.write2log(msg)
+        try:
+            self.write2log(msg)
+        except AttributeError:
+            pass
         # self.email_notify(msg=self.logger.msg, sbj='HomePi: %s' % (self.alias))
 
 
@@ -178,14 +186,14 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
 
     def constant_chk_gpio(self):
         gpio_s = self.get_gpio_status()
-        
+       
         # arm ind
-        if gpio_s[0] == True:
+        if gpio_s[1][1] == True:
             self.set_arm_ind(1)
         else:
             self.set_arm_ind(0)
         # alert ind
-        if gpio_s[1] == True:
+        if gpio_s[1][0] == True:
             self.alarm_setoff_ind(1)
         else:
             self.alarm_setoff_ind(0)
@@ -206,7 +214,7 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
             self.setoff_alarm_label['bg'] = 'red'
         elif value == 0:
             self.alarm_on_value.set('Alarm.Off')
-            self.setoff_alarm_label['bg'] = 'green'
+            self.setoff_alarm_label['bg'] = 'orange'
 
     def arm_buttons_cb(self, but_num):
         # Full Arm was pressed
@@ -388,7 +396,10 @@ path.append(main_path + 'modules')
 import gmail_mod
 import getip
 from localswitches import Log2File
+from cbit import CBit
 
 root = tk.Tk()
 AlarmControlGUI(root, ip='192.168.2.113')
 root.mainloop()
+#GPIOMonitor(ip='192.168.2.115')
+#pause()
