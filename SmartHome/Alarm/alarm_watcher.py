@@ -1,5 +1,4 @@
 from gpiozero import Button
-from signal import pause
 from gpiozero.pins.pigpio import PiGPIOFactory
 from sys import platform, path
 import os
