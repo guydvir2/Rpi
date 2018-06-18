@@ -1,5 +1,9 @@
-from gpiozero import Button
-from gpiozero.pins.pigpio import PiGPIOFactory
+try:
+    from gpiozero import Button
+    from gpiozero.pins.pigpio import PiGPIOFactory
+except:
+    pass
+
 from sys import platform, path
 import os
 import datetime
