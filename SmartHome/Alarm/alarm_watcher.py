@@ -1,5 +1,5 @@
-# from gpiozero import Button
-# from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero import Button, OutputDevice
+from gpiozero.pins.pigpio import PiGPIOFactory
 
 
 from sys import platform, path
@@ -14,59 +14,50 @@ from signal import pause
 
 class GPIOMonitor:
     def __init__(self, ip=None, alias='gpio_monitor',
-                 trigger_pins=[21, 20], listen_pins=[16, 26]):
+                 listen_pins=[20, 21], trigger_pins=[16, 26]):
+        # listen_pins = [sys.arm, alarm.on], trigger_pins=[full, home]
 
         if ip is None:
             ip = 'localhost'
+        
         self.factory = PiGPIOFactory(host=ip)
-
-        self.trigger_pins, self.listen_pins, self.ip_pi = trigger_pins, listen_pins, ip
-        self.trigger_vector, self.listen_vector = [], []
-
         self.alias = alias
-        self.create_gpios()
-        self.change_state_notifications()
-
+        self.fullarm_hw = OutputDevice(trigger_pins[0], pin_factory=self.factory)
+        self.homearm_hw = OutputDevice(trigger_pins[1], pin_factory=self.factory)
+        self.sysarm_hw = Button(listen_pins[0], pin_factory=self.factory)
+        self.alarm_hw = Button(listen_pins[1], pin_factory=self.factory)
+        
+        #self.change_state_notifications()
         self.logger = Log2File('/home/guy/Documents/AlarmMonitor.log',
                                name_of_master=self.alias, time_in_log=1, screen=0)
         self.run_gmail_service()
         self.check_state_on_boot(trigger_pins, listen_pins)
 
-    # def run_status(self):
-    # self.cbit = CBit(500)
-    # self.cbit.append_process(self.run_status)
-    # self.cbit.init_thread()
-    # print(self.get_gpio_status())
-
-    def create_gpios(self):
-        for pin in self.trigger_pins:
-            self.trigger_vector.append(Button(pin, pin_factory=self.factory))
-        for pin1 in self.listen_pins:
-            self.listen_vector.append(Button(pin1, pin_factory=self.factory))
-
     def get_gpio_status(self):
-        trig_s, listen_s = [], []
-        for pin in self.trigger_vector:
-            trig_s.append(pin.is_pressed)
-        for pin1 in self.listen_vector:
-            listen_s.append(pin1.is_pressed)
-
+    
+        trig_s = [self.fullarm_hw.value, self.homearm_hw.value]
+        listen_s = [ self.sysarm_hw.value, self.alarm_hw.value ]
         return trig_s, listen_s
+
 
     def change_state_notifications(self):
         # Triggers        
         msgs = [['Full-mode alarm switched OFF', 'Full-mode alarm switched ON'],
                 ['Home-mode alarm switched OFF', 'Home-mode alarm switched ON']]
         for i, trig in enumerate(self.trigger_vector):
-            trig.when_released = lambda arg=i: self.notify(msgs[arg][0])
-            trig.when_pressed = lambda arg=i: self.notify(msgs[arg][1])
-
+            if trig.value == True:
+                self.notify(msgs[i][1])
+            elif trig.value == False:
+                self.notify(msgs[i][0])
+        
         # Indications 
-        msgss = [['Alarm Stopped', 'Alarm is ON'],
+        msgs = [['Alarm Stopped', 'Alarm is ON'],
                  ['System Armed', 'System Disarmed']]
         for n, listen in enumerate(self.listen_vector):
-            listen.when_released = lambda arg=n: self.notify(msgss[arg][1])
-            listen.when_pressed = lambda arg=n: self.notify(msgss[arg][0])
+            if listen.value == True:
+                self.notify(msgs[i][1])
+            elif listen.value == False:
+                self.notify(msgs[i][0])
 
     def check_state_on_boot(self, trigger_pins, listen_pins):
         # check triggers at boot
@@ -75,7 +66,7 @@ class GPIOMonitor:
         self.notify("trigger IOs [%d, %d]" % (trigger_pins[0], trigger_pins[1]))
         self.notify("Indications IOs [%d, %d]" % (listen_pins[0], listen_pins[1]))
 
-        if any([trig.is_pressed for trig in (self.trigger_vector)]):
+        if any([1,0]):# self.homearm_hw.value, self.fullarm_hw.value]):
             al_stat = '@BOOT- System Armed'
         else:
             al_stat = '@Boot -System Unarmed'
@@ -100,8 +91,8 @@ class GPIOMonitor:
         # self.email_notify(msg=self.logger.msg, sbj='HomePi: %s' % (self.alias))
 
 
-class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
-    def __init__(self, master):
+class AlarmControlGUI(ttk.Frame , GPIOMonitor):
+    def __init__(self, master, ip=None):
         self.arm_value = tk.StringVar()
         self.alarm_on_value = tk.StringVar()
         self.arm_home_value = tk.IntVar()
@@ -112,10 +103,11 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         self.disarm_pwd = '1234'
         master.title('HomePi Alarm monitor')
         self.blink_status = None
-        self.log_stack, self.ip_pi = [], None
+        self.last_ind_state = ['','']
+        self.log_stack, self.ip_pi = [], ip
 
         ttk.Frame.__init__(self)
-        # GPIOMonitor.__init__(self, ip=ip, alias='Alarm Monitor')
+        GPIOMonitor.__init__(self, ip=self.ip_pi, alias='Alarm Monitor')
 
         # Frames
         self.mainframe = tk.Frame(master, padx=5, pady=5, bg=self.common_bg)
@@ -141,7 +133,7 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         self.arm_buttons()
         self.create_indicators()
         self.oper_buttons()
-        # self.constant_chk_gpio()
+        self.chk_ind_state()
         self.status_bar()
         self.set_arm_ind(0)
         self.alarm_setoff_ind(0)
@@ -156,11 +148,11 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
         self.arm_buts_frame = tk.Frame(self.controls_frame, bg=self.common_bg, relief=tk.GROOVE, bd=2)
         self.arm_buts_frame.grid(row=0, column=0)
         self.full_arm_button = tk.Checkbutton(self.arm_buts_frame, text="Full", width=9, variable=self.arm_full_value,
-                                              indicatoron=0, height=1, command=lambda: self.arm_buttons_cb(0))
+                                              indicatoron=0, height=1, command=self.farm_cb)
         self.full_arm_button.grid(row=0, column=0, padx=pdx, pady=pdy)
 
         self.home_arm_button = tk.Checkbutton(self.arm_buts_frame, text="Home", width=9, variable=self.arm_home_value,
-                                              indicatoron=0, height=1, command=lambda: self.arm_buttons_cb(1))
+                                              indicatoron=0, height=1, command=self.harm_cb)
         self.home_arm_button.grid(row=0, column=1, padx=pdx, pady=pdy)
 
     def oper_buttons(self):
@@ -185,21 +177,32 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
                                            width=13)
         self.setoff_alarm_label.grid(row=0, column=2, padx=pdx, pady=pdy)
 
-    def constant_chk_gpio(self):
+    def chk_ind_state(self):
         gpio_s = self.get_gpio_status()
-
         # arm ind
         if gpio_s[1][1] == True:
             self.set_arm_ind(1)
+            if self.last_ind_state[0] != 'arm_on':
+                self.last_ind_state[0] =='arm_on'
+                self.write2log('System Armed detected')
         else:
             self.set_arm_ind(0)
+            if self.last_ind_state[0] != 'arm_off':
+                self.last_ind_state[0] = 'arm_off'
+                self.write2log('System Disarmed detected')
         # alert ind
         if gpio_s[1][0] == True:
             self.alarm_setoff_ind(1)
+            if self.last_ind_state[1] != 'alarm_on':
+                self.last_ind_state[1] = 'alarm_on'
+                self.write2log('System is Alarming')
         else:
             self.alarm_setoff_ind(0)
+            if self.last_ind_state[1] != 'alarm_off':
+                self.last_ind_state[1] = 'alarm_off'
+                self.write2log('System stopped alarming')
 
-        root.after(1000, self.constant_chk_gpio)
+        root.after(1000, self.chk_ind_state)
 
     def set_arm_ind(self, value):
         if value == 1:
@@ -217,73 +220,62 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
             self.alarm_on_value.set('Alarm.Off')
             self.setoff_alarm_label['bg'] = 'orange'
 
-    def arm_buttons_cb(self, but_num):
-        gpio_s = self.get_gpio_status()
-        # Full Arm was pressed
-        if but_num == 0:
-            # if other button is pressed on
-            if self.arm_home_value.get() == 1:
-                # ask for passwd
-                self.passwd_window()
-                # case of correct passwd
-                if self.pwd_ent_value.get() == self.disarm_pwd:
-                    sleep(0.5)
-                    self.arm_home_value.set(0)
-                    if self.gpio_s[0][1] == 0 and self.gpio_s[0][0] == 1:
-                        self.write2log('System disarmed from Home Mode')
-                        self.write2log('System armed to Full Mode')
-                    else:
-                        self.write2log('Fail to switch to Full Home mode')
-                        self.arm_home_value.set(1)
-                        self.arm_full_value.set(0)
-                else:
-                    self.write2log('Wrong Password')
-                    self.arm_full_value.set(0)
-            elif self.arm_full_value.get() == 1:
-                # code to arm to Full mode
-                sleep(0.5)
-                if self.get_gpio_status[0][0] == 1:
-                    self.write2log('System armed to Full Mode')
-                else:
-                    self.write2log('System fail to Full mode arm')
-            elif self.arm_full_value.get() == 0:
-                # code to arm to Full mode
-                sleep(0.5)
-                self.passwd_window()
-                if self.pwd_ent_value.get() == self.disarm_pwd:
-                    self.write2log('System disarmed from Full Mode')
-                else:
-                    self.write2log('Password fail to disarm Full Mode')
-                    self.arm_full_value.set(1)
-                    # code to disarm
-        # Home Arm was pressed
-        elif but_num == 1:
-            # if other button is pressed on
-            if self.arm_full_value.get() == 1:
-                self.passwd_window()
-                if self.pwd_ent_value.get() == self.disarm_pwd:
-                    self.write2log('System disarmed from Full Mode')
-                    self.arm_full_value.set(0)
-                    sleep(0.5)
-                    # Add deactivate code
-                    self.write2log('System armed to Home Mode')
-                else:
-                    self.write2log('Password fail to disarm Home Mode')
-                    self.arm_home_value.set(0)
-            elif self.arm_full_value.get() == 1:
-                # code to arm to Full mode
-                sleep(0.5)
-                self.write2log('System armed to Home Mode')
-            elif self.arm_home_value.get() == 0:
-                # code to arm to home mode
-                sleep(0.5)
-                self.passwd_window()
-                if self.pwd_ent_value.get() == self.disarm_pwd:
-                    self.write2log('System disarmed from Home Mode')
-                else:
-                    self.write2log('Password fail to disarm Home Mode')
-                    self.arm_home_value.set(1)
-                    # code to disarm
+    def farm_cb(self):
+        # already armed - need to disable
+        if self.fullarm_hw.value == 1:
+            self.disable_with_pwd(self.fullarm_hw, self.arm_full_value)
+            self.write2log("Full mode switched off")
+        
+        # set full_arm to ON
+        elif self.fullarm_hw.value == 0 and self.homearm_hw.value == 0:
+            self.fullarm_hw.on()
+            self.write2log("Full mode switched on")
+
+        # home mode is armed- need to disable home and then arm full
+        elif self.fullarm_hw.value == 0 and self.homearm_hw.value == 1:
+            # disable home arm
+            if self.disable_with_pwd(self.homearm_hw, self.arm_home_value) == 1:
+                self.write2log("Home mode switched off")
+                self.fullarm_hw.on()
+                self.write2log("Full mode switched on")
+            else:
+                self.arm_full_value.set(0)
+                self.write2log("PWD err disarming Home mode")
+
+    def harm_cb(self):
+        # already armed - need to disable
+        if self.homearm_hw.value == 1:
+            self.disable_with_pwd(self.homearm_hw, self.arm_home_value)
+            self.write2log("Home mode switched off")
+
+        # set home_arm to ON
+        elif self.homearm_hw.value == 0 and self.fullarm_hw.value == 0:
+            self.homearm_hw.on()
+            self.write2log("Home mode switched on")
+
+        # full mode is armed- need to disable home and then arm home
+        elif self.homearm_hw.value == 0 and self.fullarm_hw.value == 1:
+            # disable full arm
+            if self.disable_with_pwd(self.fullarm_hw, self.arm_full_value) == 1:
+                self.write2log("Full mode switched off")
+                self.homearm_hw.on()
+                self.write2log("Home mode switched on")
+
+            else:
+                self.write2log("PWD err for disarming Full mode")
+                self.arm_home_value.set(0)
+        
+    def disable_with_pwd(self, hw, ind_hw):
+        if hw.value == 1:
+            self.passwd_window()
+            if self.pwd_ent_value.get() == self.disarm_pwd:
+                hw.off()
+                ind_hw.set(0)
+                return 1
+            else:
+                print("wrong pwd")
+                ind_hw.set(1)
+                return 0
 
     def log_window(self):
         # Create log window
@@ -379,7 +371,7 @@ class AlarmControlGUI(ttk.Frame):  # , GPIOMonitor):
             self.tx_label["bg"] = color
             self.after(t_blink, self.blink_tx)
 
-        t_blink = 5500
+        t_blink = 1500
 
         ping_result = os.system('ping -c 1 %s > /dev/null 2>&1 ' % self.ip_pi)
         if ping_result == 0:
@@ -410,12 +402,12 @@ path.append(main_path + 'modules')
 import gmail_mod
 import getip
 
-# from localswitches import Log2File
-# from cbit import CBit
-getip.get_ip()
+from localswitches import Log2File
+#getip.get_ip()
 
 root = tk.Tk()
-AlarmControlGUI(root)  # , ip='192.168.2.101')
+AlarmControlGUI(root , ip='192.168.2.117')
 root.mainloop()
+
 # GPIOMonitor(ip='192.168.2.115')
 # pause()
