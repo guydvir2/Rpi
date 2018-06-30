@@ -49,8 +49,7 @@ if len(argv) > 0:
         sys.exit(2)
 
     a = HomePiLocalSwitch(switch_type='double', gpio_in=[20, 21], gpio_out=[16, 26], mode='press',
-                          ext_log='/home/guy/Documents/%s.log' % device_name, alias=device_name + 'O/D')
-
+                          ext_log='/home/guy/Documents/%s.log' % (device_name), alias=device_name + 'O/D')
     switch = ''
     for opt, arg in opts:
         if opt == '-h':
