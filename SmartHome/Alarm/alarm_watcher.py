@@ -104,6 +104,7 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
         master.title('HomePi Alarm monitor')
         self.blink_status = None
         self.last_ind_state = ['','']
+        self.last_ping_state = 0
         self.log_stack, self.ip_pi = [], ip
 
         ttk.Frame.__init__(self)
@@ -183,13 +184,13 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
         if gpio_s[1][1] == True:
             self.set_arm_ind(1)
             if self.last_ind_state[0] != 'arm_on':
-                self.last_ind_state[0] =='arm_on'
-                self.write2log('System Armed detected')
+                self.last_ind_state[0] ='arm_on'
+                self.write2log('System is Armed')
         else:
             self.set_arm_ind(0)
             if self.last_ind_state[0] != 'arm_off':
                 self.last_ind_state[0] = 'arm_off'
-                self.write2log('System Disarmed detected')
+                self.write2log('System Disarmed')
         # alert ind
         if gpio_s[1][0] == True:
             self.alarm_setoff_ind(1)
@@ -385,6 +386,11 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
             blink_1('red', 'yellow', '*')
         else:
             blink_1('red', 'red', 'X')
+            
+        if self.last_ping_state == ping_result:
+            self.last_ping_state = [1,0][ping_result]
+            m=["OK","Fail"][ping_result]
+            self.write2log("Ping %s"%m)
 
 
 os_type = platform
