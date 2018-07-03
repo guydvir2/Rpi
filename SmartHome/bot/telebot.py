@@ -4,6 +4,7 @@ import datetime
 import telepot
 from telepot.loop import MessageLoop
 import tkinter as tk
+from sys import platform, path
 
 """
 - `/roll` - reply with a random integer between 1 and 6, like rolling a dice.
@@ -49,13 +50,41 @@ def handle(msg):
         bot.sendMessage(chat_id, random.randint(1, 6))
     elif command == '/time':
         bot.sendMessage(chat_id, str(datetime.datetime.now()))
+    elif command == '/window1_up':
+        win1_commands(0,1)
+        bot.sendMessage(chat_id, 'Window 1 set UP')
+    elif command == '/window1_down':
+        win1_commands(1,1)
+        bot.sendMessage(chat_id, 'Window 1 set DOWN')
+    elif command == '/window1_stop':
+        win1_commands(1,0)
+        bot.sendMessage(chat_id, 'Window 1 stopped')
+        
     else:
         bot.sendMessage(chat_id, 'pppfff comme on')
 
-def up_win_1():
-    pass
+def win1_commands(direction,state):
+    win1.set_state(0, 0)
+    win1.set_state(1, 0)
+    print(win1.get_state())
+    win1.set_state(direction,state)
+    print(win1.get_state())
+    #a.close_device()
 
+os_type = platform
+if os_type == 'darwin':
+    main_path = '/Users/guy/Documents/github/Rpi/'
+elif os_type == 'win32':
+    main_path = 'd:/users/guydvir/Documents/git/Rpi/'
+elif os_type == 'linux':
+    main_path = '/home/guy/Documents/github/Rpi/'
 
+path.append(main_path + 'GPIO_Projects/lcd')
+path.append(main_path + 'SmartHome/LocalSwitch')
+path.append(main_path + 'modules')
+path.append(main_path + 'SmartHome/LocalSwitch')
+path.append(main_path + 'SmartHome/RemoteSwitch')
+from gpiobuttonlib import HWRemoteOutput
 
 root = tk.Tk()
 chat_id = 596123373
@@ -63,9 +92,9 @@ build_gui(root)
 bot = telepot.Bot('497268459:AAFrPh-toL6DPPArWknqJzIAby8jMi21S4c')
 me = bot.getMe()
 root.title('Telegram BOT:' +me['first_name'] + '#' + str(me['id']))
+win1 = HWRemoteOutput(ip='192.168.2.114', output_pins=[19,26],switch_type='press')
 MessageLoop(bot, handle).run_as_thread()
 
-# put_log('I am listening ...')
 root.mainloop()
 #
 # while 1:
