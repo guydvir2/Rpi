@@ -141,8 +141,15 @@ class HWRemoteOutput:
     def hardware_config(self, output_pins, ip):
         for sw, pin in enumerate(output_pins):
             self.output_pins.append(OutputDevice(pin, pin_factory=self.factory, initial_value=False))
-
-        self.master.com.message("[%s][Remote-Output][IP:%s][GPIO:%s]" % (self.nick, ip, output_pins))
+            
+        try:
+            msg="[%s][Remote-Output][IP:%s][GPIO:%s]" % (self.nick, ip, output_pins)
+            self.master.com.message("[%s][Remote-Output][IP:%s][GPIO:%s]" % (self.nick, ip, output_pins))
+        except AttributeError:
+            print(msg)
+            pass
+            # When run outside ain program
+                
 
     # Make the switch
     def set_state(self, sw, state):
@@ -161,13 +168,20 @@ class HWRemoteOutput:
         for sw in self.output_pins:
             sw.close()
         self.output_pins[0].close()
-        self.master.com.message("[%s][Device shut done]" % self.nick)
+        try:
+            msg = "[%s][Device shut done]" % self.nick
+            self.master.com.message(msg)
+        except AttributeError:
+            print(msg)
 
 
 if __name__ == "__main__":
-    a = HWRemoteOutput(ip='192.168.2.114', output_pins=[21])
-    a.set_state(0, 1)
+    a = HWRemoteOutput(ip='192.168.2.114', output_pins=[19,26],switch_type='press')
+    a.set_state(0, 0)
+    a.set_state(1, 0)
     print(a.get_state())
-    a.close_device()
+    a.set_state(1,1)
+    print(a.get_state())
+    #a.close_device()
 
-    b = HWRemoteInput(ip='192.168.2.113', input_pins=[12])
+    #b = HWRemoteInput(ip='192.168.2.113', input_pins=[12])
