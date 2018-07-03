@@ -8,7 +8,7 @@ import datetime
 
 class GPIOMonitor:
     def __init__(self, ip=None, alias='gpio_monitor',
-                 listen_pins=[20, 21], trigger_pins=[16, 26], 
+                 listen_pins=[21, 20], trigger_pins=[16, 26], 
                  log_filename='/home/guy/Documents/AlarmMonitor.log'):
                 # listen_pins = [sys.arm, alarm.on], trigger_pins=[full, home]
         self.last_state=[None for i in range(4)]
@@ -40,7 +40,7 @@ class GPIOMonitor:
                 for i, current_gpio in enumerate(tmp_status):
                     if self.last_state[i] != current_gpio:
                         self.last_state[i] = current_gpio
-                        self.notify('Change State -%s :%s'%(msgs[i], current_gpio))
+                        self.notify('[%s] :%s'%(msgs[i], current_gpio))
         
         msgs=['Full-mode Arm','Home-mode','System Arm state','Alarm state']
         
