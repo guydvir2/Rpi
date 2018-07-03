@@ -21,7 +21,7 @@ sw1_name = '/Down'
 ########################  Schedule 0  #################
 # Select One
 local_schedule_0 = None
-sched_filename_0 = '/home/guy/LocalSwitch/sched_up.txt'
+sched_filename_0 = '/home/guy/Documents/github/Rpi/SmartHome/LocalSwitch/sched_up.txt'
 #######################################################
 
 
@@ -29,7 +29,7 @@ sched_filename_0 = '/home/guy/LocalSwitch/sched_up.txt'
 # Select One
 # DoubleSwitch only
 local_schedule_1 = None
-sched_filename_1 = '/home/guy/LocalSwitch/sched_down.txt'
+sched_filename_1 = '/home/guy/Documents/github/Rpi/SmartHome/LocalSwitch/sched_down.txt'
 #######################################################
 
 
