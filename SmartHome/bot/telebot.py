@@ -17,6 +17,7 @@ def build_gui(frame):
 
     def send_text():
         bot.sendMessage(chat_id, text_input.get())
+        put_log('bot: %s'% str(text_input.get()))
         text_input.set('')
 
     frame1 = tk.Frame(frame)
@@ -46,30 +47,58 @@ def handle(msg):
     command = msg['text']
     put_log('%s %s: %s' % (msg['from']['first_name'], msg['from']['last_name'], command))
 
-    if command == '/roll':
-        bot.sendMessage(chat_id, random.randint(1, 6))
-    elif command == '/time':
-        bot.sendMessage(chat_id, str(datetime.datetime.now()))
-    elif command == '/window1_up':
+    if command == '/window1_up':
         win1_commands(0,1)
-        bot.sendMessage(chat_id, 'Window 1 set UP')
+        msg='Window 1 set UP'
+        #bot.sendMessage(chat_id, 'Window 1 set UP')
     elif command == '/window1_down':
         win1_commands(1,1)
-        bot.sendMessage(chat_id, 'Window 1 set DOWN')
+        msg='Window 1 set DOWN'
     elif command == '/window1_stop':
         win1_commands(1,0)
-        bot.sendMessage(chat_id, 'Window 1 stopped')
+        msg='Window 1 stopped'
+    elif command == '/alarm_home_arm':
+        alarm_system_commands(1,1)
+        msg='Alarm System: Home Mode is ON'
+    elif command == '/alarm_home_disarm':
+        alarm_system_commands(1,0)
+        msg='Alarm System: Home Mode is OFF'
+    elif command == '/alarm_full_arm':
+        alarm_system_commands(0,1)
+        msg = 'Alarm System: Full Mode is ON'
+    elif command == '/alarm_full_disarm':
+        alarm_system_commands(0,0)
+        msg='Alarm System: Full Mode is OFF'
+    
+    elif command == '/alarm_status':
+        t=alarm_system_ind_commands()
+        msg='Alarm System ARMED: %s\nSystem is Alarming: %s'%(t[1], t[0])
         
     else:
-        bot.sendMessage(chat_id, 'pppfff comme on')
+        msg='Unknown command'
+    
+    bot.sendMessage(chat_id, msg)
+    put_log('bot: %s'%msg)
+        
 
 def win1_commands(direction,state):
     win1.set_state(0, 0)
     win1.set_state(1, 0)
-    print(win1.get_state())
     win1.set_state(direction,state)
-    print(win1.get_state())
-    #a.close_device()
+    
+def alarm_system_commands(mode, state):
+    # mode = 1 : Home Arm
+    # mode = 0 : Full
+    
+    if state == 1:
+        alarm_system.set_state(mode,state)
+    elif state == 0:
+        alarm_system.set_state(mode,state)
+
+def alarm_system_ind_commands():
+    # mode = 1 : Home Arm
+    # mode = 0 : Full
+    return alarm_system_indicators.get_state()
 
 os_type = platform
 if os_type == 'darwin':
@@ -84,7 +113,7 @@ path.append(main_path + 'SmartHome/LocalSwitch')
 path.append(main_path + 'modules')
 path.append(main_path + 'SmartHome/LocalSwitch')
 path.append(main_path + 'SmartHome/RemoteSwitch')
-from gpiobuttonlib import HWRemoteOutput
+from gpiobuttonlib import HWRemoteOutput, HWRemoteInput
 
 root = tk.Tk()
 chat_id = 596123373
@@ -92,9 +121,14 @@ build_gui(root)
 bot = telepot.Bot('497268459:AAFrPh-toL6DPPArWknqJzIAby8jMi21S4c')
 me = bot.getMe()
 root.title('Telegram BOT:' +me['first_name'] + '#' + str(me['id']))
-win1 = HWRemoteOutput(ip='192.168.2.114', output_pins=[19,26],switch_type='press')
-MessageLoop(bot, handle).run_as_thread()
 
+win1 = HWRemoteOutput(ip='192.168.2.114', output_pins=[19,26],switch_type='press')
+alarm_system = HWRemoteOutput(ip='192.168.2.117', output_pins=[16,26],switch_type='press')
+alarm_system_indicators = HWRemoteInput(ip='192.168.2.117', input_pins=[20,21],switch_mode='toggle')
+
+alarm_system_ind_commands()
+
+MessageLoop(bot, handle).run_as_thread()
 root.mainloop()
 #
 # while 1:
