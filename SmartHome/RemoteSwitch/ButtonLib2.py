@@ -929,7 +929,7 @@ if __name__ == "__main__":
     ## sched_vector=[[[6], "1:24:30", "23:12:10"]])
     #f1.grid(row=0, column=1, sticky=tk.S)
 
-    f1 = UpDownButton(root, nickname='Loc_pi113', ip_out='192.168.2.116', hw_out=[21,19])
+    f1 = UpDownButton(root, nickname='Loc_pi113', ip_out='192.168.2.116', hw_out=[26,19])
 		# sched_vector=[[[6], "1:24:30", "23:12:10"]])
     f1.grid(row=0, column=1, sticky=tk.S)
     # g = MainsButton(root, nickname='WaterBoiler', ip_out='192.168.2.114',
