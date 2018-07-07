@@ -1,0 +1,7 @@
+window1_up - Opens FamilyRoom's Window
+window1_down - Closes FamilyRoom's Window
+window1_stop - Stop FamilyRoom's Window Open/ Close
+alarm_home_arm - Arm Alarm system in Home mode
+alarm_home_disarm - disarm Alarm system in Home mode
+alarm_full_arm - Arm Alarm system in Full mode
+alarm_full_disarm - disarm Alarm system in Full mode
