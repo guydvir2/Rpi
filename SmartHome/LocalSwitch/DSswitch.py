@@ -5,10 +5,10 @@ from time import sleep
 import os
 
 ################## Switch Parameters #################
-device_name = 'F-RoomWindow'
+device_name = 'P-RoomWindow'
 switch_type = 'double'
-gpio_in = [20, 21]
-gpio_out = [19, 26]
+gpio_in = [4, 17]
+gpio_out = [19,26]
 mode = 'press'
 ext_log = '/home/guy/Documents/%s.log' % (device_name)
 recps = ['guydvir.tech@gmail.com']
