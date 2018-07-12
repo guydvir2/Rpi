@@ -3,6 +3,9 @@ from gpiozero.pins.pigpio import PiGPIOFactory
 import gpiozero
 from gpiozero import OutputDevice
 import os
+import time
+import datetime
+import random
 
 
 class Indicators:
@@ -83,17 +86,19 @@ class HWRemoteInput:
     def hardware_config(self, input_pins, ip):
         if self.switch_mode == 'press':
             for sw, pin in enumerate(input_pins):
-                self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
+                self.input_pins.append(gpiozero.Button(pin, bounce_time=1, pin_factory=self.factory))
                 self.input_pins[sw].when_pressed = lambda arg=[sw, 1]: self.pressed(arg)
                 # Line below is used when button switched off - setting the command to off
                 self.input_pins[sw].when_released = lambda arg=[sw, 0]: self.pressed(arg)
         elif self.switch_mode =='toggle':
             for sw, pin in enumerate(input_pins):
-                self.input_pins.append(gpiozero.Button(pin, pin_factory=self.factory))
+                self.input_pins.append(gpiozero.Button(pin, bounce_time=1, pin_factory=self.factory))
                 self.input_pins[sw].when_pressed = lambda arg=[sw]: self.toggled(arg)
-
-        self.master.com.message("[%s][mode:%s][Remote-Intput][IP:%s][GPIO:%s]" %
-                                (self.nick, self.switch_mode, ip, input_pins))
+        try:
+            msg = "[%s][mode:%s][Remote-Intput][IP:%s][GPIO:%s]" % (self.nick, self.switch_mode, ip, input_pins)
+            self.master.com.message(msg)
+        except AttributeError:
+            print(msg)
 
     # Detect press and make switch
     def pressed(self, arg):
@@ -120,7 +125,11 @@ class HWRemoteInput:
     def close_device(self):
         for sw in self.output_pins:
             sw.close()
-        self.master.com.message("[%s][Device shut done]" % self.nick)
+        try:
+            msg= "[%s][Device shut done]" % self.nick
+            self.master.com.message(msg)
+        except AttributeError:
+            print(msg)
 
 
 class HWRemoteOutput:
@@ -140,9 +149,15 @@ class HWRemoteOutput:
 
     def hardware_config(self, output_pins, ip):
         for sw, pin in enumerate(output_pins):
-            self.output_pins.append(OutputDevice(pin, pin_factory=self.factory, initial_value=False))
-
-        self.master.com.message("[%s][Remote-Output][IP:%s][GPIO:%s]" % (self.nick, ip, output_pins))
+            self.output_pins.append(OutputDevice(pin, pin_factory=self.factory, initial_value=None))
+            
+        try:
+            msg="[%s][Remote-Output][IP:%s][GPIO:%s]" % (self.nick, ip, output_pins)
+            self.master.com.message("[%s][Remote-Output][IP:%s][GPIO:%s]" % (self.nick, ip, output_pins))
+        except AttributeError:
+            print(msg)
+            # When run outside ain program
+                
 
     # Make the switch
     def set_state(self, sw, state):
@@ -161,13 +176,28 @@ class HWRemoteOutput:
         for sw in self.output_pins:
             sw.close()
         self.output_pins[0].close()
-        self.master.com.message("[%s][Device shut done]" % self.nick)
+        try:
+            msg = "[%s][Device shut done]" % self.nick
+            self.master.com.message(msg)
+        except AttributeError:
+            print(msg)
 
 
 if __name__ == "__main__":
-    a = HWRemoteOutput(ip='192.168.2.114', output_pins=[21])
-    a.set_state(0, 1)
-    print(a.get_state())
-    a.close_device()
+    a = HWRemoteOutput(ip='192.168.2.116', output_pins=[19,26],switch_type='press')
+    t_sleep = 1
+    for i in range (100):
+        t= datetime.datetime.now()
+        print(t)
+        t_sleep = 1# random.randint(1,5)/10
+        #print(t_sleep)
+        for m in range (2):
+            a.set_state(m, 1)
+            time.sleep(t_sleep)
+            a.set_state(m,0)
+            time.sleep(t_sleep)
+            print(i,m)
 
-    b = HWRemoteInput(ip='192.168.2.113', input_pins=[12])
+    #a.close_device()
+
+    #b = HWRemoteInput(ip='192.168.2.113', input_pins=[12])

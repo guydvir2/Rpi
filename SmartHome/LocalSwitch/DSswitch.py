@@ -21,7 +21,7 @@ sw1_name = '/Down'
 ########################  Schedule 0  #################
 # Select One
 local_schedule_0 = None
-sched_filename_0 = '/home/guy/LocalSwitch/sched_up.txt'
+sched_filename_0 = '/home/guy/Documents/github/Rpi/SmartHome/LocalSwitch/sched_up.txt'
 #######################################################
 
 
@@ -29,7 +29,7 @@ sched_filename_0 = '/home/guy/LocalSwitch/sched_up.txt'
 # Select One
 # DoubleSwitch only
 local_schedule_1 = None
-sched_filename_1 = '/home/guy/LocalSwitch/sched_down.txt'
+sched_filename_1 = '/home/guy/Documents/github/Rpi/SmartHome/LocalSwitch/sched_down.txt'
 #######################################################
 
 
@@ -49,8 +49,7 @@ if len(argv) > 0:
         sys.exit(2)
 
     a = HomePiLocalSwitch(switch_type='double', gpio_in=[20, 21], gpio_out=[16, 26], mode='press',
-                          ext_log='/home/guy/Documents/%s.log' % device_name, alias=device_name + 'O/D')
-
+                          ext_log='/home/guy/Documents/%s.log' % (device_name), alias=device_name + 'O/D')
     switch = ''
     for opt, arg in opts:
         if opt == '-h':
