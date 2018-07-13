@@ -21,8 +21,8 @@ class GPIOMonitor:
             self.ip_pi = getip.get_ip()[0]
             
         self.alias = alias
-        self.fullarm_hw = OutputDevice(trigger_pins[0], pin_factory=self.factory)
-        self.homearm_hw = OutputDevice(trigger_pins[1], pin_factory=self.factory)
+        self.fullarm_hw = OutputDevice(trigger_pins[0], pin_factory=self.factory, initial_value=None)
+        self.homearm_hw = OutputDevice(trigger_pins[1], pin_factory=self.factory, initial_value=None)
         self.sysarm_hw = Button(listen_pins[0], pin_factory=self.factory)
         self.alarm_hw = Button(listen_pins[1], pin_factory=self.factory)
         
@@ -42,7 +42,7 @@ class GPIOMonitor:
                         self.last_state[i] = current_gpio
                         self.notify('[%s] :%s'%(msgs[i], current_gpio))
         
-        msgs=['Full-mode Arm','Home-mode','System Arm state','Alarm state']
+        msgs=['Full-mode Arm','Home-mode Arm','System Arm state','Alarm state']
         
         self.cbit.append_process(const_check_state)
         self.cbit.init_thread()
@@ -55,9 +55,9 @@ class GPIOMonitor:
         self.notify("Indications IOs [%d, %d]" % (listen_pins[0], listen_pins[1]))
 
         if any([self.homearm_hw.value, self.fullarm_hw.value]):
-            al_stat = '@BOOT- System Armed'
+            al_stat = 'System detected ad Armed'
         else:
-            al_stat = '@Boot -System Unarmed'
+            al_stat = 'System detected as UnArmed'
 
         self.notify(al_stat)
 
