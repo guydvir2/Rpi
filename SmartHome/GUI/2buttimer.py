@@ -17,7 +17,6 @@ class TwoButsTimer(tk.Frame):
         self.clockframe.grid(row=2, column=0, sticky=tk.W + tk.E)
         self.clockframe.grid_columnconfigure(0, weight=1)
 
-
         self.on_off_state = False
         self.start_time, self.end_time, self.press_counter = None, None, 0
         self.but1, self.but2 = None, None
@@ -43,11 +42,11 @@ class TwoButsTimer(tk.Frame):
         self.lb1_value.set("Wait for 1st command")
 
         self.label2 = tk.Label(self.labelframe, textvariable=self.lb2_value)
-        self.label2.grid(row=1, column=0, sticky=tk.E+tk.W)
+        self.label2.grid(row=1, column=0, sticky=tk.E + tk.W)
         self.lb2_value.set("Wait for 1st command")
 
         self.label3 = tk.Label(self.clockframe, textvariable=self.lb3_value)
-        self.label3.grid(row=0, column=0, sticky=tk.E+tk.W, columnspan=2)
+        self.label3.grid(row=0, column=0, sticky=tk.E + tk.W, columnspan=2)
         self.lb3_value.set("it's time")
 
     def zeroing_variables(self):
@@ -82,6 +81,7 @@ class TwoButsTimer(tk.Frame):
         print("action_off")
 
     def timer_cb(self):
+        # cond to start timer:
         if self.on_off_state is True:
             self.but2['bg'] = 'green'
             self.lb1_value.set("Status: Timer")
@@ -91,8 +91,8 @@ class TwoButsTimer(tk.Frame):
             self.end_time = self.start_time + datetime.timedelta(seconds=10 * self.press_counter)
         else:
             self.lb2_value.set("Err: Switch On before Timer")
-            # time.sleep(1)
-            # self.zeroing_variables()
+            #time.sleep(3)
+            #self.zeroing_variables()
 
     def tick_clock(self):
         time_now = datetime.datetime.now()
