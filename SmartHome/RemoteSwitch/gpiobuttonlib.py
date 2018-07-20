@@ -185,12 +185,12 @@ class HWRemoteOutput:
 
 if __name__ == "__main__":
     output_pins=[19]
-    a = HWRemoteOutput(ip='192.168.2.118', output_pins=output_pins,switch_type='press')
+    a = HWRemoteOutput(ip='192.168.2.116', output_pins=output_pins,switch_type='press')
     t_sleep = 1
     t_start= datetime.datetime.now()
-    for i in range (100):
+    for i in range (10):
         t= datetime.datetime.now()
-        t_sleep = random.randint(1,5)/10
+        t_sleep = 0.2+ random.randint(1,5)/10
         for m in range (len(output_pins)):
             a.set_state(m, 1)
             time.sleep(t_sleep)

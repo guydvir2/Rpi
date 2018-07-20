@@ -1,12 +1,12 @@
-from gpiozero import Button, OutputDevice
+#from gpiozero import Button, OutputDevice
 #from gpiozero.pins.pigpio import PiGPIOFactory
 
 from sys import platform, path
 import os
 import datetime
-#import tkinter as tk
-#from tkinter import filedialog
-#from tkinter import ttk
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import ttk
 #from time import sleep
 #from signal import pause
 
@@ -85,7 +85,7 @@ class GPIOMonitor:
         # self.email_notify(msg=self.logger.msg, sbj='HomePi: %s' % (self.alias))
 
 
-class AlarmControlGUI(ttk.Frame , GPIOMonitor):
+class AlarmControlGUI(ttk.Frame):
     def __init__(self, master, ip=None):
         self.arm_value = tk.StringVar()
         self.alarm_on_value = tk.StringVar()
@@ -102,7 +102,7 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
         self.log_stack, self.ip_pi = [], ip
 
         ttk.Frame.__init__(self)
-        GPIOMonitor.__init__(self, ip=self.ip_pi, alias='Alarm Monitor')
+        #GPIOMonitor.__init__(self, ip=self.ip_pi, alias='Alarm Monitor')
 
         # Frames
         self.mainframe = tk.Frame(master, padx=5, pady=5, bg=self.common_bg)
@@ -122,6 +122,10 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
         ###################################################
 
         self.run_modules()
+        
+    def test1(self):
+        print("HI")
+        self.after(100, self.test1)
 
     def run_modules(self):
         self.log_window()
@@ -130,11 +134,13 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
         self.oper_buttons()
         self.chk_ind_state()
         self.status_bar()
-        self.set_arm_ind(0)
-        self.alarm_setoff_ind(0)
-        #self.blink_tx()
-        self.boot_notifications()
-        self.run_alltime()
+        self.clock1()
+        #self.set_arm_ind(0)
+        #self.alarm_setoff_ind(0)
+        self.blink_tx()
+        #self.test1()
+        #self.boot_notifications()
+        #self.run_alltime()
 
     def boot_notifications(self):
         self.write2log("Boot GUI")
@@ -174,7 +180,8 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
         self.setoff_alarm_label.grid(row=0, column=2, padx=pdx, pady=pdy)
 
     def chk_ind_state(self):
-        gpio_s = self.get_gpio_status()
+        #gpio_s = self.get_gpio_status()
+        gpio_s = [[1, 1], [1, 1]]
         # arm ind
         if gpio_s[1][1] == True:
             self.set_arm_ind(1)
@@ -336,18 +343,24 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
         self.tx_label = tk.Label(self.status_frame, textvariable=self.tx_value, relief=tk.GROOVE, width=2)
         self.tx_label.grid(row=0, column=4, sticky=tk.E)
 
-        self.clock()
+        #self.clock()
 
-    def clock(self):
+    def clock1(self):
         def update_time():
             time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             clock_label.config(text=time)
+            print("YU")
+            
+        def me2():
+            print("DFGDFGDFG")
+
 
         clock_label = tk.Label(self.status_frame, bg=self.common_bg, fg='white', relief=tk.GROOVE, bd=2, padx=3)
         clock_label.grid(row=0, column=2, sticky=tk.E, padx=2)
-        #time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        clock_label.config(text=time)
         
-        self.after(500, update_time)
+        self.after(500, self.clock1)
 
     def exit_button_cb(self):
         quit()
@@ -391,8 +404,8 @@ class AlarmControlGUI(ttk.Frame , GPIOMonitor):
             m=["OK","Fail"][ping_result]
             self.write2log("Ping %s"%m)
     
-    def run_alltime(self):
-        self.clock()
+    #def run_alltime(self):
+        #self.clock()
         
 
 
@@ -411,11 +424,9 @@ path.append(main_path + 'modules')
 import gmail_mod
 from localswitches import Log2File
 import getip
-import cbit
+#import cbit
 
-#root = tk.Tk()
-#AlarmControlGUI(root , ip='192.168.2.117')
-#root.mainloop()
+root = tk.Tk()
+AlarmControlGUI(root , ip='192.168.2.117')
+root.mainloop()
 
-GPIOMonitor()#ip='192.168.2.113')
-#pause()

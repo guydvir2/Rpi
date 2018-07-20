@@ -354,16 +354,14 @@ if __name__ == '__main__':
     # a.wifi_off()
 
     #
-<<<<<<< HEAD
+
     b = RunWeeklySchedule(on_func=on_func, off_func=off_func,
                           sched_file='/home/guy/Documents/github/Rpi/SmartHome/LocalSwitch/sched.txt')
     # # b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
     # b.add_weekly_task_weekly_task(
     #     new_task={'start_days': [3], 'start_time': '09:03:30', 'end_days': [3], 'end_time': '18:11:00'})
-=======
-    b = RunWeeklySchedule(on_func=on_func, off_func=off_func)#, sched_file='sched1.txt')
-    b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
->>>>>>> Alarm
+    #b = RunWeeklySchedule(on_func=on_func, off_func=off_func)#, sched_file='sched1.txt')
+    #b.add_weekly_task(new_task={'start_days': [6], 'start_time': '19:03:00', 'end_days': [6], 'end_time': '23:08:00'})
     # b.add_weekly_task(
     #     new_task={'start_days': [4, 7,5,7,1], 'start_time': '09:03:30', 'end_days': [1, 3,2,1,2], 'end_time': '14:35:00'})
 
